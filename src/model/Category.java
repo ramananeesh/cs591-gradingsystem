@@ -6,16 +6,26 @@ public class Category {
 	private String fieldName;
 	private double weight;
 	private String courseName;
-
+	private int templateId; 
+	
 	public Category(int id, String fieldName, double weight, String courseName) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
 		this.weight = weight;
 		this.courseName = courseName;
+		this.templateId = -1; 
 	}
 
-	private int templateId;
+	public Category(int id, String fieldName, double weight, String courseName, int templateId) {
+		super();
+		this.id = id;
+		this.fieldName = fieldName;
+		this.weight = weight;
+		this.courseName = courseName;
+		this.templateId = templateId; 
+	}
+
 
 	public int getId() {
 		return id;
@@ -61,4 +71,5 @@ public class Category {
 		return this.id + " - " + this.fieldName + " - " + this.weight + " - " + this.courseName + " - "
 				+ this.templateId;
 	}
+	
 }
