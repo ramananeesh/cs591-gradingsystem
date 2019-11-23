@@ -8,6 +8,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+//import java.awt.;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class GradeWindow extends JFrame {
 	private static final String TITLE = "Grading System - Grade";
@@ -24,16 +28,14 @@ public class GradeWindow extends JFrame {
 		setBounds(SizeManager.windowBounds);
 
 		String[] tableGradeColumn = {
-				"Student Name", "Homework 1", "Homework 2", "Midterm", "Final Exam"
+				"Student Name", "Homework 1", "Homework 2", "Homework 3", "Homework 4", "Homework 5", "Midterm", "Final Exam"
 		};
-		String[][] tableCourseData = { // TODO load course data
-				{"Student 1", "100", "100", "100"},
-				{"Student 2", "100", "100"},
-				{"Student 3"},
-				{"Student 4"},
-				{"Student 5"},
-				{"Student 6"}
-		};
+		String[][] tableCourseData = new String[100][1];//{ // TODO load course data
+		tableCourseData[0][0] = "Average";
+		tableCourseData[1][0] = "Median";
+		for (int i = 3; i < 100; ++i) {
+			tableCourseData[i][0] = String.format("Student %02d", i - 2);
+		}
 
 		DefaultTableModel modelGrade = new DefaultTableModel(tableCourseData, tableGradeColumn) {
 			@Override
@@ -116,10 +118,38 @@ public class GradeWindow extends JFrame {
 		labelSearch.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(labelSearch);
 
+		initRandom(tableGrade);
+		computeStatistics(tableGrade);
+
 		setVisible(true);
 	}
 
 	private static void search(JComboBox<String> boxCategory, JComboBox<String> boxItem, TableRowSorter<DefaultTableModel> sorter) {
 		// TODO
+	}
+
+	private void initRandom(JTable tableGrade) {
+		Random random = new Random();
+		for (int i = 3; i < 100; ++i) {
+			for (int j = 1; j < 8; ++j) {
+				tableGrade.setValueAt(String.valueOf(random.nextInt(20) + 80), i, j);
+			}
+		}
+	}
+
+	private void computeStatistics(JTable tableGrade) {
+		for (int i = 1; i < 8; ++i) {
+			List<Integer> rank = new ArrayList<>();
+			for (int j = 3; j < 100; ++j) {
+				rank.add(Integer.valueOf((String) tableGrade.getValueAt(j, i)));
+			}
+			double sum = 0;
+			for (Integer integer : rank) {
+				sum += integer;
+			}
+			rank.sort(Integer::compareTo);
+			tableGrade.setValueAt(String.valueOf(rank.get(rank.size() / 2)), 1, i);
+			tableGrade.setValueAt(String.format("%.2f", sum / rank.size()), 0, i);
+		}
 	}
 }
