@@ -70,6 +70,7 @@ public class CourseWindow extends JFrame {
 		tableHeader.setFont(tableCourse.getFont());
 		JScrollPane tableCourseScrollPane = new JScrollPane(tableCourse);
 		tableCourseScrollPane.setBounds(tableCourse.getBounds());
+		tableCourse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		add(tableCourseScrollPane);
 
 		String[] semester = {"All", "Fall 2019", "Spring 2020"}; // TODO
