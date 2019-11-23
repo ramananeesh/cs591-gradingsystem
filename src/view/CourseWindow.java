@@ -78,7 +78,7 @@ public class CourseWindow extends JFrame {
 //		textSearch.addFocusListener(new FocusListener() {
 //			@Override
 //			public void focusGained(FocusEvent e) {
-//				if (textSearch.getText().equals("")) {
+//				if (textSearch.getText().equals("Search Bar")) {
 //					textSearch.setText("");
 //				}
 //			}
@@ -105,19 +105,24 @@ public class CourseWindow extends JFrame {
 		});
 		add(buttonAdd);
 
+		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);
+		UIManager.put("OptionPane.buttonFont", FontManager.fontLabel);
 		JButton buttonView = new JButton("View");
 		buttonView.setFont(FontManager.fontButton);
 		buttonView.setBounds(SizeManager.buttonViewBounds);
 		buttonView.setForeground(ColorManager.lightColor);
 		buttonView.setBackground(ColorManager.primaryColor);
 		buttonView.addActionListener(e -> {
-			String[] courseName = new String[3];
-			for (int i = 0; i < 3; ++i) {
-				courseName[i] = tableCourse.getValueAt(tableCourse.getSelectedRow(), i).toString();
+			if (tableCourse.getSelectedRow() == -1) {
+				JOptionPane.showMessageDialog(this, "Please select a course.", "Error", JOptionPane.WARNING_MESSAGE);
+			} else {
+				String[] courseData = new String[3];
+				for (int i = 0; i < 3; ++i) {
+					courseData[i] = tableCourse.getValueAt(tableCourse.getSelectedRow(), i).toString();
+				}
+				new MenuWindow(courseData);
+				dispose();
 			}
-			new MenuWindow(courseName);
-			setVisible(false);
-			dispose();
 		});
 		add(buttonView);
 
