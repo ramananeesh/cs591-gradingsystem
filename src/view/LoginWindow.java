@@ -40,8 +40,6 @@ public class LoginWindow extends JFrame {
 		});
 		add(buttonLogin);
 
-		requestFocus();
-
 		setVisible(true);
 	}
 }

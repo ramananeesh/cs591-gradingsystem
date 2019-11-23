@@ -5,9 +5,15 @@ import helper.FontManager;
 import helper.SizeManager;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class CourseWindow extends JFrame {
 	private static final String TITLE = "Grading System - Course";
@@ -35,7 +41,12 @@ public class CourseWindow extends JFrame {
 				{"CS530", "Graduate Algorithms", "Fall 2019"}
 		};
 
-		DefaultTableModel modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumn);
+		DefaultTableModel modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumn) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		JTable tableCourse = new JTable(modelCourse);
 		tableCourse.setBounds(SizeManager.tableCourseBounds);
 		tableCourse.setRowHeight(SizeManager.tableRowHeight);
@@ -53,11 +64,12 @@ public class CourseWindow extends JFrame {
 		tableCourse.setDefaultRenderer(Object.class, render);
 		TableRowSorter<DefaultTableModel> sorterCourse = new TableRowSorter<>(modelCourse);
 		tableCourse.setRowSorter(sorterCourse);
-		tableCourse.getTableHeader().setFont(tableCourse.getFont());
+		JTableHeader tableHeader = tableCourse.getTableHeader();
+		tableHeader.setBackground(ColorManager.primaryColor);
+		tableHeader.setForeground(ColorManager.lightColor);
+		tableHeader.setFont(tableCourse.getFont());
 		JScrollPane tableCourseScrollPane = new JScrollPane(tableCourse);
-		tableCourseScrollPane.setSize(tableCourse.getWidth(), tableCourse.getHeight());
-		tableCourseScrollPane.setVisible(true);
-		tableCourseScrollPane.setLocation(tableCourse.getX(), tableCourse.getY());
+		tableCourseScrollPane.setBounds(tableCourse.getBounds());
 		add(tableCourseScrollPane);
 
 		String[] semester = {"All", "Fall 2019", "Spring 2020"}; // TODO
@@ -92,8 +104,23 @@ public class CourseWindow extends JFrame {
 //		});
 		add(textSearch);
 
-		textSearch.getDocument().addDocumentListener(new SearchDocumentListener(sorterCourse, textSearch, boxFilter));
-		boxFilter.addActionListener(new SearchActionListener(sorterCourse, textSearch, boxFilter));
+		textSearch.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				search(sorterCourse, textSearch, boxFilter);
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				search(sorterCourse, textSearch, boxFilter);
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				search(sorterCourse, textSearch, boxFilter);
+			}
+		});
+		boxFilter.addActionListener(e -> search(sorterCourse, textSearch, boxFilter));
 
 		JButton buttonAdd = new JButton("Add");
 		buttonAdd.setFont(FontManager.fontButton);
@@ -141,5 +168,20 @@ public class CourseWindow extends JFrame {
 		add(labelSearch);
 
 		setVisible(true);
+	}
+
+	private static void search(TableRowSorter<DefaultTableModel> sorter, JTextField search, JComboBox<String> boxFilter) {
+		if (search.getText().length() != 0 && !Objects.equals(boxFilter.getSelectedItem(), "All")) {
+			sorter.setRowFilter(RowFilter.andFilter(new ArrayList<>(Arrays.asList(
+					RowFilter.regexFilter("(?i)" + boxFilter.getSelectedItem()),
+					RowFilter.regexFilter("(?i)" + search.getText()))))
+			);
+		} else if (!Objects.equals(boxFilter.getSelectedItem(), "All")) {
+			sorter.setRowFilter(RowFilter.regexFilter("(?i)" + boxFilter.getSelectedItem()));
+		} else if (search.getText().length() != 0) {
+			sorter.setRowFilter(RowFilter.regexFilter("(?i)" + search.getText()));
+		} else {
+			sorter.setRowFilter(null);
+		}
 	}
 }

@@ -6,6 +6,8 @@ import helper.SizeManager;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -17,14 +19,12 @@ import java.awt.event.ActionListener;
 
 public class MenuWindow extends JFrame {
 	private static final String TITLE = "Grading System - Main Menu";
-//	private static final String BACKGROUND_PICTURE_FILE_NAME = "src/resource/background.jpg";
 
-	public MenuWindow(String[] data) { // TODO data should not be String array
+	public MenuWindow(String[] courseData) { // TODO data should not be String array
 		setTitle(TITLE);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
 		setResizable(false);
-//		setContentPane(new JLabel(new ImageIcon(BACKGROUND_PICTURE_FILE_NAME)));
 		setBounds(SizeManager.windowBounds);
 
 		String[] menuName = {"  File  ", "  Edit  ", "  Grade  "};
@@ -69,7 +69,8 @@ public class MenuWindow extends JFrame {
 				},
 				{
 						e -> { // Edit All Grades
-
+							new GradeWindow(courseData);
+							dispose();
 						},
 						e -> { // Edit by Student
 
@@ -102,7 +103,7 @@ public class MenuWindow extends JFrame {
 
 		JTextPane textInfo = new JTextPane();
 		textInfo.setBounds(SizeManager.textInfoBounds);
-		textInfo.setText(data[0] + "\n" + data[1] + "\n" + data[2]); // TODO load info from database
+		textInfo.setText(courseData[0] + "\n" + courseData[1] + "\n" + courseData[2]); // TODO load info from database
 		textInfo.setFont(FontManager.fontText);
 		textInfo.setEditable(false);
 		textInfo.setBorder(new LineBorder(ColorManager.primaryColor, SizeManager.lineThickness));
@@ -119,11 +120,15 @@ public class MenuWindow extends JFrame {
 		String[][] tableStudentData; // TODO load student from database
 		tableStudentData = new String[100][1];
 		for (int i = 0; i < 100; ++i) {
-			tableStudentData[i][0] = String.format(" Student %010d", i + 1);
+			tableStudentData[i][0] = String.format("Student %010d", i + 1);
 		}
-		DefaultTableModel modelStudent = new DefaultTableModel(tableStudentData, tableStudentColumn);
+		DefaultTableModel modelStudent = new DefaultTableModel(tableStudentData, tableStudentColumn) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		JTable tableStudent = new JTable(modelStudent);
-		tableStudent.setBounds(SizeManager.tableStudentBounds);
 		tableStudent.setRowHeight(SizeManager.menuTableRowHeight);
 		JScrollPane tableStudentScrollPane = new JScrollPane(tableStudent);
 		tableStudentScrollPane.setBounds(SizeManager.tableStudentBounds);
@@ -135,9 +140,13 @@ public class MenuWindow extends JFrame {
 		for (int i = 0; i < 100; ++i) {
 			tableCategoryData[i][0] = String.format("Category %010d", i + 1);
 		}
-		DefaultTableModel modelCategory = new DefaultTableModel(tableCategoryData, tableCategoryColumn);
+		DefaultTableModel modelCategory = new DefaultTableModel(tableCategoryData, tableCategoryColumn) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		JTable tableCategory = new JTable(modelCategory);
-//		tableCategory.setBounds(SizeManager.tableCategoryBounds);
 		JScrollPane tableCategoryScrollPane = new JScrollPane(tableCategory);
 		tableCategoryScrollPane.setBounds(SizeManager.tableCategoryBounds);
 		add(tableCategoryScrollPane);
@@ -146,11 +155,15 @@ public class MenuWindow extends JFrame {
 		String[][] tableItemData; // TODO load Item from database
 		tableItemData = new String[100][1];
 		for (int i = 0; i < 100; ++i) {
-			tableItemData[i][0] = String.format(" Item %010d", i + 1);
+			tableItemData[i][0] = String.format("Item %010d", i + 1);
 		}
-		DefaultTableModel modelItem = new DefaultTableModel(tableItemData, tableItemColumn);
+		DefaultTableModel modelItem = new DefaultTableModel(tableItemData, tableItemColumn) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		JTable tableItem = new JTable(modelItem);
-		tableItem.setBounds(SizeManager.tableItemBounds);
 		JScrollPane tableItemScrollPane = new JScrollPane(tableItem);
 		tableItemScrollPane.setBounds(SizeManager.tableItemBounds);
 		add(tableItemScrollPane);
@@ -161,8 +174,12 @@ public class MenuWindow extends JFrame {
 		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
 			table.setDefaultRenderer(Object.class, render);
 			table.setRowHeight(SizeManager.menuTableRowHeight);
-			table.getSelectionModel().addListSelectionListener(new TextInfoListener(textInfo, tableStudent, tableCategory, tableItem));
-			table.setEnabled(false);
+			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					// TODO
+				}
+			});
 
 			JTableHeader tableHeader = table.getTableHeader();
 			tableHeader.setPreferredSize(new Dimension(SizeManager.panelWidth, SizeManager.menuTableRowHeight));

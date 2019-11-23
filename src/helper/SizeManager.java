@@ -1,11 +1,10 @@
 package helper;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class SizeManager {
 
-	public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 	// LoginWindow
 
@@ -25,77 +24,77 @@ public class SizeManager {
 	public static final Rectangle buttonLoginBounds = new Rectangle(buttonLoginX, buttonLoginY, buttonLoginWidth, buttonLoginHeight);
 	public static final float buttonLoginFontSize = buttonLoginHeight * 0.6f;
 
-	// Course Window
+	// CourseWindow
 
-	public static int windowWidth = getScaledSize(1900);
-	public static int windowHeight = getScaledSize(1000);
-	public static int windowX = (int) ((screenSize.getWidth() - windowWidth) / 2);
-	public static int windowY = (int) ((screenSize.getHeight() - windowHeight) / 2);
-	public static Rectangle windowBounds = new Rectangle(windowX, windowY, windowWidth, windowHeight);
+	public static final int windowWidth = getScaledSize(1900);
+	public static final int windowHeight = getScaledSize(1000);
+	public static final int windowX = (int) ((screenSize.getWidth() - windowWidth) / 2);
+	public static final int windowY = (int) ((screenSize.getHeight() - windowHeight) / 2);
+	public static final Rectangle windowBounds = new Rectangle(windowX, windowY, windowWidth, windowHeight);
 
 
-	public static int tableRowHeight = windowHeight / 20;
+	public static final int tableRowHeight = windowHeight / 20;
 	public static final float fontTableSize = tableRowHeight * 0.6f;
 
-	public static int tableCourseWidth = windowWidth * 7 / 8;
-	public static int tableCourseHeight = tableRowHeight * 15;
-	public static int tableCourseX = windowWidth / 2 - tableCourseWidth / 2;
-	public static int tableCourseY = windowHeight / 2 - tableCourseHeight / 2;
-	public static Rectangle tableCourseBounds = new Rectangle(tableCourseX, tableCourseY, tableCourseWidth, tableCourseHeight);
-	public static int tableCourseColumnNumberWidth = tableCourseWidth / 4;
-	public static int tableCourseColumnNameWidth = tableCourseWidth / 2;
-	public static int tableCourseColumnSemesterWidth = tableCourseWidth / 4;
+	public static final int tableCourseWidth = windowWidth * 7 / 8;
+	public static final int tableCourseHeight = tableRowHeight * 15;
+	public static final int tableCourseX = windowWidth / 2 - tableCourseWidth / 2;
+	public static final int tableCourseY = windowHeight / 2 - tableCourseHeight / 2;
+	public static final Rectangle tableCourseBounds = new Rectangle(tableCourseX, tableCourseY, tableCourseWidth, tableCourseHeight);
+	public static final int tableCourseColumnNumberWidth = tableCourseWidth / 4;
+	public static final int tableCourseColumnNameWidth = tableCourseWidth / 2;
+	public static final int tableCourseColumnSemesterWidth = tableCourseWidth / 4;
 
-	public static int midSearchFilter = windowWidth / 15;
+	public static final int midSearchFilter = windowWidth / 15;
 
-	public static int searchFilterCourseWidth = windowWidth / 6;
-	public static int searchFilterCourseHeight = windowHeight / 20;
-	public static int searchCourseX = windowWidth / 2 + midSearchFilter;
-	public static int searchFilterCourseY = tableCourseY / 2 - searchFilterCourseHeight / 2;
-	public static Rectangle searchCourseBounds = new Rectangle(searchCourseX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
-	public static float fontSearchSize = searchFilterCourseHeight * 0.6f;
+	public static final int searchFilterCourseWidth = windowWidth / 6;
+	public static final int searchFilterCourseHeight = windowHeight / 20;
+	public static final int searchCourseX = windowWidth / 2 + midSearchFilter;
+	public static final int searchFilterCourseY = tableCourseY / 2 - searchFilterCourseHeight / 2;
+	public static final Rectangle searchCourseBounds = new Rectangle(searchCourseX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
+	public static final float fontSearchSize = searchFilterCourseHeight * 0.6f;
 
-	public static int filterCourseX = windowWidth / 2 - searchFilterCourseWidth - midSearchFilter;
-	public static Rectangle filterCourseBounds = new Rectangle(filterCourseX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
-	public static float fontFilterSize = searchFilterCourseHeight * 0.6f;
+	public static final int filterCourseX = windowWidth / 2 - searchFilterCourseWidth - midSearchFilter;
+	public static final Rectangle filterCourseBounds = new Rectangle(filterCourseX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
+	public static final float fontFilterSize = searchFilterCourseHeight * 0.6f;
 
-	public static int labelHeight = windowHeight / 20;
-	public static float fontLabelSize = labelHeight * 0.6f;
+	public static final int labelHeight = windowHeight / 20;
+	public static final float fontLabelSize = labelHeight * 0.6f;
 
-	public static Rectangle labelFilterBounds = new Rectangle(0, searchFilterCourseY, filterCourseX, labelHeight);
-	public static Rectangle labelSearchBounds = new Rectangle(filterCourseX + searchFilterCourseWidth, searchFilterCourseY, searchCourseX - filterCourseX - searchFilterCourseWidth, labelHeight);
+	public static final Rectangle labelFilterBounds = new Rectangle(0, searchFilterCourseY, filterCourseX, labelHeight);
+	public static final Rectangle labelSearchBounds = new Rectangle(filterCourseX + searchFilterCourseWidth, searchFilterCourseY, searchCourseX - filterCourseX - searchFilterCourseWidth, labelHeight);
 
-	public static int buttonWidth = windowWidth / 15;
-	public static int buttonHeight = windowHeight / 20;
-	public static float fontButtonSize = buttonHeight * 0.6f;
+	public static final int buttonWidth = windowWidth / 15;
+	public static final int buttonHeight = windowHeight / 20;
+	public static final float fontButtonSize = buttonHeight * 0.6f;
 
-	public static int midButtonCourse = windowWidth / 40;
-	public static int buttonAddX = windowWidth / 2 - buttonWidth - midButtonCourse;
-	public static int buttonViewX = windowWidth / 2 + midButtonCourse;
-	public static int buttonAddViewY = windowHeight * 179 / 200;
-	public static Rectangle buttonAddBounds = new Rectangle(buttonAddX, buttonAddViewY, buttonWidth, buttonHeight);
-	public static Rectangle buttonViewBounds = new Rectangle(buttonViewX, buttonAddViewY, buttonWidth, buttonHeight);
+	public static final int midButtonCourse = windowWidth / 40;
+	public static final int buttonAddX = windowWidth / 2 - buttonWidth - midButtonCourse;
+	public static final int buttonViewX = windowWidth / 2 + midButtonCourse;
+	public static final int buttonAddViewY = windowHeight * 179 / 200;
+	public static final Rectangle buttonAddBounds = new Rectangle(buttonAddX, buttonAddViewY, buttonWidth, buttonHeight);
+	public static final Rectangle buttonViewBounds = new Rectangle(buttonViewX, buttonAddViewY, buttonWidth, buttonHeight);
 
-	// Menu Window
+	// MenuWindow
 
 	public static final int menuBarHeight = windowHeight / 20;
-	public static Rectangle menuBarBounds = new Rectangle(0, 0, windowWidth, menuBarHeight);
+	public static final Rectangle menuBarBounds = new Rectangle(0, 0, windowWidth, menuBarHeight);
 	public static final float fontMenuSize = menuBarHeight * 0.6f;
 	public static final int lineThickness = windowWidth / 500;
 
-	public static int panelWidth = (int) (windowWidth * 0.3332);
-	public static int panelHeight = (int) (windowHeight * 0.915);
+	public static final int panelWidth = (int) (windowWidth * 0.3332);
+	public static final int panelHeight = (int) (windowHeight * 0.915);
 
-	public static Rectangle textInfoBounds = new Rectangle(panelWidth, menuBarHeight, panelWidth, panelHeight);
-	public static float fontTextSize = fontMenuSize;
+	public static final Rectangle textInfoBounds = new Rectangle(panelWidth, menuBarHeight, panelWidth, panelHeight);
+	public static final float fontTextSize = fontMenuSize;
 
-	public static Rectangle tableStudentBounds = new Rectangle(0, menuBarHeight, panelWidth, panelHeight);
-	public static Rectangle tableCategoryBounds = new Rectangle(2 * panelWidth, menuBarHeight, panelWidth, panelHeight / 2);
-	public static Rectangle tableItemBounds = new Rectangle(2 * panelWidth, menuBarHeight + panelHeight / 2, panelWidth, panelHeight / 2);
-	public static int menuTableRowHeight = (int)(panelHeight *0.051);
-	public static float fontMenuTableSize = menuTableRowHeight * 0.6f;
+	public static final Rectangle tableStudentBounds = new Rectangle(0, menuBarHeight, panelWidth, panelHeight);
+	public static final Rectangle tableCategoryBounds = new Rectangle(2 * panelWidth, menuBarHeight, panelWidth, panelHeight / 2);
+	public static final Rectangle tableItemBounds = new Rectangle(2 * panelWidth, menuBarHeight + panelHeight / 2, panelWidth, panelHeight / 2);
+	public static final int menuTableRowHeight = (int) (panelHeight * 0.051);
+	public static final float fontMenuTableSize = menuTableRowHeight * 0.6f;
 
-	public static int getScaledSize(double size) {
+	public static final int getScaledSize(double size) {
 		return (int) (size / 2000 * Math.max(screenSize.getWidth(), screenSize.getHeight()));
 	}
 }
