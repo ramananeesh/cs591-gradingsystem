@@ -131,7 +131,11 @@ public class CourseWindow extends JFrame {
 				JTextField numberField = new JTextField();
 				JTextField nameField = new JTextField();
 				JTextField termField = new JTextField();
-				Object[] fields = {"Course Number: ", numberField, "Course Name: ", nameField, "Course Term: ", termField,};
+				JComboBox<String> templateCombo = new JComboBox<String>();
+				for(int i = 0; i < tableCourseData.length; i++){
+					templateCombo.addItem(tableCourseData[i][0] + " " + tableCourseData[i][2]);
+				}
+				Object[] fields = {"Course Number: ", numberField, "Course Name: ", nameField, "Course Term: ", termField, "Template: ", templateCombo, };
 				while (true) {
 					int reply = JOptionPane.showConfirmDialog(null, fields, "Add a Course", JOptionPane.OK_CANCEL_OPTION);
 					if (reply == JOptionPane.OK_OPTION) {
