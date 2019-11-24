@@ -41,9 +41,7 @@ public class SizeManager {
 	public static final int tableCourseX = windowWidth / 2 - tableCourseWidth / 2;
 	public static final int tableCourseY = windowHeight / 2 - tableCourseHeight / 2;
 	public static final Rectangle tableCourseBounds = new Rectangle(tableCourseX, tableCourseY, tableCourseWidth, tableCourseHeight);
-	public static final int tableCourseColumnNumberWidth = tableCourseWidth / 4;
-	public static final int tableCourseColumnNameWidth = tableCourseWidth / 2;
-	public static final int tableCourseColumnSemesterWidth = tableCourseWidth / 4;
+	public static final int[] tableColumWidth = {tableCourseWidth / 4, tableCourseWidth / 2, tableCourseWidth / 4};
 
 	public static final int midSearchFilter = windowWidth / 15;
 
@@ -91,8 +89,11 @@ public class SizeManager {
 	public static final Rectangle tableStudentBounds = new Rectangle(0, menuBarHeight, panelWidth, panelHeight);
 	public static final Rectangle tableCategoryBounds = new Rectangle(2 * panelWidth, menuBarHeight, panelWidth, panelHeight / 2);
 	public static final Rectangle tableItemBounds = new Rectangle(2 * panelWidth, menuBarHeight + panelHeight / 2, panelWidth, panelHeight / 2);
+	public static final int[] tableCategoryItemColumWidth = {panelWidth * 3 / 4, panelWidth / 4};
 	public static final int menuTableRowHeight = (int) (panelHeight * 0.051);
 	public static final float fontMenuTableSize = menuTableRowHeight * 0.6f;
+
+	public static final Dimension optionPaneDimension = new Dimension(getScaledSize(600), getScaledSize(600));
 
 	public static final int getScaledSize(double size) {
 		return (int) (size / 2000 * Math.max(screenSize.getWidth(), screenSize.getHeight()));

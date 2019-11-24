@@ -23,7 +23,6 @@ public class GradeWindow extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
 		setResizable(false);
-		setLocationRelativeTo(null);
 		setContentPane(new JLabel(new ImageIcon(BACKGROUND_PICTURE_FILE_NAME)));
 		setBounds(SizeManager.windowBounds);
 

@@ -25,9 +25,10 @@ public class CourseWindow extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
 		setResizable(false);
-		setLocationRelativeTo(null);
 		setContentPane(new JLabel(new ImageIcon(BACKGROUND_PICTURE_FILE_NAME)));
 		setBounds(SizeManager.windowBounds);
+
+		UIManager.put("TextField.font", FontManager.fontSearch);
 
 		String[] tableCourseColumn = {
 				"#", "Course Name", "Semester"
@@ -51,13 +52,10 @@ public class CourseWindow extends JFrame {
 		tableCourse.setBounds(SizeManager.tableCourseBounds);
 		tableCourse.setRowHeight(SizeManager.tableRowHeight);
 		tableCourse.setFont(FontManager.fontTable);
-		int[] tableColumWidth = {
-				SizeManager.tableCourseColumnNumberWidth,
-				SizeManager.tableCourseColumnNameWidth,
-				SizeManager.tableCourseColumnSemesterWidth
-		};
-		for (int i = 0; i < 3; ++i)
-			tableCourse.getColumnModel().getColumn(i).setPreferredWidth(tableColumWidth[i]);
+
+		for (int i = 0; i < 3; ++i) {
+			tableCourse.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableColumWidth[i]);
+		}
 		DefaultTableCellRenderer render = new DefaultTableCellRenderer();
 		render.setHorizontalAlignment(SwingConstants.CENTER);
 		render.setVerticalAlignment(SwingConstants.CENTER);
@@ -88,7 +86,7 @@ public class CourseWindow extends JFrame {
 		textSearch.setBounds(SizeManager.searchCourseBounds);
 		textSearch.setFont(FontManager.fontSearch);
 		textSearch.setHorizontalAlignment(SwingConstants.CENTER);
-//		textSearch.addFocusListener(new FocusListener() {
+//		textSearch.addFocusListener(new FocusListener() { TODO may display hint words in search bar
 //			@Override
 //			public void focusGained(FocusEvent e) {
 //				if (textSearch.getText().equals("Search Bar")) {
@@ -133,14 +131,13 @@ public class CourseWindow extends JFrame {
 				JTextField numberField = new JTextField();
 				JTextField nameField = new JTextField();
 				JTextField termField = new JTextField();
-				Object[] fields = {"Course Number: ", numberField, "Course Name: ", nameField, "Course Term: ", termField, };
-				while(true) {
+				Object[] fields = {"Course Number: ", numberField, "Course Name: ", nameField, "Course Term: ", termField,};
+				while (true) {
 					int reply = JOptionPane.showConfirmDialog(null, fields, "Add a Course", JOptionPane.OK_CANCEL_OPTION);
 					if (reply == JOptionPane.OK_OPTION) {
 
 						break;
-					}
-					else{
+					} else {
 						return;
 					}
 				}

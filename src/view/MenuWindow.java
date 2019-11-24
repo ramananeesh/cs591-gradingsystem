@@ -6,18 +6,14 @@ import helper.SizeManager;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableRowSorter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Collection;
 import java.util.Random;
 
 public class MenuWindow extends JFrame {
@@ -30,16 +26,26 @@ public class MenuWindow extends JFrame {
 		setResizable(false);
 		setBounds(SizeManager.windowBounds);
 
+		UIManager.put("Table.font", FontManager.fontMenuTable);
+		UIManager.put("TableHeader.font", FontManager.fontMenuTable);
+		UIManager.put("Menu.font", FontManager.fontMenu);
+		UIManager.put("MenuItem.font", FontManager.fontMenu);
+		UIManager.put("TextField.font", FontManager.fontLabel);
+		UIManager.put("ComboBox.font", FontManager.fontLabel);
+		UIManager.put("OptionPane.minimumSize", SizeManager.optionPaneDimension);
+
+		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
+		tableRender.setHorizontalAlignment(SwingConstants.CENTER);
+		tableRender.setVerticalAlignment(SwingConstants.CENTER);
+
 		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2] + "\n\n";
 
 		String[] menuName = {"  File  ", "  Edit  ", "  Grade  "};
 		String[][] menuItemName = {
-				{"Add Student", "Add Category", "Add Item", "|", "Back", "Exit"},
+				{"Add Student", "Add Category", "Add Item", null, "Back", "Exit"},
 				{"Edit Student", "Edit Category", "Edit Item"},
 				{"Edit All Grades", "Edit by Student", "View Grade"}
 		};
-		UIManager.put("TextField.font", FontManager.fontLabel);
-		UIManager.put("ComboBox.font", FontManager.fontLabel);
 		ActionListener[][] menuActionListener = { // TODO complete menu action
 				{ // File
 						e -> { // Add Student
@@ -51,7 +57,6 @@ public class MenuWindow extends JFrame {
 								Object[] fields = {"Name: ", nameField, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
 
 								while (true) {
-									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -73,7 +78,6 @@ public class MenuWindow extends JFrame {
 								Object[] fields = {"Category: ", categoryField, "Percentage: ", percentageField,};
 
 								while (true) {
-									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 										JOptionPane.showMessageDialog(null,
@@ -106,7 +110,6 @@ public class MenuWindow extends JFrame {
 								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage: ", percentageField,};
 
 								while (true) {
-									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -152,7 +155,6 @@ public class MenuWindow extends JFrame {
 								Object[] fields = {"Student: ", studentCombo, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
 
 								while (true) {
-									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -190,10 +192,11 @@ public class MenuWindow extends JFrame {
 										return column > 0;
 									}
 								};
+								categoryTable.setDefaultRenderer(Object.class, tableRender);
+								categoryTable.setRowHeight(SizeManager.tableRowHeight);
 								JScrollPane categoryScrollPane = new JScrollPane(categoryTable);
 
 								while (true) {
-									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, categoryScrollPane, "Edit Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -240,12 +243,12 @@ public class MenuWindow extends JFrame {
 									}
 								};
 								itemTable.setRowHeight(SizeManager.tableRowHeight);
+								itemTable.setDefaultRenderer(Object.class, tableRender);
 								JScrollPane itemScrollPane = new JScrollPane(itemTable);
 								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemScrollPane,};
 
 
 								while (true) {
-									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Item", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -275,14 +278,12 @@ public class MenuWindow extends JFrame {
 				}
 		};
 
-		UIManager.put("Menu.font", FontManager.fontMenu);
-		UIManager.put("MenuItem.font", FontManager.fontMenu);
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setLayout(new GridBagLayout());
 		for (int i = 0; i < menuName.length; ++i) {
 			JMenu menu = new JMenu(menuName[i]);
 			for (int j = 0; j < menuItemName[i].length; ++j) {
-				if (menuItemName[i][j].equals("|")) {
+				if (menuItemName[i][j] == null) {
 					menu.addSeparator();
 				} else {
 					JMenuItem menuItem = new JMenuItem(menuItemName[i][j]);
@@ -307,8 +308,6 @@ public class MenuWindow extends JFrame {
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		add(textInfo);
 
-		UIManager.put("Table.font", FontManager.fontMenuTable);
-		UIManager.put("TableHeader.font", FontManager.fontMenuTable);
 
 		Random random = new Random();
 
@@ -396,20 +395,13 @@ public class MenuWindow extends JFrame {
 		tableItemScrollPane.setBounds(SizeManager.tableItemBounds);
 		add(tableItemScrollPane);
 
-		int[] tableColumWidth = {
-				SizeManager.tableCategoryBounds.width * 3 / 4,
-				SizeManager.tableCategoryBounds.width / 4
-		};
 		for (int i = 0; i < 2; ++i) {
-			tableCategory.getColumnModel().getColumn(i).setPreferredWidth(tableColumWidth[i]);
-			tableItem.getColumnModel().getColumn(i).setPreferredWidth(tableColumWidth[i]);
+			tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
+			tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
 		}
 
-		DefaultTableCellRenderer render = new DefaultTableCellRenderer();
-		render.setHorizontalAlignment(SwingConstants.CENTER);
-		render.setVerticalAlignment(SwingConstants.CENTER);
 		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
-			table.setDefaultRenderer(Object.class, render);
+			table.setDefaultRenderer(Object.class, tableRender);
 			table.setRowHeight(SizeManager.menuTableRowHeight);
 			table.setEnabled(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -434,8 +426,8 @@ public class MenuWindow extends JFrame {
 					tableItem.setModel(newTableItemModel);
 					tableItem.setEnabled(true);
 					for (int i = 0; i < 2; ++i) {
-						tableCategory.getColumnModel().getColumn(i).setPreferredWidth(tableColumWidth[i]);
-						tableItem.getColumnModel().getColumn(i).setPreferredWidth(tableColumWidth[i]);
+						tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
+						tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
 					}
 					text += "Category: ";
 					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 0) + "\n";
