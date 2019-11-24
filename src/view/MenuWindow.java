@@ -12,6 +12,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -35,21 +36,92 @@ public class MenuWindow extends JFrame {
 		String[] menuName = {"  File  ", "  Edit  ", "  Grade  "};
 		String[][] menuItemName = {
 				{"Add Student", "Add Category", "Add Item", "|", "Back", "Exit"},
-				{"Edit Student", "Edit Category", "Edit Student"},
+				{"Edit Student", "Edit Category", "Edit Item"},
 				{"Edit All Grades", "Edit by Student", "View Grade"}
 		};
 		ActionListener[][] menuActionListener = { // TODO complete menu action
 				{ // File
 						e -> { // Add Student
-							System.exit(0);
+							try {
+								JTextField nameField = new JTextField();
+								JTextField BUIDField = new JTextField();
+								JTextField emailField = new JTextField();
+								JComboBox<String> levelCombo = new JComboBox<String>(new String[]{"Undergraduate", "Graduate"});
+								Object[] fields = {"Name: ", nameField, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo, };
 
+								while(true) {
+									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student", JOptionPane.OK_CANCEL_OPTION);
+									if (reply == JOptionPane.OK_OPTION) {
+
+										break;
+									}
+									else{
+										return;
+									}
+								}
+							} catch (Exception e1) {
+								JOptionPane.showMessageDialog(null,
+										"Error", "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
 						},
 						e -> { // Add Category
-							System.exit(0);
+							try {
+								JTextField categoryField = new JTextField();
+								JTextField percentageField = new JTextField();
+								Object[] fields = {"Category: ", categoryField, "Percentage: ", percentageField, };
 
+								while(true) {
+									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Category", JOptionPane.OK_CANCEL_OPTION);
+									if (reply == JOptionPane.OK_OPTION) {
+										JOptionPane.showMessageDialog(null,
+												"Please edit the percentage for all other categories", "Warning",
+												JOptionPane.WARNING_MESSAGE);
+										break;
+									}
+									else{
+										return;
+									}
+								}
+							} catch (Exception e1) {
+								JOptionPane.showMessageDialog(null,
+										"Error", "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
 						},
 						e -> { // Add Item
-							System.exit(0);
+							try {
+								JComboBox<String> categoryCombo = new JComboBox<String>();
+								/***for test***/
+								categoryCombo.addItem("Homework");
+								categoryCombo.addItem("Exam");
+								categoryCombo.addItem("Project");
+								/******/
+//								for(int i = 0; i < category.size(); i++) {
+//									categoryCombo.addItem(category.get(i).getCategoryName());
+//								}
+								JTextField itemField = new JTextField();
+								JTextField percentageField = new JTextField();
+								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage: ", percentageField, };
+
+								while(true) {
+									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item", JOptionPane.OK_CANCEL_OPTION);
+									if (reply == JOptionPane.OK_OPTION) {
+
+										JOptionPane.showMessageDialog(null,
+												"Please edit the percentage for all other items", "Warning",
+												JOptionPane.WARNING_MESSAGE);
+										break;
+									}
+									else{
+										return;
+									}
+								}
+							} catch (Exception e1) {
+								JOptionPane.showMessageDialog(null,
+										"Error", "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
 
 						},
 						null, // Separator
@@ -63,13 +135,130 @@ public class MenuWindow extends JFrame {
 				},
 				{
 						e -> { // Edit Student
+							try {
+								JComboBox<String> studentCombo = new JComboBox<String>();
+								/***for test***/
+								studentCombo.addItem("Student1");
+								studentCombo.addItem("Student2");
+								studentCombo.addItem("Student3");
+								/******/
+//								for(int i = 0; i < student.size(); i++) {
+//									studentCombo.addItem(student.get(i).getStudentName());
+//								}
+								JTextField BUIDField = new JTextField();
+								JTextField emailField = new JTextField();
+								JComboBox<String> levelCombo = new JComboBox<String>(new String[]{"Undergraduate", "Graduate"});
+								Object[] fields = {"Student: ", studentCombo, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
+
+								while(true) {
+									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Student", JOptionPane.OK_CANCEL_OPTION);
+									if (reply == JOptionPane.OK_OPTION) {
+
+										break;
+									}
+									else{
+										return;
+									}
+								}
+							} catch (Exception e1) {
+								JOptionPane.showMessageDialog(null,
+										"Error", "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
 
 						},
 						e -> { // Edit Category
+							try{
+								String[][] categoryData;
 
+//								for(int i = 0; i < category.size(); i++) {
+//									categoryData[i][0] = category.get(i).getCategoryName();
+//									categoryData[i][1] = category.get(i).getPercentage();
+//								}
+								/***for test***/
+								categoryData = new String[][]{
+										{"Homework", "50%",},
+										{"Exam", "25%",},
+										{"Project", "25%",}
+								};
+								/******/
+
+								String[] categoryColumn = {"Category", "Percentage"};
+								JTable categoryTable = new JTable(categoryData, categoryColumn) {
+									public boolean isCellEditable(int row, int column) {
+										return column > 0;
+									}
+								};
+								categoryTable.setBounds(30, 40, 200, 300);
+								JScrollPane categoryScrollPane = new JScrollPane(categoryTable);
+
+								while(true) {
+									int reply = JOptionPane.showConfirmDialog(null, categoryScrollPane, "Edit Category", JOptionPane.OK_CANCEL_OPTION);
+									if (reply == JOptionPane.OK_OPTION) {
+
+										break;
+									}
+									else{
+										return;
+									}
+								}
+							} catch (Exception e1) {
+								JOptionPane.showMessageDialog(null,
+										"Error", "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
 						},
-						e -> { // Edit Item
 
+						e -> { // Edit Item
+							try{
+								JComboBox<String> categoryCombo = new JComboBox<String>();
+								/***for test***/
+								categoryCombo.addItem("Homework");
+								categoryCombo.addItem("Exam");
+								categoryCombo.addItem("Project");
+								/******/
+//								for(int i = 0; i < category.size(); i++) {
+//									categoryCombo.addItem(category.get(i).getCategoryName());
+//								}
+
+								String[][] itemData;
+//								for(int i = 0; i < category.size(); i++) {
+//									data[i][0] = category.get(i).getCategoryName();
+//									data[i][1] = category.get(i).getPercentage();
+//								}
+								/***for test***/
+								itemData = new String[][]{
+										{"Homework1", "50%",},
+										{"Homework2", "50%",}
+								};
+								/******/
+
+								String[] itemColumn = {"Item", "Percentage"};
+								JTable itemTable = new JTable(itemData, itemColumn) {
+									public boolean isCellEditable(int row, int column) {
+										return column > 0;
+									}
+								};
+								itemTable.setBounds(30, 40, 200, 300);
+								JScrollPane itemScrollPane = new JScrollPane(itemTable);
+								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemScrollPane, };
+
+
+								while(true) {
+									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Item", JOptionPane.OK_CANCEL_OPTION);
+									if (reply == JOptionPane.OK_OPTION) {
+
+										break;
+									}
+									else{
+										return;
+									}
+								}
+							} catch (Exception e1) {
+								JOptionPane.showMessageDialog(null,
+										"Error", "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
 						}
 				},
 				{

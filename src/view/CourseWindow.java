@@ -129,7 +129,26 @@ public class CourseWindow extends JFrame {
 		buttonAdd.setForeground(ColorManager.lightColor);
 		buttonAdd.setBackground(ColorManager.primaryColor);
 		buttonAdd.addActionListener(e -> {
-			// TODO
+			try {
+				JTextField numberField = new JTextField();
+				JTextField nameField = new JTextField();
+				JTextField termField = new JTextField();
+				Object[] fields = {"Course Number: ", numberField, "Course Name: ", nameField, "Course Term: ", termField, };
+				while(true) {
+					int reply = JOptionPane.showConfirmDialog(null, fields, "Add a Course", JOptionPane.OK_CANCEL_OPTION);
+					if (reply == JOptionPane.OK_OPTION) {
+
+						break;
+					}
+					else{
+						return;
+					}
+				}
+			} catch (Exception e1) {
+				JOptionPane.showMessageDialog(null,
+						"Error", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
 		});
 		add(buttonAdd);
 
