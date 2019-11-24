@@ -1,6 +1,5 @@
 package view;
 
-import com.sun.deploy.panel.JreTableModel;
 import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
@@ -50,6 +49,7 @@ public class MenuWindow extends JFrame {
 								Object[] fields = {"Name: ", nameField, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo, };
 
 								while(true) {
+									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -72,6 +72,7 @@ public class MenuWindow extends JFrame {
 								Object[] fields = {"Category: ", categoryField, "Percentage: ", percentageField, };
 
 								while(true) {
+									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 										JOptionPane.showMessageDialog(null,
@@ -105,6 +106,7 @@ public class MenuWindow extends JFrame {
 								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage: ", percentageField, };
 
 								while(true) {
+									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -151,6 +153,7 @@ public class MenuWindow extends JFrame {
 								Object[] fields = {"Student: ", studentCombo, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
 
 								while(true) {
+									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -189,10 +192,10 @@ public class MenuWindow extends JFrame {
 										return column > 0;
 									}
 								};
-								categoryTable.setBounds(30, 40, 200, 300);
 								JScrollPane categoryScrollPane = new JScrollPane(categoryTable);
 
 								while(true) {
+									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
 									int reply = JOptionPane.showConfirmDialog(null, categoryScrollPane, "Edit Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -239,12 +242,12 @@ public class MenuWindow extends JFrame {
 										return column > 0;
 									}
 								};
-								itemTable.setBounds(30, 40, 200, 300);
 								JScrollPane itemScrollPane = new JScrollPane(itemTable);
 								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemScrollPane, };
 
 
 								while(true) {
+									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Item", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -437,10 +440,16 @@ public class MenuWindow extends JFrame {
 						tableCategory.getColumnModel().getColumn(i).setPreferredWidth(tableColumWidth[i]);
 						tableItem.getColumnModel().getColumn(i).setPreferredWidth(tableColumWidth[i]);
 					}
-					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 0) + "\n\n";
+					text += "Category: ";
+					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 0) + "\n";
+					text += "Weight: ";
+					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 1) + "\n\n";
 				}
 				if (tableItem.getSelectedRow() != -1) {
-					text += tableItem.getValueAt(tableItem.getSelectedRow(), 0) + "\n\n";
+					text += "Item: ";
+					text += tableItem.getValueAt(tableItem.getSelectedRow(), 0) + "\n";
+					text += "Weight: ";
+					text += tableItem.getValueAt(tableItem.getSelectedRow(), 1) + "\n\n";
 				}
 
 				textInfo.setText(text);
