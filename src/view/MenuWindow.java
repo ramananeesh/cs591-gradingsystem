@@ -38,6 +38,8 @@ public class MenuWindow extends JFrame {
 				{"Edit Student", "Edit Category", "Edit Item"},
 				{"Edit All Grades", "Edit by Student", "View Grade"}
 		};
+		UIManager.put("TextField.font", FontManager.fontLabel);
+		UIManager.put("ComboBox.font", FontManager.fontLabel);
 		ActionListener[][] menuActionListener = { // TODO complete menu action
 				{ // File
 						e -> { // Add Student
@@ -46,16 +48,15 @@ public class MenuWindow extends JFrame {
 								JTextField BUIDField = new JTextField();
 								JTextField emailField = new JTextField();
 								JComboBox<String> levelCombo = new JComboBox<String>(new String[]{"Undergraduate", "Graduate"});
-								Object[] fields = {"Name: ", nameField, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo, };
+								Object[] fields = {"Name: ", nameField, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
 
-								while(true) {
-									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
+								while (true) {
+									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
 										break;
-									}
-									else{
+									} else {
 										return;
 									}
 								}
@@ -69,18 +70,17 @@ public class MenuWindow extends JFrame {
 							try {
 								JTextField categoryField = new JTextField();
 								JTextField percentageField = new JTextField();
-								Object[] fields = {"Category: ", categoryField, "Percentage: ", percentageField, };
+								Object[] fields = {"Category: ", categoryField, "Percentage: ", percentageField,};
 
-								while(true) {
-									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
+								while (true) {
+									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 										JOptionPane.showMessageDialog(null,
 												"Please edit the percentage for all other categories", "Warning",
 												JOptionPane.WARNING_MESSAGE);
 										break;
-									}
-									else{
+									} else {
 										return;
 									}
 								}
@@ -103,10 +103,10 @@ public class MenuWindow extends JFrame {
 //								}
 								JTextField itemField = new JTextField();
 								JTextField percentageField = new JTextField();
-								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage: ", percentageField, };
+								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage: ", percentageField,};
 
-								while(true) {
-									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
+								while (true) {
+									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
@@ -114,8 +114,7 @@ public class MenuWindow extends JFrame {
 												"Please edit the percentage for all other items", "Warning",
 												JOptionPane.WARNING_MESSAGE);
 										break;
-									}
-									else{
+									} else {
 										return;
 									}
 								}
@@ -152,14 +151,13 @@ public class MenuWindow extends JFrame {
 								JComboBox<String> levelCombo = new JComboBox<String>(new String[]{"Undergraduate", "Graduate"});
 								Object[] fields = {"Student: ", studentCombo, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
 
-								while(true) {
-									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
+								while (true) {
+									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
 										break;
-									}
-									else{
+									} else {
 										return;
 									}
 								}
@@ -171,7 +169,7 @@ public class MenuWindow extends JFrame {
 
 						},
 						e -> { // Edit Category
-							try{
+							try {
 								String[][] categoryData;
 
 //								for(int i = 0; i < category.size(); i++) {
@@ -194,14 +192,13 @@ public class MenuWindow extends JFrame {
 								};
 								JScrollPane categoryScrollPane = new JScrollPane(categoryTable);
 
-								while(true) {
-									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
+								while (true) {
+									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, categoryScrollPane, "Edit Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
 										break;
-									}
-									else{
+									} else {
 										return;
 									}
 								}
@@ -213,7 +210,7 @@ public class MenuWindow extends JFrame {
 						},
 
 						e -> { // Edit Item
-							try{
+							try {
 								JComboBox<String> categoryCombo = new JComboBox<String>();
 								/***for test***/
 								categoryCombo.addItem("Homework");
@@ -242,18 +239,18 @@ public class MenuWindow extends JFrame {
 										return column > 0;
 									}
 								};
+								itemTable.setRowHeight(SizeManager.tableRowHeight);
 								JScrollPane itemScrollPane = new JScrollPane(itemTable);
-								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemScrollPane, };
+								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemScrollPane,};
 
 
-								while(true) {
-									UIManager.put("OptionPane.minimumSize",new Dimension(500,500));
+								while (true) {
+									UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Item", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
 										break;
-									}
-									else{
+									} else {
 										return;
 									}
 								}
