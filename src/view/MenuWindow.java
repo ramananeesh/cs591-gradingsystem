@@ -403,7 +403,7 @@ public class MenuWindow extends JFrame {
 		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
 			table.setDefaultRenderer(Object.class, tableRender);
 			table.setRowHeight(SizeManager.menuTableRowHeight);
-			table.setEnabled(true);
+			table.setRowSelectionAllowed(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			table.getSelectionModel().addListSelectionListener(e -> {
 				String text = courseString;
@@ -424,7 +424,6 @@ public class MenuWindow extends JFrame {
 					}
 					DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumn);
 					tableItem.setModel(newTableItemModel);
-					tableItem.setEnabled(true);
 					for (int i = 0; i < 2; ++i) {
 						tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
 						tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
@@ -442,6 +441,7 @@ public class MenuWindow extends JFrame {
 				}
 
 				textInfo.setText(text);
+				tableItem.setRowSelectionAllowed(true);
 			});
 
 			JTableHeader tableHeader = table.getTableHeader();
@@ -451,5 +451,8 @@ public class MenuWindow extends JFrame {
 		}
 
 		setVisible(true);
+	}
+	private static class SelectedItem {
+		private int selectedStudent,selectedCategory,selectedItem;
 	}
 }

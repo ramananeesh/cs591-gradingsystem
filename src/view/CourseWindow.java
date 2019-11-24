@@ -29,6 +29,7 @@ public class CourseWindow extends JFrame {
 		setBounds(SizeManager.windowBounds);
 
 		UIManager.put("TextField.font", FontManager.fontSearch);
+		UIManager.put("ComboBox.font",FontManager.fontFilter);
 
 		String[] tableCourseColumn = {
 				"#", "Course Name", "Semester"
