@@ -399,7 +399,7 @@ public class MenuWindow extends JFrame {
 			tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
 			tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
 		}
-
+		final int[] selectedRow = {-1, -1, -1};
 		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
 			table.setDefaultRenderer(Object.class, tableRender);
 			table.setRowHeight(SizeManager.menuTableRowHeight);
@@ -411,22 +411,24 @@ public class MenuWindow extends JFrame {
 					text += tableStudent.getValueAt(tableStudent.getSelectedRow(), 0) + "\n\n";
 				}
 				if (tableCategory.getSelectedRow() != -1) {
-					Object[][] newTableItemData;
-					if (tableCategory.getSelectedRow() == 0) {
-						newTableItemData = tableItemData;
-					} else {
-						newTableItemData = new Object[5][2];
-						String category = (String) tableCategory.getValueAt(tableCategory.getSelectedRow(), 0);
-						for (int i = 0; i < 5; ++i) {
-							newTableItemData[i][0] = category + " " + (i + 1);
-							newTableItemData[i][1] = "5%";
+					if (tableCategory.getSelectedRow() != selectedRow[1]) {
+						Object[][] newTableItemData;
+						if (tableCategory.getSelectedRow() == 0) {
+							newTableItemData = tableItemData;
+						} else {
+							newTableItemData = new Object[5][2];
+							String category = (String) tableCategory.getValueAt(tableCategory.getSelectedRow(), 0);
+							for (int i = 0; i < 5; ++i) {
+								newTableItemData[i][0] = category + " " + (i + 1);
+								newTableItemData[i][1] = "5%";
+							}
 						}
-					}
-					DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumn);
-					tableItem.setModel(newTableItemModel);
-					for (int i = 0; i < 2; ++i) {
-						tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
-						tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
+						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumn);
+						tableItem.setModel(newTableItemModel);
+						for (int i = 0; i < 2; ++i) {
+							tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
+							tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumWidth[i]);
+						}
 					}
 					text += "Category: ";
 					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 0) + "\n";
@@ -441,8 +443,10 @@ public class MenuWindow extends JFrame {
 				}
 
 				textInfo.setText(text);
-				tableItem.setRowSelectionAllowed(true);
-			});
+
+				selectedRow[0] = tableStudent.getSelectedRow();
+				selectedRow[1] = tableCategory.getSelectedRow();
+				selectedRow[2] = tableItem.getSelectedRow();			});
 
 			JTableHeader tableHeader = table.getTableHeader();
 			tableHeader.setPreferredSize(new Dimension(SizeManager.panelWidth, SizeManager.menuTableRowHeight));
@@ -451,8 +455,5 @@ public class MenuWindow extends JFrame {
 		}
 
 		setVisible(true);
-	}
-	private static class SelectedItem {
-		private int selectedStudent,selectedCategory,selectedItem;
 	}
 }
