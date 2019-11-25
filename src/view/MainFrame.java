@@ -39,7 +39,7 @@ public class MainFrame extends JFrame {
 	 * @param to   the JPanel that will be added
 	 */
 	public void switchPanel(JPanel from, JPanel to) {
-		switchPanelWithSlideAnimation(from, to);
+		switchPanelWithoutAnimation(from, to);
 	}
 
 	private void switchPanelWithoutAnimation(JPanel from, JPanel to) {
