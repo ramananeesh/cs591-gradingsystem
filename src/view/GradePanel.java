@@ -24,6 +24,7 @@ public class GradePanel extends JPanel {
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
+		setOpaque(false);
 
 		String[] tableGradeColumn = {
 				"Student Name", "Homework 1", "Homework 2", "Homework 3", "Homework 4", "Homework 5", "Midterm", "Final Exam"
@@ -79,9 +80,7 @@ public class GradePanel extends JPanel {
 		buttonBack.setBounds(SizeManager.buttonAddBounds);
 		buttonBack.setForeground(ColorManager.lightColor);
 		buttonBack.setBackground(ColorManager.primaryColor);
-		buttonBack.addActionListener(e -> {
-			frame.switchPanel(this, new MenuPanel(frame, courseData));
-		});
+		buttonBack.addActionListener(e -> frame.switchPanel(this, new MenuPanel(frame, courseData)));
 		add(buttonBack);
 
 		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);

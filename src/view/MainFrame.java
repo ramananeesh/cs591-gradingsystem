@@ -3,6 +3,7 @@ package view;
 import helper.SizeManager;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class MainFrame extends JFrame {
 
@@ -27,6 +28,10 @@ public class MainFrame extends JFrame {
 		setVisible(true);
 	}
 
+	private static enum Animation {
+		NONE, SLIDE, SCALE;
+	}
+
 	/**
 	 * Switch JPanel contained in this JFrame from one to another.
 	 *
@@ -34,10 +39,68 @@ public class MainFrame extends JFrame {
 	 * @param to   the JPanel that will be added
 	 */
 	public void switchPanel(JPanel from, JPanel to) {
-		from.setVisible(false);
+		switchPanelWithoutAnimation(from, to);
+	}
+
+	private void switchPanelWithoutAnimation(JPanel from, JPanel to) {
 		remove(from);
 		add(to);
-		// revalidate(); // TODO if we use some kind of Layout instead of setLayout(null), we will need this line.
+		revalidate();
 		repaint();
+	}
+
+	private void switchPanelWithSlideAnimation(JPanel from, JPanel to) {
+		new Thread(() -> {
+			Rectangle toBounds = to.getBounds();
+			int count = 15;
+			int delta = getHeight() / count;
+			add(to);
+			for (int i = 1; i <= count; ++i) {
+				from.setLocation(0, -delta * i);
+				to.setLocation(0, from.getHeight() - delta * i);
+				try {
+					Thread.sleep(16);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			to.setBounds(toBounds);
+			remove(from);
+			revalidate();
+			repaint();
+		}).start();
+	}
+
+	private void switchPanelWithScaleAnimation(JPanel from, JPanel to) {
+		new Thread(() -> {
+			Rectangle fromBounds = from.getBounds();
+			Rectangle toBounds = to.getBounds();
+			int count = 15;
+			for (int i = 1; i <= count; ++i) {
+				int newFromWidth = (int) (fromBounds.getWidth() * (count - i) / count);
+				int newFromHeight = (int) (fromBounds.getWidth() * (count - i) / count);
+				from.setBounds(getWidth() / 2 - newFromWidth / 2, getHeight() / 2 - newFromHeight / 2, newFromWidth, newFromHeight);
+				try {
+					Thread.sleep(16);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			remove(from);
+			add(to);
+			for (int i = 1; i <= count; ++i) {
+				int newToWidth = (int) (toBounds.getWidth() * i / count);
+				int newToHeight = (int) (toBounds.getHeight() * i / count);
+				to.setBounds(getWidth() / 2 - newToWidth / 2, getHeight() / 2 - newToHeight / 2, newToWidth, newToHeight);
+				try {
+					Thread.sleep(16);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			to.setBounds(toBounds);
+			revalidate();
+			repaint();
+		}).start();
 	}
 }
