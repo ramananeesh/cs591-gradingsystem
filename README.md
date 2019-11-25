@@ -1,1 +1,1 @@
-# cs591-gradingsystem
+# CS591-GradingSystem

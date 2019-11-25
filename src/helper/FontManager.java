@@ -5,6 +5,7 @@ import java.awt.*;
 import java.io.File;
 
 public class FontManager {
+
 	private static final Font fontBauhaus = setFont("Bauhaus 93");
 	private static final Font fontCascadia = setFont("Cascadia");
 	private static final Font fontConsolas = setFont("Consolas");
