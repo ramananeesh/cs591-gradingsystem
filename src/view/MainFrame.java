@@ -28,6 +28,10 @@ public class MainFrame extends JFrame {
 		setVisible(true);
 	}
 
+	private static enum Animation {
+		NONE, SLIDE, SCALE;
+	}
+
 	/**
 	 * Switch JPanel contained in this JFrame from one to another.
 	 *
@@ -36,6 +40,13 @@ public class MainFrame extends JFrame {
 	 */
 	public void switchPanel(JPanel from, JPanel to) {
 		switchPanelWithSlideAnimation(from, to);
+	}
+
+	private void switchPanelWithoutAnimation(JPanel from, JPanel to) {
+		remove(from);
+		add(to);
+		revalidate();
+		repaint();
 	}
 
 	private void switchPanelWithSlideAnimation(JPanel from, JPanel to) {
@@ -91,12 +102,5 @@ public class MainFrame extends JFrame {
 			revalidate();
 			repaint();
 		}).start();
-	}
-
-	private void switchPanelWithoutAnimation(JPanel from, JPanel to) {
-		remove(from);
-		add(to);
-		revalidate();
-		repaint();
 	}
 }
