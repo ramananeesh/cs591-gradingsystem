@@ -27,6 +27,7 @@ public class MenuPanel extends JPanel {
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
+		setOpaque(false);
 
 		UIManager.put("Table.font", FontManager.fontMenuTable);
 		UIManager.put("TableHeader.font", FontManager.fontMenuTable);
@@ -131,9 +132,7 @@ public class MenuPanel extends JPanel {
 
 						},
 						null, // Separator
-						back -> { // Back
-							frame.switchPanel(this, new CoursePanel(frame));
-						},
+						back -> frame.switchPanel(this, new CoursePanel(frame)), // Back
 						exit -> System.exit(0)
 				},
 				{
@@ -156,7 +155,6 @@ public class MenuPanel extends JPanel {
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
-
 										break;
 									} else {
 										return;
@@ -171,7 +169,6 @@ public class MenuPanel extends JPanel {
 						editCategory -> { // Edit Category
 							try {
 								String[][] categoryData;
-
 //								for(int i = 0; i < category.size(); i++) {
 //									categoryData[i][0] = category.get(i).getCategoryName();
 //									categoryData[i][1] = category.get(i).getPercentage();
@@ -197,7 +194,6 @@ public class MenuPanel extends JPanel {
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, categoryScrollPane, "Edit Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
-
 										break;
 									} else {
 										return;
