@@ -2,7 +2,7 @@ package model;
 
 import java.sql.Date;
 
-public class Item {
+public class GenericItem {
 
 	private int id;
 	private String fieldName;
@@ -13,7 +13,7 @@ public class Item {
 	private Date dateAssigned;
 	private Date dateDue;
 
-	public Item(int id, String fieldName, String categoryName, double weight, String courseName, int templateId,
+	public GenericItem(int id, String fieldName, String categoryName, double weight, String courseName, int templateId,
 			Date dateAssigned, Date dateDue) {
 		super();
 		this.id = id;
