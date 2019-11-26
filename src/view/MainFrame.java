@@ -28,28 +28,38 @@ public class MainFrame extends JFrame {
 		setVisible(true);
 	}
 
-	private static enum Animation {
-		NONE, SLIDE, SCALE;
-	}
-
 	/**
-	 * Switch JPanel contained in this JFrame from one to another.
+	 * Change JPanel contained in this JFrame from one to another.
 	 *
 	 * @param from the JPanel that will be removed
 	 * @param to   the JPanel that will be added
 	 */
-	public void switchPanel(JPanel from, JPanel to) {
-		switchPanelWithoutAnimation(from, to);
+	public void changePanel(JPanel from, JPanel to) {
+		changePanelWithoutAnimation(from, to);
 	}
 
-	private void switchPanelWithoutAnimation(JPanel from, JPanel to) {
+	public void changePanel(JPanel from, JPanel to, AnimationType animationType) {
+		switch (animationType) {
+			case NONE:
+				changePanelWithoutAnimation(from, to);
+				break;
+			case SLIDE:
+				changePanelWithSlideAnimation(from, to);
+				break;
+			case SCALE:
+				changePanelWithScaleAnimation(from, to);
+				break;
+		}
+	}
+
+	private void changePanelWithoutAnimation(JPanel from, JPanel to) {
 		remove(from);
 		add(to);
 		revalidate();
 		repaint();
 	}
 
-	private void switchPanelWithSlideAnimation(JPanel from, JPanel to) {
+	private void changePanelWithSlideAnimation(JPanel from, JPanel to) {
 		new Thread(() -> {
 			Rectangle toBounds = to.getBounds();
 			int count = 15;
@@ -71,7 +81,7 @@ public class MainFrame extends JFrame {
 		}).start();
 	}
 
-	private void switchPanelWithScaleAnimation(JPanel from, JPanel to) {
+	private void changePanelWithScaleAnimation(JPanel from, JPanel to) {
 		new Thread(() -> {
 			Rectangle fromBounds = from.getBounds();
 			Rectangle toBounds = to.getBounds();
@@ -102,5 +112,9 @@ public class MainFrame extends JFrame {
 			revalidate();
 			repaint();
 		}).start();
+	}
+
+	public enum AnimationType {
+		NONE, SLIDE, SCALE
 	}
 }

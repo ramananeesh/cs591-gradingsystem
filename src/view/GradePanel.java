@@ -8,8 +8,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GradePanel extends JPanel {
@@ -80,7 +80,7 @@ public class GradePanel extends JPanel {
 		buttonBack.setBounds(SizeManager.buttonAddBounds);
 		buttonBack.setForeground(ColorManager.lightColor);
 		buttonBack.setBackground(ColorManager.primaryColor);
-		buttonBack.addActionListener(e -> frame.switchPanel(this, new MenuPanel(frame, courseData)));
+		buttonBack.addActionListener(e -> frame.changePanel(this, new MenuPanel(frame, courseData)));
 		add(buttonBack);
 
 		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);

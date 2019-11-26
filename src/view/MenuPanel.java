@@ -132,7 +132,7 @@ public class MenuPanel extends JPanel {
 
 						},
 						null, // Separator
-						back -> frame.switchPanel(this, new CoursePanel(frame)), // Back
+						back -> frame.changePanel(this, new CoursePanel(frame)), // Back
 						exit -> System.exit(0)
 				},
 				{
@@ -259,7 +259,7 @@ public class MenuPanel extends JPanel {
 				},
 				{
 						editAllGrades -> { // Edit All Grades
-							frame.switchPanel(this, new GradePanel(frame, courseData));
+							frame.changePanel(this, new GradePanel(frame, courseData));
 						},
 						editByStudent -> { // Edit by Student
 

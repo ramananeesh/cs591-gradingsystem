@@ -169,7 +169,7 @@ public class CoursePanel extends JPanel {
 				for (int i = 0; i < 3; ++i) {
 					courseData[i] = tableCourse.getValueAt(tableCourse.getSelectedRow(), i).toString();
 				}
-				frame.switchPanel(this, new MenuPanel(frame, courseData));
+				frame.changePanel(this, new MenuPanel(frame, courseData));
 			}
 		});
 		add(buttonView);
