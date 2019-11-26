@@ -20,6 +20,37 @@ public class Course extends GenericCourse {
 		this.categories = categories; 
 		this.students = students; 
 	}
+	
+	/*
+	 * Specific methods 
+	 */
+	//-------------------------------------------------------------------------------------------------------------------//
+	
+	public void addCategory(Category newCategory) {
+		this.categories.add(newCategory);
+	}
+	
+	public Category removeCategory(int categoryIndex) {
+		Category removedCategory = this.categories.get(categoryIndex);
+		this.categories.remove(categoryIndex);
+		
+		return removedCategory;
+	}
+	
+	public void addStudent(CourseStudent newStudent) {
+		this.students.add(newStudent);
+	}
+	
+	public CourseStudent removeStudent(int studentIndex) {
+		CourseStudent removedStudent = this.students.get(studentIndex);
+		this.students.remove(studentIndex);
+		
+		return removedStudent;
+	}
+	/*
+	 * accessors and mutators
+	 */
+	//-------------------------------------------------------------------------------------------------------------------//
 
 	public ArrayList<Category> getCategories() {
 		return categories;
@@ -37,4 +68,29 @@ public class Course extends GenericCourse {
 		this.students = students;
 	}
 	
+	public Category getCategory(int categoryIndex) {
+		return this.categories.get(categoryIndex);
+	}
+	
+	public void setCategory(int categoryIndex, Category newCategory) {
+		//remove category at existing position
+		this.removeCategory(categoryIndex);
+		
+		//add newCategory at the same position. 
+		//this will shift the category at that index if any
+		this.categories.add(categoryIndex, newCategory);
+	}
+	
+	public CourseStudent getStudent(int studentIndex) {
+		return this.students.get(studentIndex);
+	}
+	
+	public void setStudent(int studentIndex, CourseStudent newStudent) {
+		//remove student at existing position 
+		this.removeStudent(studentIndex);
+		
+		//add newStudent at same position
+		//this will shift the student at that index if any
+		this.students.add(studentIndex,newStudent);
+	}
 }

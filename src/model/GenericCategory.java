@@ -25,8 +25,7 @@ public class GenericCategory {
 		this.courseName = courseName;
 		this.templateId = templateId; 
 	}
-
-
+	
 	public int getId() {
 		return id;
 	}
