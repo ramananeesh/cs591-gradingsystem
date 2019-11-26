@@ -35,13 +35,16 @@ public class MainFrame extends JFrame {
 	 * @param to   the JPanel that will be added
 	 */
 	public void changePanel(JPanel from, JPanel to) {
-		changePanelWithoutAnimation(from, to);
+		changePanel(from, to, AnimationType.NON_LINEAR);
 	}
 
 	public void changePanel(JPanel from, JPanel to, AnimationType animationType) {
 		switch (animationType) {
 			case NONE:
 				changePanelWithoutAnimation(from, to);
+				break;
+			case NON_LINEAR:
+				changePanelWithNonLinearSlideAnimation(from, to);
 				break;
 			case SLIDE:
 				changePanelWithSlideAnimation(from, to);
@@ -59,10 +62,36 @@ public class MainFrame extends JFrame {
 		repaint();
 	}
 
+	private void changePanelWithNonLinearSlideAnimation(JPanel from, JPanel to) {
+		changePanelWithNonLinearSlideAnimation(from, to, 7d);
+	}
+
+	private void changePanelWithNonLinearSlideAnimation(JPanel from, JPanel to, double exponent) {
+		new Thread(() -> { // coefficient * pow(time - i, exponent) = height
+			int time = 30;
+			int distance = getHeight();
+			double coefficient = distance / Math.pow(time, exponent);
+			add(to);
+			for (int i = 0; i <= time; ++i) {
+				int height = (int) (coefficient * Math.pow(time - i, exponent)) - distance;
+				from.setLocation(0, height);
+				to.setLocation(0, from.getHeight() + height);
+				try {
+					Thread.sleep(16);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			to.setLocation(0, 0);
+			remove(from);
+			revalidate();
+			repaint();
+		}).start();
+	}
+
 	private void changePanelWithSlideAnimation(JPanel from, JPanel to) {
 		new Thread(() -> {
-			Rectangle toBounds = to.getBounds();
-			int count = 15;
+			int count = 60;
 			int delta = getHeight() / count;
 			add(to);
 			for (int i = 1; i <= count; ++i) {
@@ -74,7 +103,7 @@ public class MainFrame extends JFrame {
 					e.printStackTrace();
 				}
 			}
-			to.setBounds(toBounds);
+			to.setLocation(0, 0);
 			remove(from);
 			revalidate();
 			repaint();
@@ -85,7 +114,7 @@ public class MainFrame extends JFrame {
 		new Thread(() -> {
 			Rectangle fromBounds = from.getBounds();
 			Rectangle toBounds = to.getBounds();
-			int count = 15;
+			int count = 60;
 			for (int i = 1; i <= count; ++i) {
 				int newFromWidth = (int) (fromBounds.getWidth() * (count - i) / count);
 				int newFromHeight = (int) (fromBounds.getWidth() * (count - i) / count);
@@ -115,6 +144,6 @@ public class MainFrame extends JFrame {
 	}
 
 	public enum AnimationType {
-		NONE, SLIDE, SCALE
+		NONE, NON_LINEAR, SLIDE, SCALE
 	}
 }

@@ -318,19 +318,15 @@ public class MenuPanel extends JPanel {
 		tableStudentScrollPane.setBounds(SizeManager.tableStudentBounds);
 		add(tableStudentScrollPane);
 
-		String[] tableCategoryColumn = {"Category Name", "Weight"}; // TODO load Category from database
-		String[][] tableCategoryData = {
+		String[] tableCategoryColumn = {"Category", "Weight"};
+		String[][] tableCategoryData = { // TODO
 				{"All", "100%"},
 				{"Homework", "25%"},
 				{"Project", "25%"},
 				{"Presentation", "25%"},
 				{"Exam", "25%"}
 		};
-//		String[][] tableCategoryData = new String[100][2];
-//		for (int i = 0; i < 100; ++i) {
-//			tableCategoryData[i][0] = String.format("Category %010d", i + 1);
-//			tableCategoryData[i][1] = String.format("%d%%", random.nextInt(100));
-//		}
+
 		DefaultTableModel modelCategory = new DefaultTableModel(tableCategoryData, tableCategoryColumn) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -342,8 +338,8 @@ public class MenuPanel extends JPanel {
 		tableCategoryScrollPane.setBounds(SizeManager.tableCategoryBounds);
 		add(tableCategoryScrollPane);
 
-		String[] tableItemColumn = {"Item Name", "Weight"};
-		String[][] tableItemData = {
+		String[] tableItemColumn = {"Item", "Weight"};
+		String[][] tableItemData = { // TODO
 				{"All", "100%"},
 				{"Homework 1", "5%"},
 				{"Homework 2", "5%"},
