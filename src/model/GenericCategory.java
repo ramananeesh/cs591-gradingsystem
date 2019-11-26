@@ -1,6 +1,6 @@
 package model;
 
-public class Category {
+public class GenericCategory {
 
 	private int id;
 	private String fieldName;
@@ -8,7 +8,7 @@ public class Category {
 	private String courseName;
 	private int templateId; 
 	
-	public Category(int id, String fieldName, double weight, String courseName) {
+	public GenericCategory(int id, String fieldName, double weight, String courseName) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
@@ -17,7 +17,7 @@ public class Category {
 		this.templateId = -1; 
 	}
 
-	public Category(int id, String fieldName, double weight, String courseName, int templateId) {
+	public GenericCategory(int id, String fieldName, double weight, String courseName, int templateId) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;

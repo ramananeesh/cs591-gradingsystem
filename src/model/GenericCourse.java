@@ -1,12 +1,12 @@
 package model;
 
-public class Course {
+public class GenericCourse {
 
 	private int courseId;
 	private String courseName;
 	private String term;
 
-	public Course(int courseId, String courseName, String term) {
+	public GenericCourse(int courseId, String courseName, String term) {
 		this.courseId = courseId;
 		this.courseName = courseName;
 		this.term = term;
