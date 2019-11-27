@@ -32,7 +32,7 @@ public class GradePanel extends JPanel {
 		setBounds(SizeManager.panelBounds);
 		setOpaque(false);
 
-
+		// grade table
 		String[] gradeTableColumnNames = {
 				"Student Name", "Homework 1", "Homework 2", "Homework 3", "Homework 4", "Homework 5", "Midterm", "Final Exam"
 		}; // TODO test data, need to be replaced when database exists
@@ -72,6 +72,7 @@ public class GradePanel extends JPanel {
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
 		add(gradeTableScrollPane);
 
+		// category combo box
 		String[] categoryComboBoxItems = {"All", "Homework", "Exam"}; // TODO
 		JComboBox<String> categoryComboBox = new JComboBox<>(categoryComboBoxItems);
 		categoryComboBox.setBounds(SizeManager.filterCourseBounds);
@@ -81,16 +82,17 @@ public class GradePanel extends JPanel {
 		categoryComboBox.setRenderer(categoryComboBoxRenderer);
 		add(categoryComboBox);
 
+		// item combo box
 		String[] itemComboBoxItems = {"All", "Homework 1", "Homework 2", "Midterm", "Final Exam"}; // TODO
 		JComboBox<String> itemComboBox = new JComboBox<>(itemComboBoxItems);
 		itemComboBox.setBounds(SizeManager.searchCourseBounds);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
 		add(itemComboBox);
-
 		categoryComboBox.addActionListener(e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox));
 		itemComboBox.addActionListener(e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox));
 
+		// back button
 		JButton backButton = new JButton("Back");
 		backButton.setFont(FontManager.fontButton);
 		backButton.setBounds(SizeManager.buttonAddBounds);
@@ -99,9 +101,9 @@ public class GradePanel extends JPanel {
 		backButton.addActionListener(e -> frame.changePanel(this, new MenuPanel(frame, courseData)));
 		add(backButton);
 
+		// save button
 		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);
 		UIManager.put("OptionPane.buttonFont", FontManager.fontLabel);
-
 		JButton saveButton = new JButton("Save");
 		saveButton.setFont(FontManager.fontButton);
 		saveButton.setBounds(SizeManager.buttonViewBounds);
@@ -112,6 +114,7 @@ public class GradePanel extends JPanel {
 		});
 		add(saveButton);
 
+		// category label
 		JLabel categoryLabel = new JLabel("Category : ");
 		categoryLabel.setBounds(SizeManager.labelFilterBounds);
 		categoryLabel.setFont(FontManager.fontLabel);
@@ -119,6 +122,7 @@ public class GradePanel extends JPanel {
 		categoryLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(categoryLabel);
 
+		// item label
 		JLabel itemLabel = new JLabel("Item : ");
 		itemLabel.setBounds(SizeManager.labelSearchBounds);
 		itemLabel.setFont(FontManager.fontLabel);

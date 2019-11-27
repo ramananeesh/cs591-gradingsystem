@@ -42,13 +42,12 @@ public class MenuPanel extends JPanel {
 		UIManager.put("TextField.font", FontManager.fontLabel);
 		UIManager.put("ComboBox.font", FontManager.fontLabel);
 		UIManager.put("OptionPane.minimumSize", SizeManager.optionPaneDimension);
-
 		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
 		tableRender.setHorizontalAlignment(SwingConstants.CENTER);
 		tableRender.setVerticalAlignment(SwingConstants.CENTER);
 
+		// menu bar
 		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2] + "\n\n"; // TODO test data, need to be replaced when database exists
-
 		String[] menuName = {"  File  ", "  Edit  ", "  Grade  "};
 		String[][] menuItemName = {
 				{"Add Student", "Add Category", "Add Item", null, "Back", "Exit"},
@@ -225,7 +224,6 @@ public class MenuPanel extends JPanel {
 						}
 				}
 		};
-
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setLayout(new GridBagLayout());
 		for (int i = 0; i < menuName.length; ++i) {
@@ -244,18 +242,20 @@ public class MenuPanel extends JPanel {
 		menuBar.setBounds(SizeManager.menuBarBounds);
 		add(menuBar);
 
-		JTextPane textInfo = new JTextPane();
-		textInfo.setBounds(SizeManager.textInfoBounds);
-		textInfo.setText(courseString); // TODO load info from database
-		textInfo.setFont(FontManager.fontText);
-		textInfo.setEditable(false);
-		textInfo.setBorder(new LineBorder(ColorManager.primaryColor, SizeManager.lineThickness));
-		StyledDocument doc = textInfo.getStyledDocument();
+		// information text pane
+		JTextPane informationTextPane = new JTextPane();
+		informationTextPane.setBounds(SizeManager.textInfoBounds);
+		informationTextPane.setText(courseString); // TODO load info from database
+		informationTextPane.setFont(FontManager.fontText);
+		informationTextPane.setEditable(false);
+		informationTextPane.setBorder(new LineBorder(ColorManager.primaryColor, SizeManager.lineThickness));
+		StyledDocument doc = informationTextPane.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
-		add(textInfo);
+		add(informationTextPane);
 
+		// student table
 		String[] studentTableColumnNames = {"Student"};
 		String[][] studentTableRowData; // TODO load student from database
 		studentTableRowData = new String[100][1];
@@ -274,6 +274,7 @@ public class MenuPanel extends JPanel {
 		studentTableScrollPane.setBounds(SizeManager.tableStudentBounds);
 		add(studentTableScrollPane);
 
+		// category table
 		String[] categoryTableColumnNames = {"Category", "Weight"};
 		String[][] categoryTableRowData = { // TODO
 				{"All", "100%"},
@@ -293,6 +294,7 @@ public class MenuPanel extends JPanel {
 		categoryTableScrollPane.setBounds(SizeManager.tableCategoryBounds);
 		add(categoryTableScrollPane);
 
+		// item table
 		String[] itemTableColumnNames = {"Item", "Weight"};
 		String[][] itemTableRowData = { // TODO
 				{"All", "100%"},
@@ -373,7 +375,7 @@ public class MenuPanel extends JPanel {
 					text += "Weight: ";
 					text += itemTable.getValueAt(itemTable.getSelectedRow(), 1) + "\n\n";
 				}
-				textInfo.setText(text);
+				informationTextPane.setText(text);
 			});
 			JTableHeader tableHeader = table.getTableHeader();
 			tableHeader.setPreferredSize(new Dimension(SizeManager.panelWidth, SizeManager.menuTableRowHeight));

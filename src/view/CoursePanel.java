@@ -38,6 +38,7 @@ public class CoursePanel extends JPanel {
 		UIManager.put("TextField.font", FontManager.fontSearch);
 		UIManager.put("ComboBox.font", FontManager.fontFilter);
 
+		// course table
 		String[] courseTableColumnNames = {"#", "Course Name", "Semester"}; // The table head of course table.
 		String[][] courseTableRowData = { // TODO test data, need to be replaced when database exists
 				{"CS505", "Introduction to Natural Language Processing", "Spring 2020"},
@@ -47,7 +48,6 @@ public class CoursePanel extends JPanel {
 				{"CS480/680", "Introduction to Computer Graphics", "Fall 2019"},
 				{"CS530", "Graduate Algorithms", "Fall 2019"}
 		};
-
 		DefaultTableModel courseTableModel = new DefaultTableModel(courseTableRowData, courseTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -76,6 +76,7 @@ public class CoursePanel extends JPanel {
 		courseTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		add(courseTableScrollPane);
 
+		// semester combo box
 		String[] semesterComboBoxItems = {"All", "Fall 2019", "Spring 2020"}; // TODO test data, need to be replaced when database exists
 		JComboBox<String> semesterComboBox = new JComboBox<>(semesterComboBoxItems);
 		semesterComboBox.setBounds(SizeManager.filterCourseBounds);
@@ -85,6 +86,7 @@ public class CoursePanel extends JPanel {
 		semesterComboBox.setRenderer(renderer);
 		add(semesterComboBox);
 
+		// search text field
 		JTextField searchTextField = new JTextField();
 		searchTextField.setBounds(SizeManager.searchCourseBounds);
 		searchTextField.setFont(FontManager.fontSearch);
@@ -105,7 +107,6 @@ public class CoursePanel extends JPanel {
 //			}
 //		});
 		add(searchTextField);
-
 		searchTextField.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -124,6 +125,7 @@ public class CoursePanel extends JPanel {
 		});
 		semesterComboBox.addActionListener(e -> searchCourseTable(courseTableRowSorter, searchTextField, semesterComboBox));
 
+		// add button
 		JButton addButton = new JButton("Add");
 		addButton.setFont(FontManager.fontButton);
 		addButton.setBounds(SizeManager.buttonAddBounds);
@@ -156,6 +158,7 @@ public class CoursePanel extends JPanel {
 		});
 		add(addButton);
 
+		// view button
 		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);
 		UIManager.put("OptionPane.buttonFont", FontManager.fontLabel);
 		JButton buttonView = new JButton("View");
@@ -176,6 +179,7 @@ public class CoursePanel extends JPanel {
 		});
 		add(buttonView);
 
+		// semester label
 		JLabel semesterLabel = new JLabel("Semester : ");
 		semesterLabel.setBounds(SizeManager.labelFilterBounds);
 		semesterLabel.setFont(FontManager.fontLabel);
@@ -183,6 +187,7 @@ public class CoursePanel extends JPanel {
 		semesterLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(semesterLabel);
 
+		// search label
 		JLabel searchLabel = new JLabel("Search : ");
 		searchLabel.setBounds(SizeManager.labelSearchBounds);
 		searchLabel.setFont(FontManager.fontLabel);
