@@ -21,6 +21,8 @@ public class MainFrame extends JFrame {
 		setBounds(SizeManager.windowBounds);
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+//			System.setProperty("awt.useSystemAAFontSettings","on");
+//			System.setProperty("swing.aatext", "true");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -35,19 +37,26 @@ public class MainFrame extends JFrame {
 	 * @param to   the JPanel that will be added
 	 */
 	public void changePanel(JPanel from, JPanel to) {
-		changePanel(from, to, AnimationType.NON_LINEAR);
+		changePanel(from, to, AnimationType.NONLINEAR_SLIDE);
 	}
 
+	/**
+	 * Change JPanel contained in this JFrame from one to another with specified animation
+	 *
+	 * @param from          the JPanel that will be removed
+	 * @param to            the JPanel that will be added
+	 * @param animationType type of animation
+	 */
 	public void changePanel(JPanel from, JPanel to, AnimationType animationType) {
 		switch (animationType) {
 			case NONE:
 				changePanelWithoutAnimation(from, to);
 				break;
-			case NON_LINEAR:
-				changePanelWithNonLinearSlideAnimation(from, to);
+			case NONLINEAR_SLIDE:
+				changePanelWithNonlinearSlideAnimation(from, to);
 				break;
-			case SLIDE:
-				changePanelWithSlideAnimation(from, to);
+			case LINEAR_SLIDE:
+				changePanelWithLinearSlideAnimation(from, to);
 				break;
 			case SCALE:
 				changePanelWithScaleAnimation(from, to);
@@ -55,6 +64,12 @@ public class MainFrame extends JFrame {
 		}
 	}
 
+	/**
+	 * Change JPanel contained in this JFrame from one to another without animation
+	 *
+	 * @param from the JPanel that will be removed
+	 * @param to   the JPanel that will be added
+	 */
 	private void changePanelWithoutAnimation(JPanel from, JPanel to) {
 		remove(from);
 		add(to);
@@ -62,13 +77,15 @@ public class MainFrame extends JFrame {
 		repaint();
 	}
 
-	private void changePanelWithNonLinearSlideAnimation(JPanel from, JPanel to) {
-		changePanelWithNonLinearSlideAnimation(from, to, 7d);
-	}
-
-	private void changePanelWithNonLinearSlideAnimation(JPanel from, JPanel to, double exponent) {
+	/**
+	 * Change JPanel contained in this JFrame from one to another with slide animation
+	 *
+	 * @param from the JPanel that will be removed
+	 * @param to   the JPanel that will be added
+	 */
+	private void changePanelWithSlideAnimation(JPanel from, JPanel to, double exponent) {
 		new Thread(() -> { // coefficient * pow(time - i, exponent) = height
-			int time = 30;
+			int time = 60;
 			int distance = getHeight();
 			double coefficient = distance / Math.pow(time, exponent);
 			add(to);
@@ -89,25 +106,18 @@ public class MainFrame extends JFrame {
 		}).start();
 	}
 
-	private void changePanelWithSlideAnimation(JPanel from, JPanel to) {
-		new Thread(() -> {
-			int count = 60;
-			int delta = getHeight() / count;
-			add(to);
-			for (int i = 1; i <= count; ++i) {
-				from.setLocation(0, -delta * i);
-				to.setLocation(0, from.getHeight() - delta * i);
-				try {
-					Thread.sleep(16);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			to.setLocation(0, 0);
-			remove(from);
-			revalidate();
-			repaint();
-		}).start();
+	/**
+	 * Change JPanel contained in this JFrame from one to another with nonlinear animation
+	 *
+	 * @param from the JPanel that will be removed
+	 * @param to   the JPanel that will be added
+	 */
+	private void changePanelWithNonlinearSlideAnimation(JPanel from, JPanel to) {
+		changePanelWithSlideAnimation(from, to, 7);
+	}
+
+	private void changePanelWithLinearSlideAnimation(JPanel from, JPanel to) {
+		changePanelWithSlideAnimation(from, to, 1);
 	}
 
 	private void changePanelWithScaleAnimation(JPanel from, JPanel to) {
@@ -144,6 +154,19 @@ public class MainFrame extends JFrame {
 	}
 
 	public enum AnimationType {
-		NONE, NON_LINEAR, SLIDE, SCALE
+		NONE, NONLINEAR_SLIDE, LINEAR_SLIDE, SCALE
+	}
+
+	public enum AnimationDirection {
+		UP_TO_DOWN(0, +1),
+		DOWN_TO_UP(0, -1),
+		LEFT_TO_RIGHT(+1, 0),
+		RIGHT_TO_LEFT(-1, 0);
+		int x, y;
+
+		AnimationDirection(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
 	}
 }
