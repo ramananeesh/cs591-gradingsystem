@@ -15,8 +15,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * The {@code CoursePanel} class represents the panel for viewing all the courses
+ */
 public class CoursePanel extends JPanel {
+	/** The title for the window when CoursePanel displays */
 	private static final String TITLE = "Grading System - Course";
+
+	/** The frame which contains this panel. */
 	private MainFrame frame;
 
 	/**
@@ -32,10 +38,8 @@ public class CoursePanel extends JPanel {
 		UIManager.put("TextField.font", FontManager.fontSearch);
 		UIManager.put("ComboBox.font", FontManager.fontFilter);
 
-		String[] tableCourseColumn = {
-				"#", "Course Name", "Semester"
-		};
-		String[][] tableCourseData = { // TODO load course data
+		String[] courseTableColumnNames = {"#", "Course Name", "Semester"}; // The table head of course table.
+		String[][] courseTableRowData = { // TODO test data, need to be replaced when database exists
 				{"CS505", "Introduction to Natural Language Processing", "Spring 2020"},
 				{"CS542", "Machine Learning", "Spring 2020"},
 				{"CS585", "Image & Video Computing", "Spring 2020"},
@@ -44,50 +48,48 @@ public class CoursePanel extends JPanel {
 				{"CS530", "Graduate Algorithms", "Fall 2019"}
 		};
 
-		DefaultTableModel modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumn) {
+		DefaultTableModel courseTableModel = new DefaultTableModel(courseTableRowData, courseTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
-		JTable tableCourse = new JTable(modelCourse);
-		tableCourse.setBounds(SizeManager.tableCourseBounds);
-		tableCourse.setRowHeight(SizeManager.tableRowHeight);
-		tableCourse.setFont(FontManager.fontTable);
-
+		JTable courseTable = new JTable(courseTableModel);
+		courseTable.setBounds(SizeManager.tableCourseBounds);
+		courseTable.setRowHeight(SizeManager.tableRowHeight);
+		courseTable.setFont(FontManager.fontTable);
 		for (int i = 0; i < 3; ++i) {
-			tableCourse.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableColumnWidth[i]);
+			courseTable.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.courseTableColumnWidth[i]);
 		}
-		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
-		tableRender.setHorizontalAlignment(SwingConstants.CENTER);
-		tableRender.setVerticalAlignment(SwingConstants.CENTER);
-		tableCourse.setDefaultRenderer(Object.class, tableRender);
-		TableRowSorter<DefaultTableModel> sorterCourse = new TableRowSorter<>(modelCourse);
-		tableCourse.setRowSorter(sorterCourse);
-		JTableHeader tableHeader = tableCourse.getTableHeader();
-		tableHeader.setBackground(ColorManager.primaryColor);
-		tableHeader.setForeground(ColorManager.lightColor);
-		tableHeader.setFont(tableCourse.getFont());
-		JScrollPane tableCourseScrollPane = new JScrollPane(tableCourse);
-		tableCourseScrollPane.setBounds(tableCourse.getBounds());
-		tableCourse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		add(tableCourseScrollPane);
+		DefaultTableCellRenderer courseTableRender = new DefaultTableCellRenderer();
+		courseTableRender.setHorizontalAlignment(SwingConstants.CENTER);
+		courseTableRender.setVerticalAlignment(SwingConstants.CENTER);
+		courseTable.setDefaultRenderer(Object.class, courseTableRender);
+		TableRowSorter<DefaultTableModel> courseTableRowSorter = new TableRowSorter<>(courseTableModel);
+		courseTable.setRowSorter(courseTableRowSorter);
+		JTableHeader courseTableHeader = courseTable.getTableHeader();
+		courseTableHeader.setBackground(ColorManager.primaryColor);
+		courseTableHeader.setForeground(ColorManager.lightColor);
+		courseTableHeader.setFont(courseTable.getFont());
+		JScrollPane courseTableScrollPane = new JScrollPane(courseTable);
+		courseTableScrollPane.setBounds(courseTable.getBounds());
+		courseTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		add(courseTableScrollPane);
 
-		String[] semester = {"All", "Fall 2019", "Spring 2020"}; // TODO
-
-		JComboBox<String> boxFilter = new JComboBox<>(semester);
-		boxFilter.setBounds(SizeManager.filterCourseBounds);
-		boxFilter.setFont(FontManager.fontFilter);
+		String[] semesterComboBoxItems = {"All", "Fall 2019", "Spring 2020"}; // TODO test data, need to be replaced when database exists
+		JComboBox<String> semesterComboBox = new JComboBox<>(semesterComboBoxItems);
+		semesterComboBox.setBounds(SizeManager.filterCourseBounds);
+		semesterComboBox.setFont(FontManager.fontFilter);
 		DefaultListCellRenderer renderer = new DefaultListCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		boxFilter.setRenderer(renderer);
-		add(boxFilter);
+		semesterComboBox.setRenderer(renderer);
+		add(semesterComboBox);
 
-		JTextField textSearch = new JTextField();
-		textSearch.setBounds(SizeManager.searchCourseBounds);
-		textSearch.setFont(FontManager.fontSearch);
-		textSearch.setHorizontalAlignment(SwingConstants.CENTER);
-//		textSearch.addFocusListener(new FocusListener() { TODO may display hint words in search bar
+		JTextField searchTextField = new JTextField();
+		searchTextField.setBounds(SizeManager.searchCourseBounds);
+		searchTextField.setFont(FontManager.fontSearch);
+		searchTextField.setHorizontalAlignment(SwingConstants.CENTER);
+//		textSearch.addFocusListener(new FocusListener() { TODO may display hint words in search bar by using focus listener
 //			@Override
 //			public void focusGained(FocusEvent e) {
 //				if (textSearch.getText().equals("Search Bar")) {
@@ -102,41 +104,41 @@ public class CoursePanel extends JPanel {
 //				}
 //			}
 //		});
-		add(textSearch);
+		add(searchTextField);
 
-		textSearch.getDocument().addDocumentListener(new DocumentListener() {
+		searchTextField.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				search(sorterCourse, textSearch, boxFilter);
+				searchCourseTable(courseTableRowSorter, searchTextField, semesterComboBox);
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				search(sorterCourse, textSearch, boxFilter);
+				searchCourseTable(courseTableRowSorter, searchTextField, semesterComboBox);
 			}
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				search(sorterCourse, textSearch, boxFilter);
+				searchCourseTable(courseTableRowSorter, searchTextField, semesterComboBox);
 			}
 		});
-		boxFilter.addActionListener(e -> search(sorterCourse, textSearch, boxFilter));
+		semesterComboBox.addActionListener(e -> searchCourseTable(courseTableRowSorter, searchTextField, semesterComboBox));
 
-		JButton buttonAdd = new JButton("Add");
-		buttonAdd.setFont(FontManager.fontButton);
-		buttonAdd.setBounds(SizeManager.buttonAddBounds);
-		buttonAdd.setForeground(ColorManager.lightColor);
-		buttonAdd.setBackground(ColorManager.primaryColor);
-		buttonAdd.addActionListener(e -> {
+		JButton addButton = new JButton("Add");
+		addButton.setFont(FontManager.fontButton);
+		addButton.setBounds(SizeManager.buttonAddBounds);
+		addButton.setForeground(ColorManager.lightColor);
+		addButton.setBackground(ColorManager.primaryColor);
+		addButton.addActionListener(actionEvent -> {
 			try {
-				JTextField numberField = new JTextField();
-				JTextField nameField = new JTextField();
-				JTextField termField = new JTextField();
-				JComboBox<String> templateCombo = new JComboBox<>();
-				for (String[] tableCourseDatum : tableCourseData) {
-					templateCombo.addItem(tableCourseDatum[0] + " " + tableCourseDatum[2]);
+				JTextField courseNumberField = new JTextField();
+				JTextField courseNameField = new JTextField();
+				JTextField semesterField = new JTextField();
+				JComboBox<String> templateComboBox = new JComboBox<>();
+				for (String[] courseTableRowDatum : courseTableRowData) {
+					templateComboBox.addItem(courseTableRowDatum[0] + " " + courseTableRowDatum[2]);
 				}
-				Object[] fields = {"Course Number: ", numberField, "Course Name: ", nameField, "Course Term: ", termField, "Template: ", templateCombo,};
+				Object[] fields = {"Course Number: ", courseNumberField, "Course Name: ", courseNameField, "Semester: ", semesterField, "Template: ", templateComboBox,};
 				while (true) { // TODO
 					int reply = JOptionPane.showConfirmDialog(null, fields, "Add a Course", JOptionPane.OK_CANCEL_OPTION);
 					if (reply == JOptionPane.OK_OPTION) {
@@ -146,13 +148,13 @@ public class CoursePanel extends JPanel {
 						return;
 					}
 				}
-			} catch (Exception e1) {
-				JOptionPane.showMessageDialog(null,
+			} catch (Exception exception) {
+				JOptionPane.showMessageDialog(this,
 						"Error", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		});
-		add(buttonAdd);
+		add(addButton);
 
 		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);
 		UIManager.put("OptionPane.buttonFont", FontManager.fontLabel);
@@ -162,47 +164,54 @@ public class CoursePanel extends JPanel {
 		buttonView.setForeground(ColorManager.lightColor);
 		buttonView.setBackground(ColorManager.primaryColor);
 		buttonView.addActionListener(e -> {
-			if (tableCourse.getSelectedRow() == -1) {
+			if (courseTable.getSelectedRow() == -1) {
 				JOptionPane.showMessageDialog(this, "Please select a course.", "Error", JOptionPane.WARNING_MESSAGE);
 			} else {
 				String[] courseData = new String[3];
 				for (int i = 0; i < 3; ++i) {
-					courseData[i] = tableCourse.getValueAt(tableCourse.getSelectedRow(), i).toString();
+					courseData[i] = courseTable.getValueAt(courseTable.getSelectedRow(), i).toString();
 				}
 				frame.changePanel(this, new MenuPanel(frame, courseData));
 			}
 		});
 		add(buttonView);
 
-		JLabel labelFilter = new JLabel("Semester : ");
-		labelFilter.setBounds(SizeManager.labelFilterBounds);
-		labelFilter.setFont(FontManager.fontLabel);
-		labelFilter.setVerticalAlignment(SwingConstants.CENTER);
-		labelFilter.setHorizontalAlignment(SwingConstants.RIGHT);
-		add(labelFilter);
+		JLabel semesterLabel = new JLabel("Semester : ");
+		semesterLabel.setBounds(SizeManager.labelFilterBounds);
+		semesterLabel.setFont(FontManager.fontLabel);
+		semesterLabel.setVerticalAlignment(SwingConstants.CENTER);
+		semesterLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		add(semesterLabel);
 
-		JLabel labelSearch = new JLabel("Search : ");
-		labelSearch.setBounds(SizeManager.labelSearchBounds);
-		labelSearch.setFont(FontManager.fontLabel);
-		labelSearch.setVerticalAlignment(SwingConstants.CENTER);
-		labelSearch.setHorizontalAlignment(SwingConstants.RIGHT);
-		add(labelSearch);
+		JLabel searchLabel = new JLabel("Search : ");
+		searchLabel.setBounds(SizeManager.labelSearchBounds);
+		searchLabel.setFont(FontManager.fontLabel);
+		searchLabel.setVerticalAlignment(SwingConstants.CENTER);
+		searchLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		add(searchLabel);
 
 		setVisible(true);
 	}
 
-	private static void search(TableRowSorter<DefaultTableModel> sorter, JTextField search, JComboBox<String> boxFilter) {
-		if (search.getText().length() != 0 && !Objects.equals(boxFilter.getSelectedItem(), "All")) {
-			sorter.setRowFilter(RowFilter.andFilter(new ArrayList<>(Arrays.asList(
-					RowFilter.regexFilter("(?i)" + boxFilter.getSelectedItem()),
-					RowFilter.regexFilter("(?i)" + search.getText()))))
+	/**
+	 * Search something in the course table by specified text and filter
+	 *
+	 * @param courseTableRowSorter a TableRowSorter for a JTable
+	 * @param searchTextField      a JTextField contains key words
+	 * @param semesterComboBox     a JComboBox which can be used for selecting a semester
+	 */
+	private void searchCourseTable(TableRowSorter<DefaultTableModel> courseTableRowSorter, JTextField searchTextField, JComboBox<String> semesterComboBox) {
+		if (searchTextField.getText().length() != 0 && !Objects.equals(semesterComboBox.getSelectedItem(), "All")) {
+			courseTableRowSorter.setRowFilter(RowFilter.andFilter(new ArrayList<>(Arrays.asList(
+					RowFilter.regexFilter("(?i)" + semesterComboBox.getSelectedItem()),
+					RowFilter.regexFilter("(?i)" + searchTextField.getText()))))
 			);
-		} else if (!Objects.equals(boxFilter.getSelectedItem(), "All")) {
-			sorter.setRowFilter(RowFilter.regexFilter("(?i)" + boxFilter.getSelectedItem()));
-		} else if (search.getText().length() != 0) {
-			sorter.setRowFilter(RowFilter.regexFilter("(?i)" + search.getText()));
+		} else if (!Objects.equals(semesterComboBox.getSelectedItem(), "All")) {
+			courseTableRowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + semesterComboBox.getSelectedItem()));
+		} else if (searchTextField.getText().length() != 0) {
+			courseTableRowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchTextField.getText()));
 		} else {
-			sorter.setRowFilter(null);
+			courseTableRowSorter.setRowFilter(null);
 		}
 	}
 }

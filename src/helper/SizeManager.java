@@ -41,7 +41,7 @@ public class SizeManager {
 	public static final int tableCourseX = windowWidth / 2 - tableCourseWidth / 2;
 	public static final int tableCourseY = windowHeight / 2 - tableCourseHeight / 2;
 	public static final Rectangle tableCourseBounds = new Rectangle(tableCourseX, tableCourseY, tableCourseWidth, tableCourseHeight);
-	public static final int[] tableColumnWidth = {tableCourseWidth / 4, tableCourseWidth / 2, tableCourseWidth / 4};
+	public static final int[] courseTableColumnWidth = {tableCourseWidth / 4, tableCourseWidth / 2, tableCourseWidth / 4};
 
 	public static final int midSearchFilter = windowWidth / 15;
 

@@ -15,8 +15,14 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+/**
+ * The {@code MenuPanel} class represents the panel for viewing or modifying all the grades
+ */
 public class MenuPanel extends JPanel {
+	/** The title for the window when MenuPanel displays */
 	private static final String TITLE = "Grading System - Main Menu";
+
+	/** The frame which contains this panel. */
 	private MainFrame frame;
 
 	/**
@@ -41,7 +47,7 @@ public class MenuPanel extends JPanel {
 		tableRender.setHorizontalAlignment(SwingConstants.CENTER);
 		tableRender.setVerticalAlignment(SwingConstants.CENTER);
 
-		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2] + "\n\n";
+		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2] + "\n\n"; // TODO test data, need to be replaced when database exists
 
 		String[] menuName = {"  File  ", "  Edit  ", "  Grade  "};
 		String[][] menuItemName = {
@@ -53,14 +59,14 @@ public class MenuPanel extends JPanel {
 				{ // File
 						addStudent -> { // Add Student
 							try {
-								JTextField nameField = new JTextField();
-								JTextField BUIDField = new JTextField();
-								JTextField emailField = new JTextField();
-								JComboBox<String> levelCombo = new JComboBox<>(new String[]{"Undergraduate", "Graduate"});
-								Object[] fields = {"Name: ", nameField, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
+								JTextField nameTextField = new JTextField();
+								JTextField buidTextField = new JTextField();
+								JTextField emailTextField = new JTextField();
+								JComboBox<String> levelComboBox = new JComboBox<>(new String[]{"Undergraduate", "Graduate"});
+								Object[] fields = {"Name: ", nameTextField, "BU ID: ", buidTextField, "Email: ", emailTextField, "Level: ", levelComboBox,};
 
 								while (true) {
-									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student", JOptionPane.OK_CANCEL_OPTION);
+									int reply = JOptionPane.showConfirmDialog(this, fields, "Add Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
 										break;
@@ -68,49 +74,36 @@ public class MenuPanel extends JPanel {
 										return;
 									}
 								}
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(null,
-										"Error", "Error",
-										JOptionPane.ERROR_MESSAGE);
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 						},
 						addCategory -> { // Add Category
 							try {
-								JTextField categoryField = new JTextField();
-								JTextField percentageField = new JTextField();
-								Object[] fields = {"Category: ", categoryField, "Percentage: ", percentageField,};
+								JTextField categoryTextField = new JTextField();
+								JTextField weightField = new JTextField();
+								Object[] fields = {"Category: ", categoryTextField, "Weight: ", weightField,};
 
 								while (true) {
-									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Category", JOptionPane.OK_CANCEL_OPTION);
+									int reply = JOptionPane.showConfirmDialog(this, fields, "Add Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
-										JOptionPane.showMessageDialog(null,
-												"Please edit the percentage for all other categories", "Warning",
-												JOptionPane.WARNING_MESSAGE);
+										JOptionPane.showMessageDialog(this, "Please edit the percentage for all other categories", "Warning", JOptionPane.WARNING_MESSAGE);
 										break;
 									} else {
 										return;
 									}
 								}
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(null,
-										"Error", "Error",
-										JOptionPane.ERROR_MESSAGE);
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 						},
 						addItem -> { // Add Item
 							try {
-								JComboBox<String> categoryCombo = new JComboBox<>();
-								/***for test***/
-								categoryCombo.addItem("Homework");
-								categoryCombo.addItem("Exam");
-								categoryCombo.addItem("Project");
-								/******/
-//								for(int i = 0; i < category.size(); i++) {
-//									categoryCombo.addItem(category.get(i).getCategoryName());
-//								}
+								String[] categoryComboBoxItems = {"Homework", "Exam", "Project"}; // TODO test data, need to be replaced when database exists
+								JComboBox<String> categoryCombo = new JComboBox<>(categoryComboBoxItems);
 								JTextField itemField = new JTextField();
 								JTextField percentageField = new JTextField();
-								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage: ", percentageField,};
+								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Weight: ", percentageField,};
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item", JOptionPane.OK_CANCEL_OPTION);
@@ -124,10 +117,8 @@ public class MenuPanel extends JPanel {
 										return;
 									}
 								}
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(null,
-										"Error", "Error",
-										JOptionPane.ERROR_MESSAGE);
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 
 						},
@@ -138,51 +129,34 @@ public class MenuPanel extends JPanel {
 				{
 						editStudent -> { // Edit Student
 							try {
-								JComboBox<String> studentCombo = new JComboBox<>();
-								/***for test***/
-								studentCombo.addItem("Student1");
-								studentCombo.addItem("Student2");
-								studentCombo.addItem("Student3");
-								/******/
-//								for(int i = 0; i < student.size(); i++) {
-//									studentCombo.addItem(student.get(i).getStudentName());
-//								}
-								JTextField BUIDField = new JTextField();
-								JTextField emailField = new JTextField();
-								JComboBox<String> levelCombo = new JComboBox<>(new String[]{"Undergraduate", "Graduate"});
-								Object[] fields = {"Student: ", studentCombo, "BU ID: ", BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
+								String[] studentComboBoxItems = {"Student 1", "Student 2", "Student 3"}; // TODO test data, need to be replaced when database exists
+								JComboBox<String> studentCombo = new JComboBox<>(studentComboBoxItems);
+								JTextField buidTextField = new JTextField();
+								JTextField emailTextField = new JTextField();
+								JComboBox<String> levelComboBox = new JComboBox<>(new String[]{"Undergraduate", "Graduate"});
+								Object[] fields = {"Student: ", studentCombo, "BU ID: ", buidTextField, "Email: ", emailTextField, "Level: ", levelComboBox,};
 
 								while (true) {
-									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Student", JOptionPane.OK_CANCEL_OPTION);
+									int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 										break;
 									} else {
 										return;
 									}
 								}
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(null,
-										"Error", "Error",
-										JOptionPane.ERROR_MESSAGE);
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 						},
 						editCategory -> { // Edit Category
 							try {
-								String[][] categoryData;
-//								for(int i = 0; i < category.size(); i++) {
-//									categoryData[i][0] = category.get(i).getCategoryName();
-//									categoryData[i][1] = category.get(i).getPercentage();
-//								}
-								/***for test***/
-								categoryData = new String[][]{
+								String[][] categoryRowData = { // TODO test data, need to be replaced when database exists
 										{"Homework", "50%",},
 										{"Exam", "25%",},
 										{"Project", "25%",}
 								};
-								/******/
-
-								String[] categoryColumn = {"Category", "Percentage"};
-								JTable categoryTable = new JTable(categoryData, categoryColumn) {
+								String[] categoryColumnNames = {"Category", "Weight"};
+								JTable categoryTable = new JTable(categoryRowData, categoryColumnNames) {
 									public boolean isCellEditable(int row, int column) {
 										return column > 0;
 									}
@@ -192,45 +166,27 @@ public class MenuPanel extends JPanel {
 								JScrollPane categoryScrollPane = new JScrollPane(categoryTable);
 
 								while (true) {
-									int reply = JOptionPane.showConfirmDialog(null, categoryScrollPane, "Edit Category", JOptionPane.OK_CANCEL_OPTION);
+									int reply = JOptionPane.showConfirmDialog(this, categoryScrollPane, "Edit Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 										break;
 									} else {
 										return;
 									}
 								}
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(null,
-										"Error", "Error",
-										JOptionPane.ERROR_MESSAGE);
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 						},
 						editItem -> { // Edit Item
 							try {
-								JComboBox<String> categoryCombo = new JComboBox<>();
-								/***for test***/
-								categoryCombo.addItem("Homework");
-								categoryCombo.addItem("Exam");
-								categoryCombo.addItem("Project");
-								/******/
-//								for(int i = 0; i < category.size(); i++) {
-//									categoryCombo.addItem(category.get(i).getCategoryName());
-//								}
-
-								String[][] itemData;
-//								for(int i = 0; i < category.size(); i++) {
-//									data[i][0] = category.get(i).getCategoryName();
-//									data[i][1] = category.get(i).getPercentage();
-//								}
-								/***for test***/
-								itemData = new String[][]{
-										{"Homework1", "50%",},
-										{"Homework2", "50%",}
+								String[] categoryComboBoxItems = {"Homework", "Exam", "Project"};
+								JComboBox<String> categoryCombo = new JComboBox<>(categoryComboBoxItems);
+								String[][] itemRowData = { // TODO test data, need to be replaced when database exists
+										{"Homework 1", "50%",},
+										{"Homework 2", "50%",}
 								};
-								/******/
-
-								String[] itemColumn = {"Item", "Percentage"};
-								JTable itemTable = new JTable(itemData, itemColumn) {
+								String[] itemColumnNames = {"Item", "Weight"};
+								JTable itemTable = new JTable(itemRowData, itemColumnNames) {
 									public boolean isCellEditable(int row, int column) {
 										return column > 0;
 									}
@@ -242,7 +198,7 @@ public class MenuPanel extends JPanel {
 
 
 								while (true) {
-									int reply = JOptionPane.showConfirmDialog(null, fields, "Edit Item", JOptionPane.OK_CANCEL_OPTION);
+									int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
 
 										break;
@@ -250,8 +206,8 @@ public class MenuPanel extends JPanel {
 										return;
 									}
 								}
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(null,
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(this,
 										"Error", "Error",
 										JOptionPane.ERROR_MESSAGE);
 							}
@@ -259,13 +215,13 @@ public class MenuPanel extends JPanel {
 				},
 				{
 						editAllGrades -> { // Edit All Grades
-							frame.changePanel(this, new GradePanel(frame, courseData));
+							frame.changePanel(this, new GradePanel(frame, courseData, true));
 						},
 						editByStudent -> { // Edit by Student
-
+							// TODO complete
 						},
 						viewGrades -> { // View Grades
-
+							frame.changePanel(this, new GradePanel(frame, courseData, false));
 						}
 				}
 		};
@@ -300,46 +256,45 @@ public class MenuPanel extends JPanel {
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		add(textInfo);
 
-		String[] tableStudentColumn = {"Student"};
-		String[][] tableStudentData; // TODO load student from database
-		tableStudentData = new String[100][1];
+		String[] studentTableColumnNames = {"Student"};
+		String[][] studentTableRowData; // TODO load student from database
+		studentTableRowData = new String[100][1];
 		for (int i = 0; i < 100; ++i) {
-			tableStudentData[i][0] = String.format("Student %010d", i + 1);
+			studentTableRowData[i][0] = String.format("Student %010d", i + 1);
 		}
-		DefaultTableModel modelStudent = new DefaultTableModel(tableStudentData, tableStudentColumn) {
+		DefaultTableModel studentTableModel = new DefaultTableModel(studentTableRowData, studentTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
-		JTable tableStudent = new JTable(modelStudent);
-		tableStudent.setRowHeight(SizeManager.menuTableRowHeight);
-		JScrollPane tableStudentScrollPane = new JScrollPane(tableStudent);
-		tableStudentScrollPane.setBounds(SizeManager.tableStudentBounds);
-		add(tableStudentScrollPane);
+		JTable studentTable = new JTable(studentTableModel);
+		studentTable.setRowHeight(SizeManager.menuTableRowHeight);
+		JScrollPane studentTableScrollPane = new JScrollPane(studentTable);
+		studentTableScrollPane.setBounds(SizeManager.tableStudentBounds);
+		add(studentTableScrollPane);
 
-		String[] tableCategoryColumn = {"Category", "Weight"};
-		String[][] tableCategoryData = { // TODO
+		String[] categoryTableColumnNames = {"Category", "Weight"};
+		String[][] categoryTableRowData = { // TODO
 				{"All", "100%"},
 				{"Homework", "25%"},
 				{"Project", "25%"},
 				{"Presentation", "25%"},
 				{"Exam", "25%"}
 		};
-
-		DefaultTableModel modelCategory = new DefaultTableModel(tableCategoryData, tableCategoryColumn) {
+		DefaultTableModel categoryTableModel = new DefaultTableModel(categoryTableRowData, categoryTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
-		JTable tableCategory = new JTable(modelCategory);
-		JScrollPane tableCategoryScrollPane = new JScrollPane(tableCategory);
-		tableCategoryScrollPane.setBounds(SizeManager.tableCategoryBounds);
-		add(tableCategoryScrollPane);
+		JTable categoryTable = new JTable(categoryTableModel);
+		JScrollPane categoryTableScrollPane = new JScrollPane(categoryTable);
+		categoryTableScrollPane.setBounds(SizeManager.tableCategoryBounds);
+		add(categoryTableScrollPane);
 
-		String[] tableItemColumn = {"Item", "Weight"};
-		String[][] tableItemData = { // TODO
+		String[] itemTableColumnNames = {"Item", "Weight"};
+		String[][] itemTableRowData = { // TODO
 				{"All", "100%"},
 				{"Homework 1", "5%"},
 				{"Homework 2", "5%"},
@@ -362,71 +317,64 @@ public class MenuPanel extends JPanel {
 				{"Exam 4", "5%"},
 				{"Exam 5", "5%"}
 		};
-//		String[][] tableItemData; // TODO load Item from database
-//		tableItemData = new String[100][2];
-//		for (int i = 0; i < 100; ++i) {
-//			tableItemData[i][0] = String.format("Item %010d", i + 1);
-//			tableItemData[i][1] = String.format("%d%%", random.nextInt(100));
-//		}
-		DefaultTableModel modelItem = new DefaultTableModel(tableItemData, tableItemColumn) {
+		DefaultTableModel itemTableModel = new DefaultTableModel(itemTableRowData, itemTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
-		JTable tableItem = new JTable(modelItem);
-		JScrollPane tableItemScrollPane = new JScrollPane(tableItem);
-		tableItemScrollPane.setBounds(SizeManager.tableItemBounds);
-		add(tableItemScrollPane);
+		JTable itemTable = new JTable(itemTableModel);
+		JScrollPane itemTableScrollPane = new JScrollPane(itemTable);
+		itemTableScrollPane.setBounds(SizeManager.tableItemBounds);
+		add(itemTableScrollPane);
 
 		for (int i = 0; i < 2; ++i) {
-			tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
-			tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
+			categoryTable.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
+			itemTable.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
 		}
-		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
+		for (JTable table : new JTable[]{studentTable, categoryTable, itemTable}) {
 			table.setDefaultRenderer(Object.class, tableRender);
 			table.setRowHeight(SizeManager.menuTableRowHeight);
 			table.setRowSelectionAllowed(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			table.getSelectionModel().addListSelectionListener(e -> {
+			table.getSelectionModel().addListSelectionListener(listSelectionEvent -> { // TODO test data
 				String text = courseString;
-				if (tableStudent.getSelectedRow() != -1) {
-					text += tableStudent.getValueAt(tableStudent.getSelectedRow(), 0) + "\n\n";
+				if (studentTable.getSelectedRow() != -1) {
+					text += studentTable.getValueAt(studentTable.getSelectedRow(), 0) + "\n\n";
 				}
-				if (tableCategory.getSelectedRow() != -1) {
-					if (e.getSource() == tableCategory.getSelectionModel()) {
+				if (categoryTable.getSelectedRow() != -1) {
+					if (listSelectionEvent.getSource() == categoryTable.getSelectionModel()) {
 						Object[][] newTableItemData;
-						if (tableCategory.getSelectedRow() == 0) {
-							newTableItemData = tableItemData;
+						if (categoryTable.getSelectedRow() == 0) {
+							newTableItemData = itemTableRowData;
 						} else {
 							newTableItemData = new Object[5][2];
-							String category = (String) tableCategory.getValueAt(tableCategory.getSelectedRow(), 0);
+							String category = (String) categoryTable.getValueAt(categoryTable.getSelectedRow(), 0);
 							for (int i = 0; i < 5; ++i) {
 								newTableItemData[i][0] = category + " " + (i + 1);
 								newTableItemData[i][1] = "5%";
 							}
 						}
-						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumn);
-						tableItem.setModel(newTableItemModel);
+						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, itemTableColumnNames);
+						itemTable.setModel(newTableItemModel);
 						for (int i = 0; i < 2; ++i) {
-							tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
-							tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
+							categoryTable.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
+							itemTable.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
 						}
 					}
 					text += "Category: ";
-					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 0) + "\n";
+					text += categoryTable.getValueAt(categoryTable.getSelectedRow(), 0) + "\n";
 					text += "Weight: ";
-					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 1) + "\n\n";
+					text += categoryTable.getValueAt(categoryTable.getSelectedRow(), 1) + "\n\n";
 				}
-				if (tableItem.getSelectedRow() != -1) {
+				if (itemTable.getSelectedRow() != -1) {
 					text += "Item: ";
-					text += tableItem.getValueAt(tableItem.getSelectedRow(), 0) + "\n";
+					text += itemTable.getValueAt(itemTable.getSelectedRow(), 0) + "\n";
 					text += "Weight: ";
-					text += tableItem.getValueAt(tableItem.getSelectedRow(), 1) + "\n\n";
+					text += itemTable.getValueAt(itemTable.getSelectedRow(), 1) + "\n\n";
 				}
 				textInfo.setText(text);
 			});
-
 			JTableHeader tableHeader = table.getTableHeader();
 			tableHeader.setPreferredSize(new Dimension(SizeManager.panelWidth, SizeManager.menuTableRowHeight));
 			tableHeader.setForeground(ColorManager.lightColor);
