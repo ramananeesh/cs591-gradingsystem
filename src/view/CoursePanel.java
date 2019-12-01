@@ -27,6 +27,7 @@ public class CoursePanel extends JPanel implements Observer {
 	private MainFrame frame;
 	private DefaultTableModel modelCourse;
 	private String[] tableCourseColumns;
+	private JTable tableCourse;
 
 	/**
 	 * Initializes a newly created {@code CoursePanel} object
@@ -34,6 +35,7 @@ public class CoursePanel extends JPanel implements Observer {
 	public CoursePanel(MainFrame frame, Master controller) {
 		this.controller = controller;
 		this.frame = frame;
+		this.controller.addObserver(this);
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
@@ -43,20 +45,21 @@ public class CoursePanel extends JPanel implements Observer {
 		UIManager.put("ComboBox.font", FontManager.fontFilter);
 
 		tableCourseColumns = new String[] { "#", "Course Name", "Semester" };
-		String[][] tableCourseData = { // TODO load course data
-				{ "CS505", "Introduction to Natural Language Processing", "Spring 2020" },
-				{ "CS542", "Machine Learning", "Spring 2020" }, { "CS585", "Image & Video Computing", "Spring 2020" },
-				{ "CS591 P1", "Topics in Computer Science", "Fall 2019" },
-				{ "CS480/680", "Introduction to Computer Graphics", "Fall 2019" },
-				{ "CS530", "Graduate Algorithms", "Fall 2019" } };
+//		String[][] tableCourseData = { // TODO load course data
+//				{ "CS505", "Introduction to Natural Language Processing", "Spring 2020" },
+//				{ "CS542", "Machine Learning", "Spring 2020" }, { "CS585", "Image & Video Computing", "Spring 2020" },
+//				{ "CS591 P1", "Topics in Computer Science", "Fall 2019" },
+//				{ "CS480/680", "Introduction to Computer Graphics", "Fall 2019" },
+//				{ "CS530", "Graduate Algorithms", "Fall 2019" } };
 
+		String[][] tableCourseData = new String[][] {};
 		modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
-		JTable tableCourse = new JTable(modelCourse);
+		tableCourse = new JTable(modelCourse);
 		tableCourse.setBounds(SizeManager.tableCourseBounds);
 		tableCourse.setRowHeight(SizeManager.tableRowHeight);
 		tableCourse.setFont(FontManager.fontTable);
@@ -153,7 +156,6 @@ public class CoursePanel extends JPanel implements Observer {
 						String courseName = nameField.getText();
 						String courseTerm = termField.getText();
 						int templateIndex = templateCombo.getSelectedIndex();
-
 						if (templateIndex != 0) {
 							Course templateCourse = controller.getTemplateCourse(templateIndex - 1);
 
@@ -229,9 +231,27 @@ public class CoursePanel extends JPanel implements Observer {
 		}
 	}
 
+	public DefaultTableModel addCourseRowsToModel(DefaultTableModel model, String[][] tableCourseData) {
+
+		for (int i = 0; i < tableCourseData.length; i++) {
+			model.addRow(tableCourseData[i]);
+		}
+		return model;
+	}
+
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
+		String[][] tableCourseData = controller.getAllCourseDetails();
+		modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumns) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		tableCourse.setModel(modelCourse);
+		TableRowSorter<DefaultTableModel> sorterCourse = new TableRowSorter<>(modelCourse);
+		tableCourse.setRowSorter(sorterCourse);
 
 	}
 }

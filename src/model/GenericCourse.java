@@ -39,4 +39,10 @@ public class GenericCourse {
 	public String toString() {
 		return this.courseId + " - " + this.courseName + " - " + this.term;
 	}
+	
+	public String[] getDetails() {
+		String[] str= {this.courseId,this.courseName,this.term};
+		
+		return str;
+	}
 }

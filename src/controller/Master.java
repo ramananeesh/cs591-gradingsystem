@@ -32,7 +32,7 @@ public class Master extends Observable {
 			ArrayList<CourseStudent> students) {
 		Course newCourse = new Course(courseId, courseName, term, categories, students);
 		this.courses.add(newCourse);
-
+		
 		setChanged();
 		notifyObservers();
 	}
@@ -67,6 +67,18 @@ public class Master extends Observable {
 		return newItems;
 	}
 
+	public String[][] getAllCourseDetails() {
+		String[][] allCourseDetails = new String[this.getCourseCount()][];
+		
+		int i=0;
+		for(Course c: this.courses) {
+			allCourseDetails[i] = c.getDetails();
+			i++;
+		}
+		
+		return allCourseDetails;
+	}
+	
 	public int getCourseCount() {
 		return this.courses.size();
 	}
