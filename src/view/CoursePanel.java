@@ -191,9 +191,11 @@ public class CoursePanel extends JPanel implements Observer {
 				JOptionPane.showMessageDialog(this, "Please select a course.", "Error", JOptionPane.WARNING_MESSAGE);
 			} else {
 				String[] courseData = new String[3];
+				int selectedRow = tableCourse.getSelectedRow();
 				for (int i = 0; i < 3; ++i) {
-					courseData[i] = tableCourse.getValueAt(tableCourse.getSelectedRow(), i).toString();
+					courseData[i] = tableCourse.getValueAt(selectedRow, i).toString();
 				}
+				controller.setCurrentCourse(selectedRow);
 				frame.switchPanel(this, new MenuPanel(frame, courseData, controller));
 			}
 		});

@@ -6,13 +6,16 @@ import model.*;
 public class Master extends Observable {
 
 	private ArrayList<Course> courses;
+	private Course currentCourse; 
 
 	public Master() {
 		this.courses = new ArrayList<Course>();
+		this.currentCourse = null;
 	}
 
 	public Master(ArrayList<Course> courses) {
 		this.courses = courses;
+		this.currentCourse = null;
 	}
 
 	/*
@@ -81,5 +84,17 @@ public class Master extends Observable {
 	
 	public int getCourseCount() {
 		return this.courses.size();
+	}
+	
+	public Course getCourse(int index) {
+		return this.courses.get(index);
+	}
+	
+	public void setCurrentCourse(Course course) {
+		this.currentCourse = course; 
+	}
+	
+	public void setCurrentCourse(int index) {
+		this.currentCourse = this.courses.get(index); 
 	}
 }

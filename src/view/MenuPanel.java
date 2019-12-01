@@ -17,12 +17,26 @@ import controller.Master;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
 
-public class MenuPanel extends JPanel {
+public class MenuPanel extends JPanel implements Observer{
 	private Master controller; 
 	
 	private static final String TITLE = "Grading System - Main Menu";
 	private MainFrame frame;
+
+	private DefaultTableModel modelStudent;
+
+	private String[] tableStudentColumns;
+
+	private String[] tableCategoryColumns;
+
+	private DefaultTableModel modelCategory;
+
+	private String[] tableItemColumns;
+
+	private DefaultTableModel modelItem;
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
@@ -30,6 +44,7 @@ public class MenuPanel extends JPanel {
 	public MenuPanel(MainFrame frame, String[] courseData, Master controller) { // TODO data should not be String array
 		this.frame = frame;
 		this.controller = controller; 
+		this.controller.addObserver(this);
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
@@ -306,13 +321,13 @@ public class MenuPanel extends JPanel {
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		add(textInfo);
 
-		String[] tableStudentColumn = {"Student"};
+		tableStudentColumns = new String[] {"Student"};
 		String[][] tableStudentData; // TODO load student from database
 		tableStudentData = new String[100][1];
 		for (int i = 0; i < 100; ++i) {
 			tableStudentData[i][0] = String.format("Student %010d", i + 1);
 		}
-		DefaultTableModel modelStudent = new DefaultTableModel(tableStudentData, tableStudentColumn) {
+		modelStudent = new DefaultTableModel(tableStudentData, tableStudentColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -324,7 +339,7 @@ public class MenuPanel extends JPanel {
 		tableStudentScrollPane.setBounds(SizeManager.tableStudentBounds);
 		add(tableStudentScrollPane);
 
-		String[] tableCategoryColumn = {"Category Name", "Weight"}; // TODO load Category from database
+		tableCategoryColumns = new String[] {"Category Name", "Weight"};
 		String[][] tableCategoryData = {
 				{"All", "100%"},
 				{"Homework", "25%"},
@@ -332,12 +347,7 @@ public class MenuPanel extends JPanel {
 				{"Presentation", "25%"},
 				{"Exam", "25%"}
 		};
-//		String[][] tableCategoryData = new String[100][2];
-//		for (int i = 0; i < 100; ++i) {
-//			tableCategoryData[i][0] = String.format("Category %010d", i + 1);
-//			tableCategoryData[i][1] = String.format("%d%%", random.nextInt(100));
-//		}
-		DefaultTableModel modelCategory = new DefaultTableModel(tableCategoryData, tableCategoryColumn) {
+		modelCategory = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -348,7 +358,7 @@ public class MenuPanel extends JPanel {
 		tableCategoryScrollPane.setBounds(SizeManager.tableCategoryBounds);
 		add(tableCategoryScrollPane);
 
-		String[] tableItemColumn = {"Item Name", "Weight"};
+		tableItemColumns = new String[] {"Item Name", "Weight"};
 		String[][] tableItemData = {
 				{"All", "100%"},
 				{"Homework 1", "5%"},
@@ -372,13 +382,7 @@ public class MenuPanel extends JPanel {
 				{"Exam 4", "5%"},
 				{"Exam 5", "5%"}
 		};
-//		String[][] tableItemData; // TODO load Item from database
-//		tableItemData = new String[100][2];
-//		for (int i = 0; i < 100; ++i) {
-//			tableItemData[i][0] = String.format("Item %010d", i + 1);
-//			tableItemData[i][1] = String.format("%d%%", random.nextInt(100));
-//		}
-		DefaultTableModel modelItem = new DefaultTableModel(tableItemData, tableItemColumn) {
+		modelItem = new DefaultTableModel(tableItemData, tableItemColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -416,7 +420,7 @@ public class MenuPanel extends JPanel {
 								newTableItemData[i][1] = "5%";
 							}
 						}
-						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumn);
+						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumns);
 						tableItem.setModel(newTableItemModel);
 						for (int i = 0; i < 2; ++i) {
 							tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
@@ -444,5 +448,11 @@ public class MenuPanel extends JPanel {
 		}
 
 		setVisible(true);
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }
