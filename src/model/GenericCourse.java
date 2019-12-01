@@ -2,21 +2,21 @@ package model;
 
 public class GenericCourse {
 
-	private int courseId;
+	private String courseId;
 	private String courseName;
 	private String term;
 
-	public GenericCourse(int courseId, String courseName, String term) {
+	public GenericCourse(String courseId, String courseName, String term) {
 		this.courseId = courseId;
 		this.courseName = courseName;
 		this.term = term;
 	}
 
-	public int getCourseId() {
+	public String getCourseId() {
 		return courseId;
 	}
 
-	public void setCourseId(int courseId) {
+	public void setCourseId(String courseId) {
 		this.courseId = courseId;
 	}
 

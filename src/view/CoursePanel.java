@@ -11,18 +11,28 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
+
+import controller.Master;
+import model.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Observable;
+import java.util.Observer;
 
-public class CoursePanel extends JPanel {
+public class CoursePanel extends JPanel implements Observer {
+	private Master controller;
 	private static final String TITLE = "Grading System - Course";
 	private MainFrame frame;
+	private DefaultTableModel modelCourse;
+	private String[] tableCourseColumns;
 
 	/**
 	 * Initializes a newly created {@code CoursePanel} object
 	 */
-	public CoursePanel(MainFrame frame) {
+	public CoursePanel(MainFrame frame, Master controller) {
+		this.controller = controller;
 		this.frame = frame;
 		frame.setTitle(TITLE);
 		setLayout(null);
@@ -32,19 +42,15 @@ public class CoursePanel extends JPanel {
 		UIManager.put("TextField.font", FontManager.fontSearch);
 		UIManager.put("ComboBox.font", FontManager.fontFilter);
 
-		String[] tableCourseColumn = {
-				"#", "Course Name", "Semester"
-		};
+		tableCourseColumns = new String[] { "#", "Course Name", "Semester" };
 		String[][] tableCourseData = { // TODO load course data
-				{"CS505", "Introduction to Natural Language Processing", "Spring 2020"},
-				{"CS542", "Machine Learning", "Spring 2020"},
-				{"CS585", "Image & Video Computing", "Spring 2020"},
-				{"CS591 P1", "Topics in Computer Science", "Fall 2019"},
-				{"CS480/680", "Introduction to Computer Graphics", "Fall 2019"},
-				{"CS530", "Graduate Algorithms", "Fall 2019"}
-		};
+				{ "CS505", "Introduction to Natural Language Processing", "Spring 2020" },
+				{ "CS542", "Machine Learning", "Spring 2020" }, { "CS585", "Image & Video Computing", "Spring 2020" },
+				{ "CS591 P1", "Topics in Computer Science", "Fall 2019" },
+				{ "CS480/680", "Introduction to Computer Graphics", "Fall 2019" },
+				{ "CS530", "Graduate Algorithms", "Fall 2019" } };
 
-		DefaultTableModel modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumn) {
+		modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -73,7 +79,7 @@ public class CoursePanel extends JPanel {
 		tableCourse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		add(tableCourseScrollPane);
 
-		String[] semester = {"All", "Fall 2019", "Spring 2020"}; // TODO
+		String[] semester = { "All", "Fall 2019", "Spring 2020" }; // TODO
 
 		JComboBox<String> boxFilter = new JComboBox<>(semester);
 		boxFilter.setBounds(SizeManager.filterCourseBounds);
@@ -133,23 +139,40 @@ public class CoursePanel extends JPanel {
 				JTextField nameField = new JTextField();
 				JTextField termField = new JTextField();
 				JComboBox<String> templateCombo = new JComboBox<>();
+				templateCombo.addItem("None");
 				for (String[] tableCourseDatum : tableCourseData) {
 					templateCombo.addItem(tableCourseDatum[0] + " " + tableCourseDatum[2]);
 				}
-				Object[] fields = {"Course Number: ", numberField, "Course Name: ", nameField, "Course Term: ", termField, "Template: ", templateCombo,};
+				Object[] fields = { "Course Id: ", numberField, "Course Name: ", nameField, "Course Term: ", termField,
+						"Template: ", templateCombo, };
 				while (true) { // TODO
-					int reply = JOptionPane.showConfirmDialog(null, fields, "Add a Course", JOptionPane.OK_CANCEL_OPTION);
+					int reply = JOptionPane.showConfirmDialog(null, fields, "Add a Course",
+							JOptionPane.OK_CANCEL_OPTION);
 					if (reply == JOptionPane.OK_OPTION) {
+						String courseId = numberField.getText();
+						String courseName = nameField.getText();
+						String courseTerm = termField.getText();
+						int templateIndex = templateCombo.getSelectedIndex();
 
+						if (templateIndex != 0) {
+							Course templateCourse = controller.getTemplateCourse(templateIndex - 1);
+
+							ArrayList<Category> templateCategories = controller
+									.getTemplateCategoriesForCourse(templateCourse);
+
+							controller.addNewCourse(courseId, courseName, courseTerm, templateCategories,
+									new ArrayList<CourseStudent>());
+
+						} else {
+							controller.addNewCourse(courseId, courseName, courseTerm);
+						}
 						break;
 					} else {
 						return;
 					}
 				}
 			} catch (Exception e1) {
-				JOptionPane.showMessageDialog(null,
-						"Error", "Error",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 		add(buttonAdd);
@@ -169,7 +192,7 @@ public class CoursePanel extends JPanel {
 				for (int i = 0; i < 3; ++i) {
 					courseData[i] = tableCourse.getValueAt(tableCourse.getSelectedRow(), i).toString();
 				}
-				frame.switchPanel(this, new MenuPanel(frame, courseData));
+				frame.switchPanel(this, new MenuPanel(frame, courseData, controller));
 			}
 		});
 		add(buttonView);
@@ -191,12 +214,12 @@ public class CoursePanel extends JPanel {
 		setVisible(true);
 	}
 
-	private static void search(TableRowSorter<DefaultTableModel> sorter, JTextField search, JComboBox<String> boxFilter) {
+	private static void search(TableRowSorter<DefaultTableModel> sorter, JTextField search,
+			JComboBox<String> boxFilter) {
 		if (search.getText().length() != 0 && !Objects.equals(boxFilter.getSelectedItem(), "All")) {
-			sorter.setRowFilter(RowFilter.andFilter(new ArrayList<>(Arrays.asList(
-					RowFilter.regexFilter("(?i)" + boxFilter.getSelectedItem()),
-					RowFilter.regexFilter("(?i)" + search.getText()))))
-			);
+			sorter.setRowFilter(RowFilter.andFilter(
+					new ArrayList<>(Arrays.asList(RowFilter.regexFilter("(?i)" + boxFilter.getSelectedItem()),
+							RowFilter.regexFilter("(?i)" + search.getText())))));
 		} else if (!Objects.equals(boxFilter.getSelectedItem(), "All")) {
 			sorter.setRowFilter(RowFilter.regexFilter("(?i)" + boxFilter.getSelectedItem()));
 		} else if (search.getText().length() != 0) {
@@ -204,5 +227,11 @@ public class CoursePanel extends JPanel {
 		} else {
 			sorter.setRowFilter(null);
 		}
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+
 	}
 }

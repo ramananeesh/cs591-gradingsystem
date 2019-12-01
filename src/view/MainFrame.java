@@ -3,6 +3,9 @@ package view;
 import helper.SizeManager;
 
 import javax.swing.*;
+
+import controller.Master;
+
 import java.awt.*;
 
 public class MainFrame extends JFrame {
@@ -24,7 +27,7 @@ public class MainFrame extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		add(new CoursePanel(this));
+		add(new CoursePanel(this, new Master()));
 		setVisible(true);
 	}
 

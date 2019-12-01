@@ -8,19 +8,24 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+
+import controller.Master;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class GradePanel extends JPanel {
+	private Master controller; 
 	private static final String TITLE = "Grading System - Grade";
 	private MainFrame frame;
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
 	 */
-	public GradePanel(MainFrame frame, String[] courseData) {
+	public GradePanel(MainFrame frame, String[] courseData, Master controller) {
 		this.frame = frame;
+		this.controller = controller; 
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
@@ -80,7 +85,7 @@ public class GradePanel extends JPanel {
 		buttonBack.setBounds(SizeManager.buttonAddBounds);
 		buttonBack.setForeground(ColorManager.lightColor);
 		buttonBack.setBackground(ColorManager.primaryColor);
-		buttonBack.addActionListener(e -> frame.switchPanel(this, new MenuPanel(frame, courseData)));
+		buttonBack.addActionListener(e -> frame.switchPanel(this, new MenuPanel(frame, courseData, controller)));
 		add(buttonBack);
 
 		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);

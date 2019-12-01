@@ -12,18 +12,24 @@ import javax.swing.table.JTableHeader;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import controller.Master;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class MenuPanel extends JPanel {
+	private Master controller; 
+	
 	private static final String TITLE = "Grading System - Main Menu";
 	private MainFrame frame;
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
 	 */
-	public MenuPanel(MainFrame frame, String[] courseData) { // TODO data should not be String array
+	public MenuPanel(MainFrame frame, String[] courseData, Master controller) { // TODO data should not be String array
 		this.frame = frame;
+		this.controller = controller; 
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
@@ -132,7 +138,7 @@ public class MenuPanel extends JPanel {
 
 						},
 						null, // Separator
-						back -> frame.switchPanel(this, new CoursePanel(frame)), // Back
+						back -> frame.switchPanel(this, new CoursePanel(frame, controller)), // Back
 						exit -> System.exit(0)
 				},
 				{
@@ -259,7 +265,7 @@ public class MenuPanel extends JPanel {
 				},
 				{
 						editAllGrades -> { // Edit All Grades
-							frame.switchPanel(this, new GradePanel(frame, courseData));
+							frame.switchPanel(this, new GradePanel(frame, courseData, controller));
 						},
 						editByStudent -> { // Edit by Student
 
