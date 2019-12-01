@@ -29,7 +29,7 @@ public class GradePanel extends JPanel {
 		this.frame = frame;
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setSize(SizeManager.windowSize);
 		setOpaque(false);
 
 		// grade table

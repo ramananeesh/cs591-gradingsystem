@@ -95,7 +95,7 @@ public class MainFrame extends JFrame {
 	private void changePanelWithSlideAnimation(JPanel from, JPanel to, double exponent) {
 		new Thread(() -> { // coefficient * pow(time - i, exponent) = height
 			int time = ANIMATION_FRAMES; // the total frames of the animation
-			int distance = getHeight();
+			int distance = from.getHeight();
 			double coefficient = distance / Math.pow(time, exponent);
 			add(to);
 			for (int i = 0; i <= time; ++i) {

@@ -31,7 +31,7 @@ public class SizeManager {
 	public static final int windowX = (int) ((screenSize.getWidth() - windowWidth) / 2);
 	public static final int windowY = (int) ((screenSize.getHeight() - windowHeight) / 2);
 	public static final Rectangle windowBounds = new Rectangle(windowX, windowY, windowWidth, windowHeight);
-	public static final Rectangle panelBounds = new Rectangle(0, 0, windowWidth, windowHeight);
+	public static final Dimension windowSize = new Dimension(windowWidth, windowHeight);
 
 	public static final int tableRowHeight = windowHeight / 20;
 	public static final float fontTableSize = (int) (tableRowHeight * 0.6f);
@@ -81,7 +81,7 @@ public class SizeManager {
 	public static final int lineThickness = windowWidth / 500;
 
 	public static final int panelWidth = (int) (windowWidth * 0.3332);
-	public static final int panelHeight = (int) (windowHeight * 0.915);
+	public static final int panelHeight = (int) (windowHeight * 0.91354);
 
 	public static final Rectangle textInfoBounds = new Rectangle(panelWidth, menuBarHeight, panelWidth, panelHeight);
 	public static final float fontTextSize = (int) fontMenuSize;

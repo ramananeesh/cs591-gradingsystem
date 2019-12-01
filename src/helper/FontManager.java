@@ -10,10 +10,11 @@ public class FontManager {
 	private static final Font fontCascadia = setFont("Cascadia");
 	private static final Font fontConsolas = setFont("Consolas");
 	private static final Font fontProductSans = setFont("Product Sans");
+	private static final Font fontSegoeUI = setFont("segoeui");
 
-	public static final Font fontDefault = fontProductSans;
+	public static final Font fontDefault = fontSegoeUI;
 
-	public static final Font fontTitle = fontDefault.deriveFont(Font.PLAIN, SizeManager.titleFontSize);
+	public static final Font fontTitle = fontProductSans.deriveFont(Font.PLAIN, SizeManager.titleFontSize);
 	public static final Font fontLogin = fontDefault.deriveFont(Font.PLAIN, SizeManager.buttonLoginFontSize);
 
 	public static final Font fontTable = fontDefault.deriveFont(SizeManager.fontTableSize);

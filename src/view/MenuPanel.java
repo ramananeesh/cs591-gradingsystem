@@ -32,7 +32,7 @@ public class MenuPanel extends JPanel {
 		this.frame = frame;
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setSize(SizeManager.windowSize);
 		setOpaque(false);
 
 		UIManager.put("Table.font", FontManager.fontMenuTable);
@@ -62,8 +62,12 @@ public class MenuPanel extends JPanel {
 								JTextField buidTextField = new JTextField();
 								JTextField emailTextField = new JTextField();
 								JComboBox<String> levelComboBox = new JComboBox<>(new String[]{"Undergraduate", "Graduate"});
-								Object[] fields = {"Name: ", nameTextField, "BU ID: ", buidTextField, "Email: ", emailTextField, "Level: ", levelComboBox,};
-
+								Object[] fields = {
+										"Name: ", nameTextField,
+										"BU ID: ", buidTextField,
+										"Email: ", emailTextField,
+										"Level: ", levelComboBox
+								};
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(this, fields, "Add Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
@@ -81,8 +85,10 @@ public class MenuPanel extends JPanel {
 							try {
 								JTextField categoryTextField = new JTextField();
 								JTextField weightField = new JTextField();
-								Object[] fields = {"Category: ", categoryTextField, "Weight: ", weightField,};
-
+								Object[] fields = {
+										"Category: ", categoryTextField,
+										"Weight: ", weightField
+								};
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(this, fields, "Add Category", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
@@ -99,11 +105,14 @@ public class MenuPanel extends JPanel {
 						addItem -> { // Add Item
 							try {
 								String[] categoryComboBoxItems = {"Homework", "Exam", "Project"}; // TODO test data, need to be replaced when database exists
-								JComboBox<String> categoryCombo = new JComboBox<>(categoryComboBoxItems);
+								JComboBox<String> categoryComboBox = new JComboBox<>(categoryComboBoxItems);
 								JTextField itemField = new JTextField();
 								JTextField percentageField = new JTextField();
-								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Weight: ", percentageField,};
-
+								Object[] fields = {
+										"Category: ", categoryComboBox,
+										"Item: ", itemField,
+										"Weight: ", percentageField
+								};
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
@@ -129,12 +138,16 @@ public class MenuPanel extends JPanel {
 						editStudent -> { // Edit Student
 							try {
 								String[] studentComboBoxItems = {"Student 1", "Student 2", "Student 3"}; // TODO test data, need to be replaced when database exists
-								JComboBox<String> studentCombo = new JComboBox<>(studentComboBoxItems);
+								JComboBox<String> studentComboBox = new JComboBox<>(studentComboBoxItems);
 								JTextField buidTextField = new JTextField();
 								JTextField emailTextField = new JTextField();
 								JComboBox<String> levelComboBox = new JComboBox<>(new String[]{"Undergraduate", "Graduate"});
-								Object[] fields = {"Student: ", studentCombo, "BU ID: ", buidTextField, "Email: ", emailTextField, "Level: ", levelComboBox,};
-
+								Object[] fields = {
+										"Student: ", studentComboBox,
+										"BU ID: ", buidTextField,
+										"Email: ", emailTextField,
+										"Level: ", levelComboBox
+								};
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Student", JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
@@ -150,9 +163,9 @@ public class MenuPanel extends JPanel {
 						editCategory -> { // Edit Category
 							try {
 								String[][] categoryRowData = { // TODO test data, need to be replaced when database exists
-										{"Homework", "50%",},
-										{"Exam", "25%",},
-										{"Project", "25%",}
+										{"Homework", "50%"},
+										{"Exam", "25%"},
+										{"Project", "25%"}
 								};
 								String[] categoryColumnNames = {"Category", "Weight"};
 								JTable categoryTable = new JTable(categoryRowData, categoryColumnNames) {
@@ -179,10 +192,10 @@ public class MenuPanel extends JPanel {
 						editItem -> { // Edit Item
 							try {
 								String[] categoryComboBoxItems = {"Homework", "Exam", "Project"};
-								JComboBox<String> categoryCombo = new JComboBox<>(categoryComboBoxItems);
+								JComboBox<String> categoryComboBox = new JComboBox<>(categoryComboBoxItems);
 								String[][] itemRowData = { // TODO test data, need to be replaced when database exists
-										{"Homework 1", "50%",},
-										{"Homework 2", "50%",}
+										{"Homework 1", "50%"},
+										{"Homework 2", "50%"}
 								};
 								String[] itemColumnNames = {"Item", "Weight"};
 								JTable itemTable = new JTable(itemRowData, itemColumnNames) {
@@ -193,8 +206,10 @@ public class MenuPanel extends JPanel {
 								itemTable.setRowHeight(SizeManager.tableRowHeight);
 								itemTable.setDefaultRenderer(Object.class, tableRender);
 								JScrollPane itemScrollPane = new JScrollPane(itemTable);
-								Object[] fields = {"Category: ", categoryCombo, "Item: ", itemScrollPane,};
-
+								Object[] fields = {
+										"Category: ", categoryComboBox,
+										"Item: ", itemScrollPane
+								};
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item", JOptionPane.OK_CANCEL_OPTION);
@@ -217,7 +232,29 @@ public class MenuPanel extends JPanel {
 							frame.changePanel(this, new GradePanel(frame, courseData, true));
 						},
 						editByStudent -> { // Edit by Student
-							// TODO complete
+							try {
+								String[] studentComboBoxItems = {"Student 1", "Student 2", "Student 3"}; // TODO test data, need to be replaced when database exists
+								JComboBox<String> studentComboBox = new JComboBox<>(studentComboBoxItems);
+								JComboBox<String> categoryComboBox = new JComboBox<>(new String[]{"Homework", "Exam"});
+								JComboBox<String> itemComboBox = new JComboBox<>(new String[]{"Homework 1", "Homework 2", "Midterm", "Exam"});
+								JTextField gradeTextField = new JTextField();
+								Object[] fields = {
+										"Student: ", studentComboBox,
+										"Category: ", categoryComboBox,
+										"Item: ", itemComboBox,
+										"Grade: ", gradeTextField,
+								};
+								while (true) {
+									int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student", JOptionPane.OK_CANCEL_OPTION);
+									if (reply == JOptionPane.OK_OPTION) {
+										break;
+									} else {
+										return;
+									}
+								}
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+							}
 						},
 						viewGrades -> { // View Grades
 							frame.changePanel(this, new GradePanel(frame, courseData, false));
