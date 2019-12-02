@@ -31,6 +31,17 @@ public class Item {
 		this.gradeEntries = new ArrayList<GradeEntry>();
 	}
 
+	public Item(int id, String fieldName, String categoryName, double weight, String courseName) {
+		super();
+		this.id = id;
+		this.fieldName = fieldName;
+		this.categoryName = categoryName;
+		this.weight = weight;
+		this.courseName = courseName;
+//		this.templateId = templateId;
+		this.gradeEntries = new ArrayList<GradeEntry>();
+	}
+	
 	// Item(int id, String fieldName, String categoryName, double weight, String
 	// courseName, int templateId, Date dateAssigned, Date dateDue,
 	// ArrayList<GradeEntry> gradeEntries)
@@ -110,4 +121,7 @@ public class Item {
 		this.dateDue = dateDue;
 	}
 
+	public String[] getDetails() {
+		return new String[]{this.fieldName,Double.toString(this.weight)};
+	}
 }

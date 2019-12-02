@@ -6,7 +6,7 @@ import model.*;
 public class Master extends Observable {
 
 	private ArrayList<Course> courses;
-	private Course currentCourse; 
+	private Course currentCourse;
 
 	public Master() {
 		this.courses = new ArrayList<Course>();
@@ -35,7 +35,38 @@ public class Master extends Observable {
 			ArrayList<CourseStudent> students) {
 		Course newCourse = new Course(courseId, courseName, term, categories, students);
 		this.courses.add(newCourse);
-		
+
+		setChanged();
+		notifyObservers();
+	}
+
+	public void addNewCourse(String courseId, String courseName, String term, ArrayList<Category> categories) {
+		Course newCourse = new Course(courseId, courseName, term, categories);
+		this.courses.add(newCourse);
+
+		setChanged();
+		notifyObservers();
+	}
+
+	public void addNewCategoryForCourse(Course course, String fieldName, double weight, String courseName) {
+		course.addCategory(new Category(course.getCategories().size() + 1, fieldName, weight, courseName));
+
+		setChanged();
+		notifyObservers();
+	}
+
+	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight,
+			String courseName) {
+		course.addCategory(new Category(id, fieldName, weight, courseName));
+
+		setChanged();
+		notifyObservers();
+	}
+
+	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, String courseName,
+			ArrayList<Item> items) {
+		course.addCategory(new Category(id, fieldName, weight, courseName, items));
+
 		setChanged();
 		notifyObservers();
 	}
@@ -72,29 +103,50 @@ public class Master extends Observable {
 
 	public String[][] getAllCourseDetails() {
 		String[][] allCourseDetails = new String[this.getCourseCount()][];
-		
-		int i=0;
-		for(Course c: this.courses) {
+
+		int i = 0;
+		for (Course c : this.courses) {
 			allCourseDetails[i] = c.getDetails();
 			i++;
 		}
-		
+
 		return allCourseDetails;
 	}
-	
+
 	public int getCourseCount() {
 		return this.courses.size();
 	}
-	
+
 	public Course getCourse(int index) {
 		return this.courses.get(index);
 	}
-	
+
 	public void setCurrentCourse(Course course) {
-		this.currentCourse = course; 
+		this.currentCourse = course;
 	}
-	
+
 	public void setCurrentCourse(int index) {
-		this.currentCourse = this.courses.get(index); 
+		this.currentCourse = this.courses.get(index);
+	}
+
+	public Course getCurrentCourse() {
+		return this.currentCourse;
+	}
+
+	public String[][] getAllItemsDetailsForCourse(Course course) {
+		ArrayList<String[]> str = new ArrayList<String[]>();
+		for (Category c : course.getCategories()) {
+			String[][] itemsDetails = c.getItemsForList();
+			for (int i = 0; i < itemsDetails.length; i++) {
+				str.add(itemsDetails[i]);
+			}
+		}
+
+		String[][] ans = new String[str.size()][];
+
+		for (int i = 0; i < ans.length; i++) {
+			ans[i] = str.get(i);
+		}
+		return ans;
 	}
 }

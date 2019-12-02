@@ -216,6 +216,14 @@ public class CoursePanel extends JPanel implements Observer {
 		add(labelSearch);
 
 		setVisible(true);
+
+		// testing purposes
+		ArrayList<Item> items = new ArrayList<Item>();
+		items.add(new Item(1, "HW1", "Homeworks", 0.4, "Data Mining"));
+		ArrayList<Category> categories = new ArrayList<Category>();
+		categories.add(new Category(1, "Homework", 0.3, "Data Mining", items));
+		
+		controller.addNewCourse("CS565", "Data Mining", "Fall 2019", categories);
 	}
 
 	private static void search(TableRowSorter<DefaultTableModel> sorter, JTextField search,

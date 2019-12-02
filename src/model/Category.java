@@ -70,5 +70,16 @@ public class Category extends GenericCategory {
 		// this will shift any item at that index
 		this.items.add(itemIndex, newItem);
 	}
+	
+	public String[][] getItemsForList(){
+		String [][]str = new String[this.items.size()][];
+		
+		int i=0;
+		for(Item item: this.items) {
+			str[i++]=item.getDetails();
+		}
+		
+		return str;
+	}
 
 }

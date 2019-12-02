@@ -71,4 +71,8 @@ public class GenericCategory {
 				+ this.templateId;
 	}
 	
+	public String[] getDataForList() {
+		return new String[] {this.fieldName, Double.toString(this.weight)};
+	}
+	
 }
