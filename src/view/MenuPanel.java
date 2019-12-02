@@ -121,6 +121,7 @@ public class MenuPanel extends JPanel implements Observer {
 											JOptionPane.showMessageDialog(null, "Error",
 													"Please Enter valid weight percentage between 0 and 1",
 													JOptionPane.ERROR_MESSAGE);
+											continue;
 										}
 										break;
 									} else {
@@ -155,6 +156,25 @@ public class MenuPanel extends JPanel implements Observer {
 										JOptionPane.showMessageDialog(null,
 												"Please edit the percentage for all other items", "Warning",
 												JOptionPane.WARNING_MESSAGE);
+										int categoryIndex = categoryCombo.getSelectedIndex();
+										if (categoryIndex < 0) {
+											JOptionPane.showMessageDialog(null, "Error", "Please select a category",
+													JOptionPane.ERROR_MESSAGE);
+											continue;
+										}
+										String fieldName = itemField.getText();
+										try {
+											double itemWeight = Double.parseDouble(percentageField.getText());
+
+											controller.addItemForCourseCategory(controller.getCurrentCourse(),
+													categoryIndex, fieldName, itemWeight);
+
+										} catch (Exception ex) {
+											JOptionPane.showMessageDialog(null, "Error",
+													"Please Enter valid weight percentage between 0 and 1",
+													JOptionPane.ERROR_MESSAGE);
+											continue;
+										}
 										break;
 									} else {
 										return;
@@ -417,16 +437,20 @@ public class MenuPanel extends JPanel implements Observer {
 				if (tableCategory.getSelectedRow() != -1) {
 					if (e.getSource() == tableCategory.getSelectionModel()) {
 						Object[][] newTableItemData;
-						if (tableCategory.getSelectedRow() == 0) {
-							newTableItemData = tableItemData;
-						} else {
-							newTableItemData = new Object[5][2];
-							String category = (String) tableCategory.getValueAt(tableCategory.getSelectedRow(), 0);
-							for (int i = 0; i < 5; ++i) {
-								newTableItemData[i][0] = category + " " + (i + 1);
-								newTableItemData[i][1] = "5%";
-							}
+//						if (tableCategory.getSelectedRow() == 0) {
+//							newTableItemData = tableItemData;
+//						} else {
+//							newTableItemData = new Object[5][2];
+//							String category = (String) tableCategory.getValueAt(tableCategory.getSelectedRow(), 0);
+//							for (int i = 0; i < 5; ++i) {
+//								newTableItemData[i][0] = category + " " + (i + 1);
+//								newTableItemData[i][1] = "5%";
+//							}
+//						}
+						if(tableCategory.getSelectedRow()<0) {
+							return;
 						}
+						newTableItemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(), tableCategory.getSelectedRow());
 						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumns);
 						tableItem.setModel(newTableItemModel);
 						for (int i = 0; i < 2; ++i) {

@@ -55,8 +55,7 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
-	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight,
-			String courseName) {
+	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, String courseName) {
 		course.addCategory(new Category(id, fieldName, weight, courseName));
 
 		setChanged();
@@ -67,6 +66,16 @@ public class Master extends Observable {
 			ArrayList<Item> items) {
 		course.addCategory(new Category(id, fieldName, weight, courseName, items));
 
+		setChanged();
+		notifyObservers();
+	}
+
+	public void addItemForCourseCategory(Course course, int categoryIndex, String fieldName, double weight) {
+
+		Category category = course.getCategories().get(categoryIndex);
+		category.addItem(new Item(category.getItems().size() + 1, fieldName, category.getFieldName(), weight,
+				course.getCourseName()));
+		
 		setChanged();
 		notifyObservers();
 	}
@@ -148,5 +157,9 @@ public class Master extends Observable {
 			ans[i] = str.get(i);
 		}
 		return ans;
+	}
+	
+	public String[][] getItemDetailsForCourseCategory(Course course, int categoryIndex){
+		return course.getCategories().get(categoryIndex).getItemsForList();
 	}
 }
