@@ -22,9 +22,10 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.*;
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.*;
 import java.awt.Desktop;
 
 /**
@@ -56,7 +57,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 	private JTable tableItem;
 
-	private JTable tableStudent = new JTable(studentTableModel);
+	private JTable tableStudent;
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
@@ -127,7 +128,9 @@ public class MenuPanel extends JPanel implements Observer {
 
 							{
 								// set the label to the path of the selected file
-								System.out.println(j.getSelectedFile().getAbsolutePath());
+								ArrayList<HashMap<String, String>> students = processCsvFile(
+										j.getSelectedFile().getAbsolutePath());
+								controller.addStudentsForCourse(controller.getCurrentCourse(), students);
 							}
 							// if the user cancelled the operation
 							else {
@@ -379,18 +382,17 @@ public class MenuPanel extends JPanel implements Observer {
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		add(informationTextPane);
 
-		tableStudentColumns = new String[] { "Student" };
+		tableStudentColumns = new String[] { "Student Name", "Student ID" };
 		String[][] tableStudentData; // TODO load student from database
-		tableStudentData = new String[100][1];
-		for (int i = 0; i < 100; ++i) {
-			tableStudentData[i][0] = String.format("Student %010d", i + 1);
-		}
+		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
+		
 		studentTableModel = new DefaultTableModel(tableStudentData, tableStudentColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
+		tableStudent = new JTable(studentTableModel);
 		tableStudent.setRowHeight(SizeManager.menuTableRowHeight);
 		JScrollPane tableStudentScrollPane = new JScrollPane(tableStudent);
 		tableStudentScrollPane.setBounds(SizeManager.tableStudentBounds);
@@ -466,7 +468,8 @@ public class MenuPanel extends JPanel implements Observer {
 			table.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
 				String text = courseString;
 				if (tableStudent.getSelectedRow() != -1) {
-					text += tableStudent.getValueAt(tableStudent.getSelectedRow(), 0) + "\n\n";
+					//text += tableStudent.getValueAt(tableStudent.getSelectedRow(), 0) + "\n\n";
+					text+= controller.getCurrentCourse().getStudent(tableStudent.getSelectedRow()).getStudentDetails()+"\n\n";
 				}
 				if (tableCategory.getSelectedRow() != -1) {
 					if (listSelectionEvent.getSource() == tableCategory.getSelectionModel()) {
@@ -519,6 +522,45 @@ public class MenuPanel extends JPanel implements Observer {
 		setVisible(true);
 	}
 
+	public ArrayList<HashMap<String, String>> processCsvFile(String filePath) {
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+
+		ArrayList<HashMap<String, String>> students = new ArrayList<HashMap<String, String>>();
+		try {
+
+			br = new BufferedReader(new FileReader(filePath));
+			while ((line = br.readLine()) != null) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				// use comma as separator
+				String[] values = line.split(cvsSplitBy);
+				map.put("fname", values[0]);
+				map.put("lname", values[1]);
+				map.put("buid", values[2]);
+				map.put("email", values[3]);
+				map.put("type", values[4]);
+
+				students.add(map);
+			}
+			return students;
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
@@ -540,5 +582,16 @@ public class MenuPanel extends JPanel implements Observer {
 			}
 		};
 		tableItem.setModel(itemTableModel);
+		
+		String[][] tableStudentData; // TODO load student from database
+		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
+		
+		studentTableModel = new DefaultTableModel(tableStudentData, tableStudentColumns) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		tableStudent.setModel(studentTableModel);
 	}
 }
