@@ -171,11 +171,7 @@ public class MenuPanel extends JPanel implements Observer {
 						}, addItem -> { // Add Item
 							try {
 								JComboBox<String> categoryCombo = new JComboBox<>();
-								/*** for test ***/
-								// categoryCombo.addItem("Homework");
-								// categoryCombo.addItem("Exam");
-								// categoryCombo.addItem("Project");
-								/******/
+								
 								ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
 								for (int i = 0; i < categories.size(); i++) {
 									categoryCombo.addItem(categories.get(i).getFieldName());
@@ -227,14 +223,10 @@ public class MenuPanel extends JPanel implements Observer {
 				{ editStudent -> { // Edit Student
 					try {
 						JComboBox<String> studentCombo = new JComboBox<>();
-						/*** for test ***/
-						studentCombo.addItem("Student1");
-						studentCombo.addItem("Student2");
-						studentCombo.addItem("Student3");
-						/******/
-						// for(int i = 0; i < student.size(); i++) {
-						// studentCombo.addItem(student.get(i).getStudentName());
-						// }
+						/**
+						 * to do this part
+						 */
+						
 						JTextField BUIDField = new JTextField();
 						JTextField emailField = new JTextField();
 						JComboBox<String> levelCombo = new JComboBox<>(new String[] { "Undergraduate", "Graduate" });
@@ -256,18 +248,9 @@ public class MenuPanel extends JPanel implements Observer {
 				}, editCategory -> { // Edit Category
 					try {
 						String[][] categoryData;
-						// for(int i = 0; i < category.size(); i++) {
-						// categoryData[i][0] = category.get(i).getCategoryName();
-						// categoryData[i][1] = category.get(i).getPercentage();
-						// }
-						/*** for test ***/
-						// categoryData = new String[][]{
-						// {"Homework", "50%",},
-						// {"Exam", "25%",},
-						// {"Project", "25%",}
-						// };
-						/******/
-
+						/**
+						 * to do this part
+						 */
 						categoryData = controller.getCurrentCourse().getCategoryDataForList();
 
 						String[] categoryColumn = { "Category", "Percentage" };
@@ -295,24 +278,18 @@ public class MenuPanel extends JPanel implements Observer {
 				}, editItem -> { // Edit Item
 					try {
 						JComboBox<String> categoryCombo = new JComboBox<>();
-						/*** for test ***/
-						// categoryCombo.addItem("Homework");
-						// categoryCombo.addItem("Exam");
-						// categoryCombo.addItem("Project");
-						/******/
+						/**
+						 * to do this part
+						 */
 						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
 						for (int i = 0; i < categories.size(); i++) {
 							categoryCombo.addItem(categories.get(i).getFieldName());
 						}
 
 						String[][] itemData;
-						//
-						/*** for test ***/
-						// itemData = new String[][]{
-						// {"Homework1", "50%",},
-						// {"Homework2", "50%",}
-						// };
-						/******/
+						/**
+						 * to do this part
+						 */
 
 						if (categoryCombo.getSelectedIndex() < 0)
 							return;
@@ -346,7 +323,9 @@ public class MenuPanel extends JPanel implements Observer {
 				} }, { editAllGrades -> { // Edit All Grades
 					frame.changePanel(this, new GradePanel(frame, courseData, true, controller));
 				}, editByStudent -> { // Edit by Student
-
+					/**
+					 * to do this part
+					 */
 				}, viewGrades -> { // View Grades
 					frame.changePanel(this, new GradePanel(frame, courseData, false, controller));
 				} } };
@@ -399,13 +378,6 @@ public class MenuPanel extends JPanel implements Observer {
 		add(tableStudentScrollPane);
 
 		tableCategoryColumns = new String[] { "Category Name", "Weight" };
-		// String[][] tableCategoryData = {
-		// {"All", "100%"},
-		// {"Homework", "25%"},
-		// {"Project", "25%"},
-		// {"Presentation", "25%"},
-		// {"Exam", "25%"}
-		// };
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
@@ -420,30 +392,6 @@ public class MenuPanel extends JPanel implements Observer {
 		add(tableCategoryScrollPane);
 
 		tableItemColumns = new String[] { "Item Name", "Weight" };
-		// String[][] tableItemData = {
-		// {"All", "100%"},
-		// {"Homework 1", "5%"},
-		// {"Homework 2", "5%"},
-		// {"Homework 3", "5%"},
-		// {"Homework 4", "5%"},
-		// {"Homework 5", "5%"},
-		// {"Project 1", "5%"},
-		// {"Project 2", "5%"},
-		// {"Project 3", "5%"},
-		// {"Project 4", "5%"},
-		// {"Project 5", "5%"},
-		// {"Presentation 1", "5%"},
-		// {"Presentation 2", "5%"},
-		// {"Presentation 3", "5%"},
-		// {"Presentation 4", "5%"},
-		// {"Presentation 5", "5%"},
-		// {"Exam 1", "5%"},
-		// {"Exam 2", "5%"},
-		// {"Exam 3", "5%"},
-		// {"Exam 4", "5%"},
-		// {"Exam 5", "5%"}
-		// };
-
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
 		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
 			@Override
@@ -468,23 +416,13 @@ public class MenuPanel extends JPanel implements Observer {
 			table.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
 				String text = courseString;
 				if (tableStudent.getSelectedRow() != -1) {
-					//text += tableStudent.getValueAt(tableStudent.getSelectedRow(), 0) + "\n\n";
+					
 					text+= controller.getCurrentCourse().getStudent(tableStudent.getSelectedRow()).getStudentDetails()+"\n\n";
 				}
 				if (tableCategory.getSelectedRow() != -1) {
 					if (listSelectionEvent.getSource() == tableCategory.getSelectionModel()) {
 						Object[][] newTableItemData;
-						// if (tableCategory.getSelectedRow() == 0) {
-						// newTableItemData = tableItemData;
-						// } else {
-						// newTableItemData = new Object[5][2];
-						// String category = (String)
-						// tableCategory.getValueAt(tableCategory.getSelectedRow(), 0);
-						// for (int i = 0; i < 5; ++i) {
-						// newTableItemData[i][0] = category + " " + (i + 1);
-						// newTableItemData[i][1] = "5%";
-						// }
-						// }
+						
 						if (tableCategory.getSelectedRow() < 0) {
 							return;
 						}
