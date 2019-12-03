@@ -27,6 +27,10 @@ public class GradePanel extends JPanel {
 
 	/** The frame which contains this panel. */
 	private MainFrame frame;
+	private DefaultTableModel gradeTableModel;
+	private JTable gradeTable;
+	private JComboBox<String> categoryComboBox;
+	private JComboBox<String> itemComboBox;
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
@@ -69,7 +73,6 @@ public class GradePanel extends JPanel {
 			}
 		}
 
-		DefaultTableModel gradeTableModel;
 		if (editable) {
 			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 				@Override
@@ -85,7 +88,7 @@ public class GradePanel extends JPanel {
 				}
 			};
 		}
-		JTable gradeTable = new JTable(gradeTableModel);
+		gradeTable = new JTable(gradeTableModel);
 		gradeTable.setRowHeight(SizeManager.tableRowHeight);
 		gradeTable.setFont(FontManager.fontTable);
 		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
@@ -104,7 +107,7 @@ public class GradePanel extends JPanel {
 		categoryComboNames.add("All");
 		categoryComboNames.addAll(categoryNames);
 		Object[] categoryComboBoxItems = categoryComboNames.toArray(); // TODO
-		JComboBox<String> categoryComboBox = new JComboBox<>(convertObjectArrayToString(categoryComboBoxItems));
+		categoryComboBox = new JComboBox<>(convertObjectArrayToString(categoryComboBoxItems));
 		categoryComboBox.setBounds(SizeManager.filterCourseBounds);
 		categoryComboBox.setFont(FontManager.fontFilter);
 		DefaultListCellRenderer categoryComboBoxRenderer = new DefaultListCellRenderer();
@@ -117,7 +120,7 @@ public class GradePanel extends JPanel {
 		itemComboNames.add("All");
 		itemComboNames.addAll(allItemNames);
 		Object[] itemComboItems =itemComboNames.toArray(); // TODO
-		JComboBox<String> itemComboBox = new JComboBox<>(convertObjectArrayToString(itemComboItems));
+		itemComboBox = new JComboBox<>(convertObjectArrayToString(itemComboItems));
 		itemComboBox.setBounds(SizeManager.searchCourseBounds);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
