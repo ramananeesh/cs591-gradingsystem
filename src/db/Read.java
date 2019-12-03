@@ -21,8 +21,10 @@ public class Read {
 
 		try {
 			while (rs.next()) {
+				ArrayList<Item> items = getItemsByCategory(rs.getInt("ID"));
+
 				Category category = new Category(rs.getInt("ID"), rs.getString("fieldName"), rs.getDouble("weight"),
-						rs.getInt("courseId"), rs.getInt("templateID"));
+						rs.getInt("courseId"), rs.getInt("templateID"), items);
 				categories.add(category);
 			}
 		} catch (SQLException e) {
@@ -34,17 +36,36 @@ public class Read {
 
 	// same concern with courseName -> courseID. categoryName could also be
 	// categoryID to avoid overlaps
-	public static ArrayList<Item> getItemByCourse(int courseID) {
-		ArrayList<Item> items = new ArrayList<>();
-		String query = "select id, fieldName, categoryName, weight, templateID, "
-				+ "dateAssigned, dateDue from Item where courseID='" + courseID + "'";
-		ResultSet rs = SQLHelper.performRead(query);
+//	public static ArrayList<Item> getItemByCourse(int courseID) {
+//		ArrayList<Item> items = new ArrayList<>();
+//		String query = "select id, fieldName, categoryName, weight, templateID, "
+//				+ "dateAssigned, dateDue from Item where courseID='" + courseID + "'";
+//		ResultSet rs = SQLHelper.performRead(query);
+//
+//		try {
+//			while (rs.next()) {
+//
+//				Item item = new Item(rs.getInt("ID"), rs.getString("fieldName"), rs.getInt("categoryID"),
+//						rs.getDouble("weight"), courseID);
+//				items.add(item);
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return items;
+//	} commented out, outdated code
 
+	public static ArrayList<Item> getItemsByCategory(int categoryID){
+		ArrayList<Item> items = new ArrayList<>();
+		String query = "select id, courseID, fieldName, weight, dateAssigned, dateDue from Item where categoryID = '"
+				+ categoryID + "'";
+		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
-
+				ArrayList<GradeEntry> gradeEntries = getEntriesByItem(rs.getInt("ID"));
 				Item item = new Item(rs.getInt("ID"), rs.getString("fieldName"), rs.getInt("categoryID"),
-						rs.getDouble("weight"), courseID);
+						rs.getDouble("weight"), rs.getInt("courseID"), rs.getDate("dateAssigned"),
+						rs.getDate("dateDue"), gradeEntries);
 				items.add(item);
 			}
 		} catch (SQLException e) {
@@ -53,8 +74,21 @@ public class Read {
 		return items;
 	}
 
-	public static ArrayList<Item> getItemByCategory(int categoryID){
-
+	public static ArrayList<GradeEntry> getEntriesByItem(int itemID){
+		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
+		String query = "Select * from GradeEntry where itemID = '" + itemID + "'";
+		ResultSet rs = SQLHelper.performRead(query);
+		try {
+			while (rs.next()) {
+				GradeEntry ge = new GradeEntry(rs.getString("entryName"), rs.getInt("itemID"), rs.getInt("categoryID"),
+						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getInt("courseID"),
+						rs.getString("comment"));
+				gradeEntries.add(ge);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return gradeEntries;
 	}
 
 	public static ArrayList<Course> getAllCourses() {
@@ -64,8 +98,11 @@ public class Read {
 
 		try {
 			while (rs.next()) {
+				ArrayList<Category> categories = getCategoriesByCourse(rs.getInt("ID"));
+				ArrayList<CourseStudent> students = getCourseStudentsByCourse(rs.getInt("ID"));
+
 				Course course = new Course(rs.getInt("ID"), rs.getString("courseNumber"), rs.getString("courseName"),
-						rs.getString("term"));
+						rs.getString("term"), categories, students);
 				courses.add(course);
 			}
 		} catch (SQLException e) {
@@ -74,7 +111,7 @@ public class Read {
 		return courses;
 	}
 
-	public static ArrayList<GradeEntry> getGradeEntries(int courseID) {
+	public static ArrayList<GradeEntry> getGradeEntriesByCourse(int courseID) {
 		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
 		String query = "Select * from GradeEntry where courseID='" + courseID + "'";
 		ResultSet rs = SQLHelper.performRead(query);
@@ -91,16 +128,38 @@ public class Read {
 		return gradeEntries;
 	}
 
-	// does not currently obtain active status of the students
-	public static ArrayList<Student> getStudentsByCourse(int courseID) {
-		ArrayList<Student> students = new ArrayList<>();
-		String query = "Select A.* from Student A where A.BUID in (select B.BUID from CourseStudent B where B.courseID ='"
-				+ courseID + "')";
+	public static ArrayList<GradeEntry> getGradeEntriesByCourseStudent(String BUID){
+		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
+		String query = "Select * from GradeEntry where BUID='" + BUID + "'";
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
-				Student student = new Student(rs.getString("fName"), rs.getString("lName"), rs.getString("BUID"),
-						rs.getString("type"), rs.getString("active"));
+				GradeEntry ge = new GradeEntry(rs.getString("entryName"), rs.getInt("itemID"), rs.getInt("categoryID"),
+						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getInt("courseID"),
+						rs.getString("comment"));
+				gradeEntries.add(ge);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return gradeEntries;
+	}
+
+	// does not currently obtain active status of the students
+	public static ArrayList<CourseStudent> getCourseStudentsByCourse(int courseID) {
+		ArrayList<CourseStudent> students = new ArrayList<>();
+//		String query = "Select A.* from Student A where A.BUID in (select B.BUID from CourseStudent B where B.courseID ='"
+//				+ courseID + "')";
+		String query = "Select Student.BUID, Student.fName, Student.lName, Student.type, Student.email, CourseStudent.courseID," +
+				"CourseStudent.active JOIN CourseStudent ON Student.BUID = CourseStudent.BUID";
+		ResultSet rs = SQLHelper.performRead(query);
+		try {
+			while (rs.next()) {
+				ArrayList<GradeEntry> gradeEntries = getGradeEntriesByCourseStudent(rs.getString("BUID"));
+
+				CourseStudent student = new CourseStudent(rs.getString("fName"), rs.getString("lName"), rs.getString("BUID"),
+						rs.getString("email"), rs.getString("type"), rs.getInt("courseID"), rs.getBoolean("active"),
+						gradeEntries);
 				students.add(student);
 			}
 		} catch (SQLException e) {
