@@ -18,7 +18,8 @@ import model.Item;
 import java.util.*;
 
 /**
- * The {@code GradePanel} class represents the panel for viewing or modifying all the grades
+ * The {@code GradePanel} class represents the panel for viewing or modifying
+ * all the grades
  */
 public class GradePanel extends JPanel {
 	/** The title for the window when GradePanel displays */
@@ -31,13 +32,14 @@ public class GradePanel extends JPanel {
 	private JTable gradeTable;
 	private JComboBox<String> categoryComboBox;
 	private JComboBox<String> itemComboBox;
+	private JComboBox<String> gradeOptionsComboBox;
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
 	 */
 	public GradePanel(MainFrame frame, String[] courseData, boolean editable, Master controller) {
 		this.frame = frame;
-		this.controller = controller; 
+		this.controller = controller;
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
@@ -47,7 +49,7 @@ public class GradePanel extends JPanel {
 		List<String> gradeTableColumnNamesList = new ArrayList<>();
 		List<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
 		List<String> categoryNames = new ArrayList<>();
-		for(Category c : categories){
+		for (Category c : categories) {
 			categoryNames.add(c.getFieldName());
 		}
 
@@ -58,18 +60,18 @@ public class GradePanel extends JPanel {
 		gradeTableColumnNamesList.addAll(allItemNames);
 		Object[] gradeTableColumnNames = gradeTableColumnNamesList.toArray();
 
-
-		ArrayList<HashMap<String, Double>>listOfGrades = controller.getAllGradeEntriesForAllStudents(controller.getCurrentCourse());
+		ArrayList<HashMap<String, Double>> listOfGrades = controller
+				.getAllGradeEntriesForAllStudents(controller.getCurrentCourse());
 		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 
 		String[][] gradeTableRowData = new String[students.size()][];
-		for(int i=0;i<gradeTableRowData.length;i++){
+		for (int i = 0; i < gradeTableRowData.length; i++) {
 			HashMap<String, Double> grades = students.get(i).getAllGradeEntries();
-			gradeTableRowData[i]=new String[gradeTableColumnNames.length];
-			gradeTableRowData[i][0] = students.get(i).getFname()+" "+students.get(i).getLname();
+			gradeTableRowData[i] = new String[gradeTableColumnNames.length];
+			gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
 			gradeTableRowData[i][1] = students.get(i).getBuid();
-			for(int j=0;j<grades.size();j++){
-				gradeTableRowData[i][j+2]=Double.toString(grades.get(gradeTableColumnNames[j]));
+			for (int j = 0; j < grades.size(); j++) {
+				gradeTableRowData[i][j + 2] = Double.toString(grades.get(gradeTableColumnNames[j]));
 			}
 		}
 
@@ -119,14 +121,28 @@ public class GradePanel extends JPanel {
 		ArrayList<String> itemComboNames = new ArrayList<>();
 		itemComboNames.add("All");
 		itemComboNames.addAll(allItemNames);
-		Object[] itemComboItems =itemComboNames.toArray(); // TODO
+		Object[] itemComboItems = itemComboNames.toArray(); // TODO
 		itemComboBox = new JComboBox<>(convertObjectArrayToString(itemComboItems));
 		itemComboBox.setBounds(SizeManager.searchCourseBounds);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
 		add(itemComboBox);
-		categoryComboBox.addActionListener(e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox));
-		itemComboBox.addActionListener(e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox));
+
+		// grade options combo
+		String[] gradeOptionsItems = { "Points Lost", "Percentage" };
+		gradeOptionsComboBox = new JComboBox<>(gradeOptionsItems);
+		gradeOptionsComboBox = new JComboBox<>(convertObjectArrayToString(itemComboItems));
+		gradeOptionsComboBox.setBounds(SizeManager.searchCourseBounds);
+		gradeOptionsComboBox.setFont(FontManager.fontSearch);
+		gradeOptionsComboBox.setRenderer(categoryComboBoxRenderer);
+		add(gradeOptionsComboBox);
+
+		categoryComboBox.addActionListener(
+				e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox, gradeOptionsComboBox));
+		itemComboBox.addActionListener(
+				e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox, gradeOptionsComboBox));
+		gradeOptionsComboBox.addActionListener(
+				e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox, gradeOptionsComboBox));
 
 		// back button
 		JButton backButton = new JButton("Back");
@@ -171,22 +187,27 @@ public class GradePanel extends JPanel {
 		setVisible(true);
 	}
 
-	public String[] convertObjectArrayToString(Object[] arr){
-		String []str = new String[arr.length];
-		int i=0;
-		for(Object o: arr){
+	public String[] convertObjectArrayToString(Object[] arr) {
+		String[] str = new String[arr.length];
+		int i = 0;
+		for (Object o : arr) {
 			str[i++] = o.toString();
 		}
 		return str;
 	}
+
 	/**
 	 * Search something in the grade table by specified text and filter
 	 *
 	 * @param gradeTableRowSorter a TableRowSorter for a JTable
-	 * @param categoryComboBox    a JComboBox which can be used for selecting a category
-	 * @param itemComboBox        a JComboBox which can be used for selecting an item
+	 * @param categoryComboBox    a JComboBox which can be used for selecting a
+	 *                            category
+	 * @param itemComboBox        a JComboBox which can be used for selecting an
+	 *                            item
 	 */
-	private static void searchGradeTable(TableRowSorter<DefaultTableModel> gradeTableRowSorter, JComboBox<String> categoryComboBox, JComboBox<String> itemComboBox) {
+	private static void searchGradeTable(TableRowSorter<DefaultTableModel> gradeTableRowSorter,
+			JComboBox<String> categoryComboBox, JComboBox<String> itemComboBox,
+			JComboBox<String> gradeOptionsComboBox) {
 		// TODO
 	}
 
