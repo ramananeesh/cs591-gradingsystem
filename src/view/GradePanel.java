@@ -61,7 +61,7 @@ public class GradePanel extends JPanel {
 		String[][] gradeTableRowData = new String[students.size()][];
 		for(int i=0;i<gradeTableRowData.length;i++){
 			HashMap<String, Double> grades = students.get(i).getAllGradeEntries();
-			gradeTableRowData[i]=new String[grades.size()];
+			gradeTableRowData[i]=new String[gradeTableColumnNames.length];
 			gradeTableRowData[i][0] = students.get(i).getFname()+" "+students.get(i).getLname();
 			gradeTableRowData[i][1] = students.get(i).getBuid();
 			for(int j=0;j<grades.size();j++){

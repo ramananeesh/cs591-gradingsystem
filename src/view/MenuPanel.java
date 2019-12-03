@@ -321,7 +321,7 @@ public class MenuPanel extends JPanel implements Observer {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				} }, { editAllGrades -> { // Edit All Grades
-					frame.changePanel(this, new GradePanel(frame, courseData, true, controller));
+					frame.changePanel(this, new GradePanel(frame, courseData, true, this.controller));
 				}, editByStudent -> { // Edit by Student
 					try {
 						String[] studentComboBoxItems = { "Student 1", "Student 2", "Student 3" }; // TODO test data,
@@ -348,7 +348,7 @@ public class MenuPanel extends JPanel implements Observer {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}, viewGrades -> { // View Grades
-					frame.changePanel(this, new GradePanel(frame, courseData, false, controller));
+					frame.changePanel(this, new GradePanel(frame, courseData, false, this.controller));
 				} } };
 
 		JMenuBar menuBar = new JMenuBar();
@@ -524,6 +524,8 @@ public class MenuPanel extends JPanel implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
+		
+		this.controller = controller; 
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
