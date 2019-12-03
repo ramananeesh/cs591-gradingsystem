@@ -65,7 +65,7 @@ public class CoursePanel extends JPanel implements Observer {
 		tableCourse.setFont(FontManager.fontTable);
 
 		for (int i = 0; i < 3; ++i) {
-			tableCourse.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableColumnWidth[i]);
+			tableCourse.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.courseTableColumnWidth[i]);
 		}
 		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
 		tableRender.setHorizontalAlignment(SwingConstants.CENTER);
