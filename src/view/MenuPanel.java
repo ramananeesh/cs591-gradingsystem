@@ -323,9 +323,29 @@ public class MenuPanel extends JPanel implements Observer {
 				} }, { editAllGrades -> { // Edit All Grades
 					frame.changePanel(this, new GradePanel(frame, courseData, true, controller));
 				}, editByStudent -> { // Edit by Student
-					/**
-					 * to do this part
-					 */
+					try {
+						String[] studentComboBoxItems = {"Student 1", "Student 2", "Student 3"}; // TODO test data, need to be replaced when database exists
+						JComboBox<String> studentComboBox = new JComboBox<>(studentComboBoxItems);
+						JComboBox<String> categoryComboBox = new JComboBox<>(new String[]{"Homework", "Exam"});
+						JComboBox<String> itemComboBox = new JComboBox<>(new String[]{"Homework 1", "Homework 2", "Midterm", "Exam"});
+						JTextField gradeTextField = new JTextField();
+						Object[] fields = {
+								"Student: ", studentComboBox,
+								"Category: ", categoryComboBox,
+								"Item: ", itemComboBox,
+								"Grade: ", gradeTextField,
+						};
+						while (true) {
+							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student", JOptionPane.OK_CANCEL_OPTION);
+							if (reply == JOptionPane.OK_OPTION) {
+								break;
+							} else {
+								return;
+							}
+						}
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+					}
 				}, viewGrades -> { // View Grades
 					frame.changePanel(this, new GradePanel(frame, courseData, false, controller));
 				} } };
