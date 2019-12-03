@@ -170,6 +170,14 @@ public class Master extends Observable {
 		}
 		return ans;
 	}
+	
+	public ArrayList<Item> getAllItemsForCourseCategory(Course course, int categoryIndex){
+		return course.getCategory(categoryIndex).getItems();
+	}
+	
+	public ArrayList<Category> getAllCategoriesForCourse(Course course){
+		return course.getCategories();
+	}
 
 	public String[][] getItemDetailsForCourseCategory(Course course, int categoryIndex) {
 		return course.getCategories().get(categoryIndex).getItemsForList();
