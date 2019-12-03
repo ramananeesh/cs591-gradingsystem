@@ -179,6 +179,28 @@ public class Master extends Observable {
 		return course.getCategories();
 	}
 
+
+
+	public ArrayList<HashMap<String, Double>> getAllGradeEntriesForAllStudents(Course course){
+		ArrayList<HashMap<String, Double>> l = new ArrayList<>();
+		for(CourseStudent student: course.getStudents()){
+			l.add(student.getAllGradeEntries());
+		}
+
+		return l;
+	}
+
+	public ArrayList<String> getAllItemNames(Course course){
+		ArrayList<String> names = new ArrayList<>();
+
+		for(Category category: course.getCategories()){
+			for(Item i: category.getItems()){
+				names.add(i.getFieldName());
+			}
+		}
+		return names;
+	}
+
 	public String[][] getItemDetailsForCourseCategory(Course course, int categoryIndex) {
 		return course.getCategories().get(categoryIndex).getItemsForList();
 	}

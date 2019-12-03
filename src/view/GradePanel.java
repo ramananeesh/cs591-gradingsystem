@@ -10,10 +10,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 import controller.Master;
+import model.Category;
+import model.Course;
+import model.CourseStudent;
+import model.Item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * The {@code GradePanel} class represents the panel for viewing or modifying all the grades
@@ -38,15 +40,35 @@ public class GradePanel extends JPanel {
 		setOpaque(false);
 
 		// grade table
-		String[] gradeTableColumnNames = {
-				"Student Name", "Homework 1", "Homework 2", "Homework 3", "Homework 4", "Homework 5", "Midterm", "Final Exam"
-		}; // TODO test data, need to be replaced when database exists
-		String[][] gradeTableRowData = new String[100][1];
-		gradeTableRowData[0][0] = "Average"; // TODO move statistics part to a separated place
-		gradeTableRowData[1][0] = "Median";
-		for (int i = 3; i < 100; ++i) {
-			gradeTableRowData[i][0] = String.format("Student %02d", i - 2);
+		List<String> gradeTableColumnNamesList = new ArrayList<>();
+		List<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
+		List<String> categoryNames = new ArrayList<>();
+		for(Category c : categories){
+			categoryNames.add(c.getFieldName());
 		}
+
+		Course currCourse = controller.getCurrentCourse();
+		ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
+		gradeTableColumnNamesList.add("Student Name");
+		gradeTableColumnNamesList.add("BUID");
+		gradeTableColumnNamesList.addAll(allItemNames);
+		Object[] gradeTableColumnNames = gradeTableColumnNamesList.toArray();
+
+
+		ArrayList<HashMap<String, Double>>listOfGrades = controller.getAllGradeEntriesForAllStudents(controller.getCurrentCourse());
+		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
+
+		String[][] gradeTableRowData = new String[students.size()][];
+		for(int i=0;i<gradeTableRowData.length;i++){
+			HashMap<String, Double> grades = students.get(i).getAllGradeEntries();
+			gradeTableRowData[i]=new String[grades.size()];
+			gradeTableRowData[i][0] = students.get(i).getFname()+" "+students.get(i).getLname();
+			gradeTableRowData[i][1] = students.get(i).getBuid();
+			for(int j=0;j<grades.size();j++){
+				gradeTableRowData[i][j+2]=Double.toString(grades.get(gradeTableColumnNames[j]));
+			}
+		}
+
 		DefaultTableModel gradeTableModel;
 		if (editable) {
 			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
@@ -78,8 +100,11 @@ public class GradePanel extends JPanel {
 		add(gradeTableScrollPane);
 
 		// category combo box
-		String[] categoryComboBoxItems = {"All", "Homework", "Exam"}; // TODO
-		JComboBox<String> categoryComboBox = new JComboBox<>(categoryComboBoxItems);
+		ArrayList<String> categoryComboNames = new ArrayList<>();
+		categoryComboNames.add("All");
+		categoryComboNames.addAll(categoryNames);
+		Object[] categoryComboBoxItems = categoryComboNames.toArray(); // TODO
+		JComboBox<String> categoryComboBox = new JComboBox<>(convertObjectArrayToString(categoryComboBoxItems));
 		categoryComboBox.setBounds(SizeManager.filterCourseBounds);
 		categoryComboBox.setFont(FontManager.fontFilter);
 		DefaultListCellRenderer categoryComboBoxRenderer = new DefaultListCellRenderer();
@@ -88,8 +113,11 @@ public class GradePanel extends JPanel {
 		add(categoryComboBox);
 
 		// item combo box
-		String[] itemComboBoxItems = {"All", "Homework 1", "Homework 2", "Midterm", "Final Exam"}; // TODO
-		JComboBox<String> itemComboBox = new JComboBox<>(itemComboBoxItems);
+		ArrayList<String> itemComboNames = new ArrayList<>();
+		itemComboNames.add("All");
+		itemComboNames.addAll(allItemNames);
+		Object[] itemComboItems =itemComboNames.toArray(); // TODO
+		JComboBox<String> itemComboBox = new JComboBox<>(convertObjectArrayToString(itemComboItems));
 		itemComboBox.setBounds(SizeManager.searchCourseBounds);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
@@ -135,11 +163,19 @@ public class GradePanel extends JPanel {
 		itemLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(itemLabel);
 
-		generateRandomTestData(gradeTable);
+//		generateRandomTestData(gradeTable);
 
 		setVisible(true);
 	}
 
+	public String[] convertObjectArrayToString(Object[] arr){
+		String []str = new String[arr.length];
+		int i=0;
+		for(Object o: arr){
+			str[i++] = o.toString();
+		}
+		return str;
+	}
 	/**
 	 * Search something in the grade table by specified text and filter
 	 *
