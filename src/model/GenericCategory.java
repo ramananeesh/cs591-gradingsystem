@@ -5,24 +5,24 @@ public class GenericCategory {
 	private int id;
 	private String fieldName;
 	private double weight;
-	private String courseName;
+	private int courseId;
 	private int templateId; 
 	
-	public GenericCategory(int id, String fieldName, double weight, String courseName) {
+	public GenericCategory(int id, String fieldName, double weight, int courseId) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
 		this.weight = weight;
-		this.courseName = courseName;
+		this.courseId = courseId;
 		this.templateId = -1; 
 	}
 
-	public GenericCategory(int id, String fieldName, double weight, String courseName, int templateId) {
+	public GenericCategory(int id, String fieldName, double weight, int courseId, int templateId) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
 		this.weight = weight;
-		this.courseName = courseName;
+		this.courseId = courseId;
 		this.templateId = templateId; 
 	}
 	
@@ -50,12 +50,12 @@ public class GenericCategory {
 		this.weight = weight;
 	}
 
-	public String getCourseName() {
-		return courseName;
+	public int getCourseId() {
+		return courseId;
 	}
 
-	public void setCourseName(String courseName) {
-		this.courseName = courseName;
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
 	}
 
 	public int getTemplateId() {
@@ -67,7 +67,7 @@ public class GenericCategory {
 	}
 
 	public String toString() {
-		return this.id + " - " + this.fieldName + " - " + this.weight + " - " + this.courseName + " - "
+		return this.id + " - " + this.fieldName + " - " + this.weight + " - " + this.courseId + " - "
 				+ this.templateId;
 	}
 	

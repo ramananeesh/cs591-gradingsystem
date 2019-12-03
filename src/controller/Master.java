@@ -48,23 +48,23 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
-	public void addNewCategoryForCourse(Course course, String fieldName, double weight, String courseName) {
-		course.addCategory(new Category(course.getCategories().size() + 1, fieldName, weight, courseName));
+	public void addNewCategoryForCourse(Course course, String fieldName, double weight, int courseId) {
+		course.addCategory(new Category(course.getCategories().size() + 1, fieldName, weight, courseId));
 
 		setChanged();
 		notifyObservers();
 	}
 
-	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, String courseName) {
-		course.addCategory(new Category(id, fieldName, weight, courseName));
+	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, int courseId) {
+		course.addCategory(new Category(id, fieldName, weight, courseId));
 
 		setChanged();
 		notifyObservers();
 	}
 
-	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, String courseName,
+	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, int courseId,
 			ArrayList<Item> items) {
-		course.addCategory(new Category(id, fieldName, weight, courseName, items));
+		course.addCategory(new Category(id, fieldName, weight, courseId, items));
 
 		setChanged();
 		notifyObservers();
@@ -73,8 +73,8 @@ public class Master extends Observable {
 	public void addItemForCourseCategory(Course course, int categoryIndex, String fieldName, double weight) {
 
 		Category category = course.getCategories().get(categoryIndex);
-		category.addItem(new Item(category.getItems().size() + 1, fieldName, category.getFieldName(), weight,
-				course.getCourseName()));
+		category.addItem(new Item(category.getItems().size() + 1, fieldName, category.getId(), weight,
+				course.getCourseId()));
 
 		setChanged();
 		notifyObservers();
@@ -104,7 +104,7 @@ public class Master extends Observable {
 
 		for (Category c : existingCategories) {
 			ArrayList<Item> items = getTemplateItemsForCourseCategory(c);
-			newCategories.add(new Category(c.getId(), c.getFieldName(), c.getWeight(), c.getCourseName(), items));
+			newCategories.add(new Category(c.getId(), c.getFieldName(), c.getWeight(), c.getCourseId(), items));
 		}
 		return newCategories;
 	}
@@ -115,7 +115,7 @@ public class Master extends Observable {
 		ArrayList<Item> existingItems = category.getItems();
 
 		for (Item i : existingItems) {
-			newItems.add(new Item(i.getId(), i.getFieldName(), i.getCategoryName(), i.getWeight(), i.getCourseName(),
+			newItems.add(new Item(i.getId(), i.getFieldName(), i.getCategoryId(), i.getWeight(), i.getCourseId(),
 					i.getDateAssigned(), i.getDateDue()));
 		}
 
@@ -208,4 +208,10 @@ public class Master extends Observable {
 			}
 		}
 	}
+	
+	public void setCourse(int index, Course newCourse) {
+		this.courses.remove(index);
+		this.courses.add(index, newCourse);
+	}
 }
+

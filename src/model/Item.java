@@ -7,52 +7,52 @@ public class Item {
 
 	private int id;
 	private String fieldName;
-	private String categoryName;
+	private int categoryId;
 	private double weight;
-	private String courseName;
+	private int courseId;
 //	private int templateId;
 	private Date dateAssigned;
 	private Date dateDue;
 	private ArrayList<GradeEntry> gradeEntries;
 
 	// Item(int id, String fieldName, String categoryName, double weight, String
-	// courseName, int templateId, Date dateAssigned, Date dateDue)
-	public Item(int id, String fieldName, String categoryName, double weight, String courseName, Date dateAssigned,
+	// courseId, int templateId, Date dateAssigned, Date dateDue)
+	public Item(int id, String fieldName, int categoryId, double weight, int courseId, Date dateAssigned,
 			Date dateDue) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
-		this.categoryName = categoryName;
+		this.categoryId = categoryId;
 		this.weight = weight;
-		this.courseName = courseName;
+		this.courseId = courseId;
 //		this.templateId = templateId;
 		this.dateAssigned = dateAssigned;
 		this.dateDue = dateDue;
 		this.gradeEntries = new ArrayList<GradeEntry>();
 	}
 
-	public Item(int id, String fieldName, String categoryName, double weight, String courseName) {
+	public Item(int id, String fieldName, int categoryId, double weight, int courseId) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
-		this.categoryName = categoryName;
+		this.categoryId = categoryId;
 		this.weight = weight;
-		this.courseName = courseName;
+		this.courseId = courseId;
 //		this.templateId = templateId;
 		this.gradeEntries = new ArrayList<GradeEntry>();
 	}
 	
 	// Item(int id, String fieldName, String categoryName, double weight, String
-	// courseName, int templateId, Date dateAssigned, Date dateDue,
+	// courseId, int templateId, Date dateAssigned, Date dateDue,
 	// ArrayList<GradeEntry> gradeEntries)
-	public Item(int id, String fieldName, String categoryName, double weight, String courseName, Date dateAssigned,
+	public Item(int id, String fieldName, int categoryId, double weight, int courseId, Date dateAssigned,
 			Date dateDue, ArrayList<GradeEntry> gradeEntries) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
-		this.categoryName = categoryName;
+		this.categoryId = categoryId;
 		this.weight = weight;
-		this.courseName = courseName;
+		this.courseId = courseId;
 //		this.templateId = templateId;
 		this.dateAssigned = dateAssigned;
 		this.dateDue = dateDue;
@@ -75,12 +75,12 @@ public class Item {
 		this.fieldName = fieldName;
 	}
 
-	public String getCategoryName() {
-		return categoryName;
+	public int getCategoryId() {
+		return categoryId;
 	}
 
-	public void setCategoryName(String categoryName) {
-		this.categoryName = categoryName;
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
 	}
 
 	public double getWeight() {
@@ -91,12 +91,12 @@ public class Item {
 		this.weight = weight;
 	}
 
-	public String getCourseName() {
-		return courseName;
+	public int getCourseId() {
+		return courseId;
 	}
 
-	public void setCourseName(String courseName) {
-		this.courseName = courseName;
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
 	}
 
 	/*

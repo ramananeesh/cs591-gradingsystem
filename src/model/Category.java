@@ -6,26 +6,26 @@ public class Category extends GenericCategory {
 
 	private ArrayList<Item> items;
 
-	public Category(int id, String fieldName, double weight, String courseName) {
-		super(id, fieldName, weight, courseName);
+	public Category(int id, String fieldName, double weight, int courseId) {
+		super(id, fieldName, weight, courseId);
 
 		this.items = new ArrayList<Item>();
 	}
 
-	public Category(int id, String fieldName, double weight, String courseName, int templateId) {
-		super(id, fieldName, weight, courseName, templateId);
+	public Category(int id, String fieldName, double weight, int courseId, int templateId) {
+		super(id, fieldName, weight, courseId, templateId);
 
 		this.items = new ArrayList<Item>();
 	}
 
-	public Category(int id, String fieldName, double weight, String courseName, ArrayList<Item> items) {
-		super(id, fieldName, weight, courseName);
+	public Category(int id, String fieldName, double weight, int courseId, ArrayList<Item> items) {
+		super(id, fieldName, weight, courseId);
 
 		this.items = items;
 	}
 
-	public Category(int id, String fieldName, double weight, String courseName, int templateId, ArrayList<Item> items) {
-		super(id, fieldName, weight, courseName, templateId);
+	public Category(int id, String fieldName, double weight, int courseId, int templateId, ArrayList<Item> items) {
+		super(id, fieldName, weight, courseId, templateId);
 
 		this.items = items;
 	}

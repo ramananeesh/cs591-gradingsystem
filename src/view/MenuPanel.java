@@ -153,7 +153,7 @@ public class MenuPanel extends JPanel implements Observer {
 										try {
 											double weight = Double.parseDouble(percentageField.getText());
 											controller.addNewCategoryForCourse(controller.getCurrentCourse(), fieldName,
-													weight, courseData[1]);
+													weight, controller.getCurrentCourse().getCourseId());
 										} catch (Exception ex) {
 											JOptionPane.showMessageDialog(this, "Error",
 													"Please Enter valid weight percentage between 0 and 1",
