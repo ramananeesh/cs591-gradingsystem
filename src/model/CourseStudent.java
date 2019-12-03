@@ -1,15 +1,27 @@
 package model;
 
+import java.util.*;
+
 public class CourseStudent extends Student {
 
 	private int courseId;
 	private boolean active;
+	private ArrayList<GradeEntry> grades; 
 
 	public CourseStudent(String fname, String lname, String buid, String email, String type, int courseId,
 			boolean active) {
 		super(fname, lname, buid, email, type);
 		this.courseId = courseId;
 		this.active = active;
+		this.grades = new ArrayList<GradeEntry>();
+	}
+	
+	public CourseStudent(String fname, String lname, String buid, String email, String type, int courseId,
+			boolean active, ArrayList<GradeEntry> grades) {
+		super(fname, lname, buid, email, type);
+		this.courseId = courseId;
+		this.active = active;
+		this.grades = grades;
 	}
 
 	public int getCourseId() {
@@ -28,4 +40,11 @@ public class CourseStudent extends Student {
 		this.active = active;
 	}
 
+	public ArrayList<GradeEntry> getGrades() {
+		return grades;
+	}
+
+	public void setGrades(ArrayList<GradeEntry> grades) {
+		this.grades = grades;
+	}
 }
