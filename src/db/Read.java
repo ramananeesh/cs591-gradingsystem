@@ -53,8 +53,12 @@ public class Read {
 		return items;
 	}
 
+	public static ArrayList<Item> getItemByCategory(int categoryID){
+
+	}
+
 	public static ArrayList<Course> getAllCourses() {
-		ArrayList<Course> courses = new ArrayList<Course>();
+		ArrayList<Course> courses = new ArrayList<>();
 		String query = "Select * from Course";
 		ResultSet rs = SQLHelper.performRead(query);
 
@@ -71,7 +75,7 @@ public class Read {
 	}
 
 	public static ArrayList<GradeEntry> getGradeEntries(int courseID) {
-		ArrayList<GradeEntry> gradeEntries = new ArrayList<GradeEntry>();
+		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
 		String query = "Select * from GradeEntry where courseID='" + courseID + "'";
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
