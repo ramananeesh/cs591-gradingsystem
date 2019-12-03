@@ -7,6 +7,7 @@ import model.*;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -22,9 +23,13 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.awt.Desktop;
 
 /**
- * The {@code MenuPanel} class represents the panel for viewing or modifying all the grades
+ * The {@code MenuPanel} class represents the panel for viewing or modifying all
+ * the grades
  */
 public class MenuPanel extends JPanel implements Observer {
 	private Master controller;
@@ -80,7 +85,8 @@ public class MenuPanel extends JPanel implements Observer {
 		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2] + "\n\n";
 
 		String[] menuName = { "  File  ", "  Edit  ", "  Grade  " };
-		String[][] menuItemName = { { "Add Student", "Add Category", "Add Item", null, "Back", "Exit" },
+		String[][] menuItemName = {
+				{ "Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit" },
 				{ "Edit Student", "Edit Category", "Edit Item" },
 				{ "Edit All Grades", "Edit by Student", "View Grade" } };
 		ActionListener[][] menuActionListener = { // TODO complete menu action
@@ -107,6 +113,25 @@ public class MenuPanel extends JPanel implements Observer {
 								}
 							} catch (Exception e1) {
 								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+							}
+						}, addStudentsFromFile -> {
+
+							// create an object of JFileChooser class
+							JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+
+							// invoke the showsOpenDialog function to show the save dialog
+							int r = j.showOpenDialog(null);
+
+							// if the user selects a file
+							if (r == JFileChooser.APPROVE_OPTION)
+
+							{
+								// set the label to the path of the selected file
+								System.out.println(j.getSelectedFile().getAbsolutePath());
+							}
+							// if the user cancelled the operation
+							else {
+								System.out.println("cancelled");
 							}
 						}, addCategory -> { // Add Category
 							try {
@@ -144,9 +169,9 @@ public class MenuPanel extends JPanel implements Observer {
 							try {
 								JComboBox<String> categoryCombo = new JComboBox<>();
 								/*** for test ***/
-//								categoryCombo.addItem("Homework");
-//								categoryCombo.addItem("Exam");
-//								categoryCombo.addItem("Project");
+								// categoryCombo.addItem("Homework");
+								// categoryCombo.addItem("Exam");
+								// categoryCombo.addItem("Project");
 								/******/
 								ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
 								for (int i = 0; i < categories.size(); i++) {
@@ -204,9 +229,9 @@ public class MenuPanel extends JPanel implements Observer {
 						studentCombo.addItem("Student2");
 						studentCombo.addItem("Student3");
 						/******/
-//								for(int i = 0; i < student.size(); i++) {
-//									studentCombo.addItem(student.get(i).getStudentName());
-//								}
+						// for(int i = 0; i < student.size(); i++) {
+						// studentCombo.addItem(student.get(i).getStudentName());
+						// }
 						JTextField BUIDField = new JTextField();
 						JTextField emailField = new JTextField();
 						JComboBox<String> levelCombo = new JComboBox<>(new String[] { "Undergraduate", "Graduate" });
@@ -228,16 +253,16 @@ public class MenuPanel extends JPanel implements Observer {
 				}, editCategory -> { // Edit Category
 					try {
 						String[][] categoryData;
-//								for(int i = 0; i < category.size(); i++) {
-//									categoryData[i][0] = category.get(i).getCategoryName();
-//									categoryData[i][1] = category.get(i).getPercentage();
-//								}
+						// for(int i = 0; i < category.size(); i++) {
+						// categoryData[i][0] = category.get(i).getCategoryName();
+						// categoryData[i][1] = category.get(i).getPercentage();
+						// }
 						/*** for test ***/
-//								categoryData = new String[][]{
-//										{"Homework", "50%",},
-//										{"Exam", "25%",},
-//										{"Project", "25%",}
-//								};
+						// categoryData = new String[][]{
+						// {"Homework", "50%",},
+						// {"Exam", "25%",},
+						// {"Project", "25%",}
+						// };
 						/******/
 
 						categoryData = controller.getCurrentCourse().getCategoryDataForList();
@@ -268,9 +293,9 @@ public class MenuPanel extends JPanel implements Observer {
 					try {
 						JComboBox<String> categoryCombo = new JComboBox<>();
 						/*** for test ***/
-//								categoryCombo.addItem("Homework");
-//								categoryCombo.addItem("Exam");
-//								categoryCombo.addItem("Project");
+						// categoryCombo.addItem("Homework");
+						// categoryCombo.addItem("Exam");
+						// categoryCombo.addItem("Project");
 						/******/
 						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
 						for (int i = 0; i < categories.size(); i++) {
@@ -278,12 +303,12 @@ public class MenuPanel extends JPanel implements Observer {
 						}
 
 						String[][] itemData;
-//								
+						//
 						/*** for test ***/
-//								itemData = new String[][]{
-//										{"Homework1", "50%",},
-//										{"Homework2", "50%",}
-//								};
+						// itemData = new String[][]{
+						// {"Homework1", "50%",},
+						// {"Homework2", "50%",}
+						// };
 						/******/
 
 						if (categoryCombo.getSelectedIndex() < 0)
@@ -339,6 +364,7 @@ public class MenuPanel extends JPanel implements Observer {
 			menuBar.add(menu);
 		}
 		menuBar.setBounds(SizeManager.menuBarBounds);
+
 		add(menuBar);
 
 		JTextPane informationTextPane = new JTextPane();
@@ -371,13 +397,13 @@ public class MenuPanel extends JPanel implements Observer {
 		add(tableStudentScrollPane);
 
 		tableCategoryColumns = new String[] { "Category Name", "Weight" };
-//		String[][] tableCategoryData = {
-//				{"All", "100%"},
-//				{"Homework", "25%"},
-//				{"Project", "25%"},
-//				{"Presentation", "25%"},
-//				{"Exam", "25%"}
-//		};
+		// String[][] tableCategoryData = {
+		// {"All", "100%"},
+		// {"Homework", "25%"},
+		// {"Project", "25%"},
+		// {"Presentation", "25%"},
+		// {"Exam", "25%"}
+		// };
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
@@ -392,29 +418,29 @@ public class MenuPanel extends JPanel implements Observer {
 		add(tableCategoryScrollPane);
 
 		tableItemColumns = new String[] { "Item Name", "Weight" };
-//		String[][] tableItemData = {
-//				{"All", "100%"},
-//				{"Homework 1", "5%"},
-//				{"Homework 2", "5%"},
-//				{"Homework 3", "5%"},
-//				{"Homework 4", "5%"},
-//				{"Homework 5", "5%"},
-//				{"Project 1", "5%"},
-//				{"Project 2", "5%"},
-//				{"Project 3", "5%"},
-//				{"Project 4", "5%"},
-//				{"Project 5", "5%"},
-//				{"Presentation 1", "5%"},
-//				{"Presentation 2", "5%"},
-//				{"Presentation 3", "5%"},
-//				{"Presentation 4", "5%"},
-//				{"Presentation 5", "5%"},
-//				{"Exam 1", "5%"},
-//				{"Exam 2", "5%"},
-//				{"Exam 3", "5%"},
-//				{"Exam 4", "5%"},
-//				{"Exam 5", "5%"}
-//		};
+		// String[][] tableItemData = {
+		// {"All", "100%"},
+		// {"Homework 1", "5%"},
+		// {"Homework 2", "5%"},
+		// {"Homework 3", "5%"},
+		// {"Homework 4", "5%"},
+		// {"Homework 5", "5%"},
+		// {"Project 1", "5%"},
+		// {"Project 2", "5%"},
+		// {"Project 3", "5%"},
+		// {"Project 4", "5%"},
+		// {"Project 5", "5%"},
+		// {"Presentation 1", "5%"},
+		// {"Presentation 2", "5%"},
+		// {"Presentation 3", "5%"},
+		// {"Presentation 4", "5%"},
+		// {"Presentation 5", "5%"},
+		// {"Exam 1", "5%"},
+		// {"Exam 2", "5%"},
+		// {"Exam 3", "5%"},
+		// {"Exam 4", "5%"},
+		// {"Exam 5", "5%"}
+		// };
 
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
 		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
@@ -445,20 +471,22 @@ public class MenuPanel extends JPanel implements Observer {
 				if (tableCategory.getSelectedRow() != -1) {
 					if (listSelectionEvent.getSource() == tableCategory.getSelectionModel()) {
 						Object[][] newTableItemData;
-//						if (tableCategory.getSelectedRow() == 0) {
-//							newTableItemData = tableItemData;
-//						} else {
-//							newTableItemData = new Object[5][2];
-//							String category = (String) tableCategory.getValueAt(tableCategory.getSelectedRow(), 0);
-//							for (int i = 0; i < 5; ++i) {
-//								newTableItemData[i][0] = category + " " + (i + 1);
-//								newTableItemData[i][1] = "5%";
-//							}
-//						}
-						if(tableCategory.getSelectedRow()<0) {
+						// if (tableCategory.getSelectedRow() == 0) {
+						// newTableItemData = tableItemData;
+						// } else {
+						// newTableItemData = new Object[5][2];
+						// String category = (String)
+						// tableCategory.getValueAt(tableCategory.getSelectedRow(), 0);
+						// for (int i = 0; i < 5; ++i) {
+						// newTableItemData[i][0] = category + " " + (i + 1);
+						// newTableItemData[i][1] = "5%";
+						// }
+						// }
+						if (tableCategory.getSelectedRow() < 0) {
 							return;
 						}
-						newTableItemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(), tableCategory.getSelectedRow());
+						newTableItemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
+								tableCategory.getSelectedRow());
 						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumns);
 						tableItem.setModel(newTableItemModel);
 						for (int i = 0; i < 2; ++i) {
