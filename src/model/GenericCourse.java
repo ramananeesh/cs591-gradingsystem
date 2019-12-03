@@ -2,22 +2,24 @@ package model;
 
 public class GenericCourse {
 
-	private String courseId;
+	private int courseId;
+	private String courseNumber;
 	private String courseName;
 	private String term;
 
-	public GenericCourse(String courseId, String courseName, String term) {
+	public GenericCourse(int courseId, String courseNumber, String courseName, String term) {
 		this.courseId = courseId;
+		this.courseNumber = courseNumber;
 		this.courseName = courseName;
 		this.term = term;
 	}
 
-	public String getCourseId() {
-		return courseId;
+	public String getCourseNumber() {
+		return courseNumber;
 	}
 
-	public void setCourseId(String courseId) {
-		this.courseId = courseId;
+	public void setCourseNumber(String courseNumber) {
+		this.courseNumber = courseNumber;
 	}
 
 	public String getCourseName() {
@@ -37,12 +39,20 @@ public class GenericCourse {
 	}
 
 	public String toString() {
-		return this.courseId + " - " + this.courseName + " - " + this.term;
+		return this.courseNumber + " - " + this.courseName + " - " + this.term;
 	}
-	
+
+	public int getCourseId() {
+		return courseId;
+	}
+
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
+	}
+
 	public String[] getDetails() {
-		String[] str= {this.courseId,this.courseName,this.term};
-		
+		String[] str = { this.courseNumber, this.courseName, this.term };
+
 		return str;
 	}
 }

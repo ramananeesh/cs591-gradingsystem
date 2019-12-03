@@ -171,7 +171,7 @@ public class MenuPanel extends JPanel implements Observer {
 						}, addItem -> { // Add Item
 							try {
 								JComboBox<String> categoryCombo = new JComboBox<>();
-								
+
 								ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
 								for (int i = 0; i < categories.size(); i++) {
 									categoryCombo.addItem(categories.get(i).getFieldName());
@@ -226,7 +226,7 @@ public class MenuPanel extends JPanel implements Observer {
 						/**
 						 * to do this part
 						 */
-						
+
 						JTextField BUIDField = new JTextField();
 						JTextField emailField = new JTextField();
 						JComboBox<String> levelCombo = new JComboBox<>(new String[] { "Undergraduate", "Graduate" });
@@ -324,19 +324,20 @@ public class MenuPanel extends JPanel implements Observer {
 					frame.changePanel(this, new GradePanel(frame, courseData, true, controller));
 				}, editByStudent -> { // Edit by Student
 					try {
-						String[] studentComboBoxItems = {"Student 1", "Student 2", "Student 3"}; // TODO test data, need to be replaced when database exists
+						String[] studentComboBoxItems = { "Student 1", "Student 2", "Student 3" }; // TODO test data,
+																									// need to be
+																									// replaced when
+																									// database exists
 						JComboBox<String> studentComboBox = new JComboBox<>(studentComboBoxItems);
-						JComboBox<String> categoryComboBox = new JComboBox<>(new String[]{"Homework", "Exam"});
-						JComboBox<String> itemComboBox = new JComboBox<>(new String[]{"Homework 1", "Homework 2", "Midterm", "Exam"});
+						JComboBox<String> categoryComboBox = new JComboBox<>(new String[] { "Homework", "Exam" });
+						JComboBox<String> itemComboBox = new JComboBox<>(
+								new String[] { "Homework 1", "Homework 2", "Midterm", "Exam" });
 						JTextField gradeTextField = new JTextField();
-						Object[] fields = {
-								"Student: ", studentComboBox,
-								"Category: ", categoryComboBox,
-								"Item: ", itemComboBox,
-								"Grade: ", gradeTextField,
-						};
+						Object[] fields = { "Student: ", studentComboBox, "Category: ", categoryComboBox, "Item: ",
+								itemComboBox, "Grade: ", gradeTextField, };
 						while (true) {
-							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student", JOptionPane.OK_CANCEL_OPTION);
+							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student",
+									JOptionPane.OK_CANCEL_OPTION);
 							if (reply == JOptionPane.OK_OPTION) {
 								break;
 							} else {
@@ -384,7 +385,7 @@ public class MenuPanel extends JPanel implements Observer {
 		tableStudentColumns = new String[] { "Student Name", "Student ID" };
 		String[][] tableStudentData; // TODO load student from database
 		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
-		
+
 		studentTableModel = new DefaultTableModel(tableStudentData, tableStudentColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -436,13 +437,14 @@ public class MenuPanel extends JPanel implements Observer {
 			table.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
 				String text = courseString;
 				if (tableStudent.getSelectedRow() != -1) {
-					
-					text+= controller.getCurrentCourse().getStudent(tableStudent.getSelectedRow()).getStudentDetails()+"\n\n";
+
+					text += controller.getCurrentCourse().getStudent(tableStudent.getSelectedRow()).getStudentDetails()
+							+ "\n\n";
 				}
 				if (tableCategory.getSelectedRow() != -1) {
 					if (listSelectionEvent.getSource() == tableCategory.getSelectionModel()) {
 						Object[][] newTableItemData;
-						
+
 						if (tableCategory.getSelectedRow() < 0) {
 							return;
 						}
@@ -540,10 +542,10 @@ public class MenuPanel extends JPanel implements Observer {
 			}
 		};
 		tableItem.setModel(itemTableModel);
-		
+
 		String[][] tableStudentData; // TODO load student from database
 		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
-		
+
 		studentTableModel = new DefaultTableModel(tableStudentData, tableStudentColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {

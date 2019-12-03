@@ -2,20 +2,21 @@ package model;
 
 public class CourseStudent extends Student {
 
-	private String courseId;
+	private int courseId;
 	private boolean active;
 
-	public CourseStudent(String fname, String lname, String buid, String email, String type, String courseId, boolean active) {
+	public CourseStudent(String fname, String lname, String buid, String email, String type, int courseId,
+			boolean active) {
 		super(fname, lname, buid, email, type);
 		this.courseId = courseId;
 		this.active = active;
 	}
 
-	public String getCourseId() {
+	public int getCourseId() {
 		return courseId;
 	}
 
-	public void setCourseId(String courseId) {
+	public void setCourseId(int courseId) {
 		this.courseId = courseId;
 	}
 

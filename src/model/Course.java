@@ -7,23 +7,23 @@ public class Course extends GenericCourse {
 	private ArrayList<Category> categories;
 	private ArrayList<CourseStudent> students;
 
-	public Course(String courseId, String courseName, String term) {
-		super(courseId, courseName, term);
+	public Course(int courseId, String courseNumber, String courseName, String term) {
+		super(courseId, courseName, courseName, term);
 
 		this.categories = new ArrayList<Category>();
 		this.students = new ArrayList<CourseStudent>();
 	}
 
-	public Course(String courseId, String courseName, String term, ArrayList<Category> categories) {
-		super(courseId, courseName, term);
+	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories) {
+		super(courseId, courseNumber, courseName, term);
 
 		this.categories = categories;
 		this.students = new ArrayList<CourseStudent>();
 	}
 
-	public Course(String courseId, String courseName, String term, ArrayList<Category> categories,
+	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories,
 			ArrayList<CourseStudent> students) {
-		super(courseId, courseName, term);
+		super(courseId, courseNumber, courseName, term);
 
 		this.categories = categories;
 		this.students = students;
