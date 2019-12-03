@@ -3,12 +3,16 @@ package view;
 import helper.SizeManager;
 
 import javax.swing.*;
+
+import controller.Master;
+
 import java.awt.*;
 
 /**
  * The {@code LoginFrame} class represents the main frame which contains many kinds of panels
  */
 public class MainFrame extends JFrame {
+
 	/** The background image file */
 	private static final String BACKGROUND_PICTURE_FILE_NAME = "src/resource/background.jpg";
 
@@ -20,6 +24,7 @@ public class MainFrame extends JFrame {
 
 	/** The interval (milliseconds) of animation. */
 	private static final int ANIMATION_INTERVAL = ANIMATION_TIME / ANIMATION_FRAMES;
+
 
 	/**
 	 * Initializes a newly created {@code MainFrame} object
@@ -35,7 +40,7 @@ public class MainFrame extends JFrame {
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		add(new CoursePanel(this));
+		add(new CoursePanel(this, new Master()));
 		setVisible(true);
 	}
 
@@ -184,4 +189,5 @@ public class MainFrame extends JFrame {
 			this.y = y;
 		}
 	}
+
 }

@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Date;
+import java.util.*;
 
 public class Item {
 
@@ -9,21 +10,53 @@ public class Item {
 	private String categoryName;
 	private double weight;
 	private String courseName;
-	private int templateId;
+//	private int templateId;
 	private Date dateAssigned;
 	private Date dateDue;
+	private ArrayList<GradeEntry> gradeEntries;
 
-	public Item(int id, String fieldName, String categoryName, double weight, String courseName, int templateId,
-			Date dateAssigned, Date dateDue) {
+	// Item(int id, String fieldName, String categoryName, double weight, String
+	// courseName, int templateId, Date dateAssigned, Date dateDue)
+	public Item(int id, String fieldName, String categoryName, double weight, String courseName, Date dateAssigned,
+			Date dateDue) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
 		this.categoryName = categoryName;
 		this.weight = weight;
 		this.courseName = courseName;
-		this.templateId = templateId;
+//		this.templateId = templateId;
 		this.dateAssigned = dateAssigned;
 		this.dateDue = dateDue;
+		this.gradeEntries = new ArrayList<GradeEntry>();
+	}
+
+	public Item(int id, String fieldName, String categoryName, double weight, String courseName) {
+		super();
+		this.id = id;
+		this.fieldName = fieldName;
+		this.categoryName = categoryName;
+		this.weight = weight;
+		this.courseName = courseName;
+//		this.templateId = templateId;
+		this.gradeEntries = new ArrayList<GradeEntry>();
+	}
+	
+	// Item(int id, String fieldName, String categoryName, double weight, String
+	// courseName, int templateId, Date dateAssigned, Date dateDue,
+	// ArrayList<GradeEntry> gradeEntries)
+	public Item(int id, String fieldName, String categoryName, double weight, String courseName, Date dateAssigned,
+			Date dateDue, ArrayList<GradeEntry> gradeEntries) {
+		super();
+		this.id = id;
+		this.fieldName = fieldName;
+		this.categoryName = categoryName;
+		this.weight = weight;
+		this.courseName = courseName;
+//		this.templateId = templateId;
+		this.dateAssigned = dateAssigned;
+		this.dateDue = dateDue;
+		this.gradeEntries = gradeEntries;
 	}
 
 	public int getId() {
@@ -66,13 +99,11 @@ public class Item {
 		this.courseName = courseName;
 	}
 
-	public int getTemplateId() {
-		return templateId;
-	}
-
-	public void setTemplateId(int templateId) {
-		this.templateId = templateId;
-	}
+	/*
+	 * public int getTemplateId() { return templateId; }
+	 * 
+	 * public void setTemplateId(int templateId) { this.templateId = templateId; }
+	 */
 
 	public Date getDateAssigned() {
 		return dateAssigned;
@@ -90,4 +121,7 @@ public class Item {
 		this.dateDue = dateDue;
 	}
 
+	public String[] getDetails() {
+		return new String[]{this.fieldName,Double.toString(this.weight)};
+	}
 }

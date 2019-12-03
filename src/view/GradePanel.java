@@ -8,6 +8,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+
+import controller.Master;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,6 +21,7 @@ import java.util.Random;
 public class GradePanel extends JPanel {
 	/** The title for the window when GradePanel displays */
 	private static final String TITLE = "Grading System - Grade";
+	private Master controller;
 
 	/** The frame which contains this panel. */
 	private MainFrame frame;
@@ -25,8 +29,9 @@ public class GradePanel extends JPanel {
 	/**
 	 * Initializes a newly created {@code GradePanel} object
 	 */
-	public GradePanel(MainFrame frame, String[] courseData, boolean editable) {
+	public GradePanel(MainFrame frame, String[] courseData, boolean editable, Master controller) {
 		this.frame = frame;
+		this.controller = controller; 
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
@@ -98,7 +103,7 @@ public class GradePanel extends JPanel {
 		backButton.setBounds(SizeManager.buttonAddBounds);
 		backButton.setForeground(ColorManager.lightColor);
 		backButton.setBackground(ColorManager.primaryColor);
-		backButton.addActionListener(e -> frame.changePanel(this, new MenuPanel(frame, courseData)));
+		backButton.addActionListener(e -> frame.changePanel(this, new MenuPanel(frame, courseData, controller)));
 		add(backButton);
 
 		// save button
