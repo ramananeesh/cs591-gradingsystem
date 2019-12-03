@@ -196,7 +196,7 @@ public class CoursePanel extends JPanel implements Observer {
 					courseData[i] = tableCourse.getValueAt(selectedRow, i).toString();
 				}
 				controller.setCurrentCourse(selectedRow);
-				frame.switchPanel(this, new MenuPanel(frame, courseData, controller));
+				frame.changePanel(this, new MenuPanel(frame, courseData, controller));
 			}
 		});
 		add(buttonView);

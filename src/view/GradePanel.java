@@ -11,19 +11,25 @@ import javax.swing.table.TableRowSorter;
 
 import controller.Master;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+/**
+ * The {@code GradePanel} class represents the panel for viewing or modifying all the grades
+ */
 public class GradePanel extends JPanel {
-	private Master controller; 
+	/** The title for the window when GradePanel displays */
 	private static final String TITLE = "Grading System - Grade";
+	private Master controller;
+
+	/** The frame which contains this panel. */
 	private MainFrame frame;
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
 	 */
-	public GradePanel(MainFrame frame, String[] courseData, Master controller) {
+	public GradePanel(MainFrame frame, String[] courseData, boolean editable, Master controller) {
 		this.frame = frame;
 		this.controller = controller; 
 		frame.setTitle(TITLE);
@@ -31,110 +37,132 @@ public class GradePanel extends JPanel {
 		setBounds(SizeManager.panelBounds);
 		setOpaque(false);
 
-		String[] tableGradeColumn = {
+		// grade table
+		String[] gradeTableColumnNames = {
 				"Student Name", "Homework 1", "Homework 2", "Homework 3", "Homework 4", "Homework 5", "Midterm", "Final Exam"
-		};
-		String[][] tableCourseData = new String[100][1];//{ // TODO load course data
-		tableCourseData[0][0] = "Average";
-		tableCourseData[1][0] = "Median";
+		}; // TODO test data, need to be replaced when database exists
+		String[][] gradeTableRowData = new String[100][1];
+		gradeTableRowData[0][0] = "Average"; // TODO move statistics part to a separated place
+		gradeTableRowData[1][0] = "Median";
 		for (int i = 3; i < 100; ++i) {
-			tableCourseData[i][0] = String.format("Student %02d", i - 2);
+			gradeTableRowData[i][0] = String.format("Student %02d", i - 2);
 		}
+		DefaultTableModel gradeTableModel;
+		if (editable) {
+			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return column > 0;
+				}
+			};
+		} else {
+			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			};
+		}
+		JTable gradeTable = new JTable(gradeTableModel);
+		gradeTable.setRowHeight(SizeManager.tableRowHeight);
+		gradeTable.setFont(FontManager.fontTable);
+		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
+		gradeTableRender.setHorizontalAlignment(SwingConstants.CENTER);
+		gradeTableRender.setVerticalAlignment(SwingConstants.CENTER);
+		gradeTable.setDefaultRenderer(Object.class, gradeTableRender);
+		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
+		gradeTable.setRowSorter(gradeTableRowSorter);
+		gradeTable.getTableHeader().setFont(gradeTable.getFont());
+		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
+		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
+		add(gradeTableScrollPane);
 
-		DefaultTableModel modelGrade = new DefaultTableModel(tableCourseData, tableGradeColumn) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return column > 0;
-			}
-		};
-		JTable tableGrade = new JTable(modelGrade);
-		tableGrade.setRowHeight(SizeManager.tableRowHeight);
-		tableGrade.setFont(FontManager.fontTable);
-		DefaultTableCellRenderer render = new DefaultTableCellRenderer();
-		render.setHorizontalAlignment(SwingConstants.CENTER);
-		render.setVerticalAlignment(SwingConstants.CENTER);
-		tableGrade.setDefaultRenderer(Object.class, render);
-		TableRowSorter<DefaultTableModel> sorterGrade = new TableRowSorter<>(modelGrade);
-		tableGrade.setRowSorter(sorterGrade);
-		tableGrade.getTableHeader().setFont(tableGrade.getFont());
-		JScrollPane tableCourseScrollPane = new JScrollPane(tableGrade);
-		tableCourseScrollPane.setBounds(SizeManager.tableCourseBounds);
-		add(tableCourseScrollPane);
+		// category combo box
+		String[] categoryComboBoxItems = {"All", "Homework", "Exam"}; // TODO
+		JComboBox<String> categoryComboBox = new JComboBox<>(categoryComboBoxItems);
+		categoryComboBox.setBounds(SizeManager.filterCourseBounds);
+		categoryComboBox.setFont(FontManager.fontFilter);
+		DefaultListCellRenderer categoryComboBoxRenderer = new DefaultListCellRenderer();
+		categoryComboBoxRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		categoryComboBox.setRenderer(categoryComboBoxRenderer);
+		add(categoryComboBox);
 
-		String[] category = {"All", "Homework", "Exam"}; // TODO
-		JComboBox<String> boxCategory = new JComboBox<>(category);
-		boxCategory.setBounds(SizeManager.filterCourseBounds);
-		boxCategory.setFont(FontManager.fontFilter);
-		DefaultListCellRenderer renderer = new DefaultListCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		boxCategory.setRenderer(renderer);
-		add(boxCategory);
+		// item combo box
+		String[] itemComboBoxItems = {"All", "Homework 1", "Homework 2", "Midterm", "Final Exam"}; // TODO
+		JComboBox<String> itemComboBox = new JComboBox<>(itemComboBoxItems);
+		itemComboBox.setBounds(SizeManager.searchCourseBounds);
+		itemComboBox.setFont(FontManager.fontSearch);
+		itemComboBox.setRenderer(categoryComboBoxRenderer);
+		add(itemComboBox);
+		categoryComboBox.addActionListener(e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox));
+		itemComboBox.addActionListener(e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox));
 
-		String[] item = {"All", "Homework 1", "Homework 2", "Midterm", "Final Exam"}; // TODO
-		JComboBox<String> boxItem = new JComboBox<>(item);
-		boxItem.setBounds(SizeManager.searchCourseBounds);
-		boxItem.setFont(FontManager.fontSearch);
-		boxItem.setRenderer(renderer);
-		add(boxItem);
+		// back button
+		JButton backButton = new JButton("Back");
+		backButton.setFont(FontManager.fontButton);
+		backButton.setBounds(SizeManager.buttonAddBounds);
+		backButton.setForeground(ColorManager.lightColor);
+		backButton.setBackground(ColorManager.primaryColor);
+		backButton.addActionListener(e -> frame.changePanel(this, new MenuPanel(frame, courseData, controller)));
+		add(backButton);
 
-		boxCategory.addActionListener(e -> search(boxCategory, boxItem, sorterGrade));
-		boxItem.addActionListener(e -> search(boxCategory, boxItem, sorterGrade));
-
-		JButton buttonBack = new JButton("Back");
-		buttonBack.setFont(FontManager.fontButton);
-		buttonBack.setBounds(SizeManager.buttonAddBounds);
-		buttonBack.setForeground(ColorManager.lightColor);
-		buttonBack.setBackground(ColorManager.primaryColor);
-		buttonBack.addActionListener(e -> frame.switchPanel(this, new MenuPanel(frame, courseData, controller)));
-		add(buttonBack);
-
+		// save button
 		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);
 		UIManager.put("OptionPane.buttonFont", FontManager.fontLabel);
-		JButton buttonSave = new JButton("Save");
-		buttonSave.setFont(FontManager.fontButton);
-		buttonSave.setBounds(SizeManager.buttonViewBounds);
-		buttonSave.setForeground(ColorManager.lightColor);
-		buttonSave.setBackground(ColorManager.primaryColor);
-		buttonSave.addActionListener(e -> {
-			// TODO
+		JButton saveButton = new JButton("Save");
+		saveButton.setFont(FontManager.fontButton);
+		saveButton.setBounds(SizeManager.buttonViewBounds);
+		saveButton.setForeground(ColorManager.lightColor);
+		saveButton.setBackground(ColorManager.primaryColor);
+		saveButton.addActionListener(e -> {
+			// TODO save grade data to database
 		});
+		add(saveButton);
 
-		add(buttonSave);
+		// category label
+		JLabel categoryLabel = new JLabel("Category : ");
+		categoryLabel.setBounds(SizeManager.labelFilterBounds);
+		categoryLabel.setFont(FontManager.fontLabel);
+		categoryLabel.setVerticalAlignment(SwingConstants.CENTER);
+		categoryLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		add(categoryLabel);
 
-		JLabel labelFilter = new JLabel("Category : ");
-		labelFilter.setBounds(SizeManager.labelFilterBounds);
-		labelFilter.setFont(FontManager.fontLabel);
-		labelFilter.setVerticalAlignment(SwingConstants.CENTER);
-		labelFilter.setHorizontalAlignment(SwingConstants.RIGHT);
-		add(labelFilter);
+		// item label
+		JLabel itemLabel = new JLabel("Item : ");
+		itemLabel.setBounds(SizeManager.labelSearchBounds);
+		itemLabel.setFont(FontManager.fontLabel);
+		itemLabel.setVerticalAlignment(SwingConstants.CENTER);
+		itemLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		add(itemLabel);
 
-		JLabel labelSearch = new JLabel("Item : ");
-		labelSearch.setBounds(SizeManager.labelSearchBounds);
-		labelSearch.setFont(FontManager.fontLabel);
-		labelSearch.setVerticalAlignment(SwingConstants.CENTER);
-		labelSearch.setHorizontalAlignment(SwingConstants.RIGHT);
-		add(labelSearch);
-
-		initRandom(tableGrade);
-		computeStatistics(tableGrade);
+		generateRandomTestData(gradeTable);
 
 		setVisible(true);
 	}
 
-	private static void search(JComboBox<String> boxCategory, JComboBox<String> boxItem, TableRowSorter<DefaultTableModel> sorter) {
+	/**
+	 * Search something in the grade table by specified text and filter
+	 *
+	 * @param gradeTableRowSorter a TableRowSorter for a JTable
+	 * @param categoryComboBox    a JComboBox which can be used for selecting a category
+	 * @param itemComboBox        a JComboBox which can be used for selecting an item
+	 */
+	private static void searchGradeTable(TableRowSorter<DefaultTableModel> gradeTableRowSorter, JComboBox<String> categoryComboBox, JComboBox<String> itemComboBox) {
 		// TODO
 	}
 
-	private void initRandom(JTable tableGrade) {
+	/**
+	 * Generate some random data which is used for testing
+	 *
+	 * @param tableGrade
+	 */
+	private void generateRandomTestData(JTable tableGrade) {
 		Random random = new Random();
 		for (int i = 3; i < 100; ++i) {
 			for (int j = 1; j < 8; ++j) {
 				tableGrade.setValueAt(String.valueOf(random.nextInt(20) + 80), i, j);
 			}
 		}
-	}
-
-	private void computeStatistics(JTable tableGrade) {
 		for (int i = 1; i < 8; ++i) {
 			List<Integer> rank = new ArrayList<>();
 			for (int j = 3; j < 100; ++j) {

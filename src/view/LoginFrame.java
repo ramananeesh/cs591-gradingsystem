@@ -6,8 +6,14 @@ import helper.SizeManager;
 
 import javax.swing.*;
 
+/**
+ * The {@code LoginFrame} class represents the frame for logging in the grading system.
+ */
 public class LoginFrame extends JFrame {
+	/** The title for the window when LoginFrame displays */
 	private static final String TITLE = "Grading System";
+
+	/** The background image file */
 	private static final String BACKGROUND_PICTURE_FILE_NAME = "src/resource/background.jpg";
 
 	/**
@@ -21,27 +27,27 @@ public class LoginFrame extends JFrame {
 		setContentPane(new JLabel(new ImageIcon(BACKGROUND_PICTURE_FILE_NAME)));
 		setBounds(SizeManager.loginWindowBounds);
 
-		JLabel labelTitle = new JLabel("Grading System");
-		labelTitle.setBounds(SizeManager.titleBounds);
-		labelTitle.setOpaque(true);
-		labelTitle.setBackground(ColorManager.primaryColor);
-		labelTitle.setForeground(ColorManager.lightColor);
-		labelTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		labelTitle.setVerticalAlignment(SwingConstants.CENTER);
-		labelTitle.setFont(FontManager.fontTitle);
-		add(labelTitle);
+		JLabel titleLabel = new JLabel("Grading System");
+		titleLabel.setBounds(SizeManager.titleBounds);
+		titleLabel.setOpaque(true);
+		titleLabel.setBackground(ColorManager.primaryColor);
+		titleLabel.setForeground(ColorManager.lightColor);
+		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		titleLabel.setVerticalAlignment(SwingConstants.CENTER);
+		titleLabel.setFont(FontManager.fontTitle);
+		add(titleLabel);
 
-		JButton buttonLogin = new JButton("Login");
-		buttonLogin.setBounds(SizeManager.buttonLoginBounds);
-		buttonLogin.setBackground(ColorManager.lightColor);
-		buttonLogin.setForeground(ColorManager.primaryColor);
-		buttonLogin.setFont(FontManager.fontLogin);
-		buttonLogin.setFocusPainted(false);
-		buttonLogin.addActionListener(e -> {
+		JButton loginButton = new JButton("Login");
+		loginButton.setBounds(SizeManager.buttonLoginBounds);
+		loginButton.setBackground(ColorManager.lightColor);
+		loginButton.setForeground(ColorManager.primaryColor);
+		loginButton.setFont(FontManager.fontLogin);
+		loginButton.setFocusPainted(false);
+		loginButton.addActionListener(e -> {
 			new MainFrame();
 			dispose();
 		});
-		add(buttonLogin);
+		add(loginButton);
 
 		setVisible(true);
 	}

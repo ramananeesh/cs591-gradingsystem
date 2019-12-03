@@ -8,10 +8,23 @@ import controller.Master;
 
 import java.awt.*;
 
+/**
+ * The {@code LoginFrame} class represents the main frame which contains many kinds of panels
+ */
 public class MainFrame extends JFrame {
 
 	/** The background image file */
 	private static final String BACKGROUND_PICTURE_FILE_NAME = "src/resource/background.jpg";
+
+	/** The total frames of animation */
+	private static final int ANIMATION_FRAMES = 60;
+
+	/** The total time (milliseconds) of animation */
+	private static final int ANIMATION_TIME = 1000;
+
+	/** The interval (milliseconds) of animation. */
+	private static final int ANIMATION_INTERVAL = ANIMATION_TIME / ANIMATION_FRAMES;
+
 
 	/**
 	 * Initializes a newly created {@code MainFrame} object
@@ -24,68 +37,121 @@ public class MainFrame extends JFrame {
 		setBounds(SizeManager.windowBounds);
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-		} catch (Exception e) {
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
 		add(new CoursePanel(this, new Master()));
 		setVisible(true);
 	}
 
-	private static enum Animation {
-		NONE, SLIDE, SCALE;
-	}
-
 	/**
-	 * Switch JPanel contained in this JFrame from one to another.
+	 * Change JPanel contained in this JFrame from one to another.
 	 *
 	 * @param from the JPanel that will be removed
 	 * @param to   the JPanel that will be added
 	 */
-	public void switchPanel(JPanel from, JPanel to) {
-		switchPanelWithoutAnimation(from, to);
+	public void changePanel(JPanel from, JPanel to) {
+		changePanel(from, to, AnimationType.NONLINEAR_SLIDE);
 	}
 
-	private void switchPanelWithoutAnimation(JPanel from, JPanel to) {
+	/**
+	 * Change JPanel contained in this JFrame from one to another with specified animation
+	 *
+	 * @param from          the JPanel that will be removed
+	 * @param to            the JPanel that will be added
+	 * @param animationType type of animation
+	 */
+	public void changePanel(JPanel from, JPanel to, AnimationType animationType) {
+		switch (animationType) {
+			case NONE:
+				changePanelWithoutAnimation(from, to);
+				break;
+			case NONLINEAR_SLIDE:
+				changePanelWithNonlinearSlideAnimation(from, to);
+				break;
+			case LINEAR_SLIDE:
+				changePanelWithLinearSlideAnimation(from, to);
+				break;
+			case SCALE:
+				changePanelWithScaleAnimation(from, to);
+				break;
+		}
+	}
+
+	/**
+	 * Change JPanel contained in this JFrame from one to another without animation
+	 *
+	 * @param from the JPanel that will be removed
+	 * @param to   the JPanel that will be added
+	 */
+	private void changePanelWithoutAnimation(JPanel from, JPanel to) {
 		remove(from);
 		add(to);
 		revalidate();
 		repaint();
 	}
 
-	private void switchPanelWithSlideAnimation(JPanel from, JPanel to) {
-		new Thread(() -> {
-			Rectangle toBounds = to.getBounds();
-			int count = 15;
-			int delta = getHeight() / count;
+	/**
+	 * Change JPanel contained in this JFrame from one to another with slide animation
+	 *
+	 * @param from the JPanel that will be removed
+	 * @param to   the JPanel that will be added
+	 */
+	private void changePanelWithSlideAnimation(JPanel from, JPanel to, double exponent) {
+		new Thread(() -> { // coefficient * pow(time - i, exponent) = height
+			int time = ANIMATION_FRAMES; // the total frames of the animation
+			int distance = getHeight();
+			double coefficient = distance / Math.pow(time, exponent);
 			add(to);
-			for (int i = 1; i <= count; ++i) {
-				from.setLocation(0, -delta * i);
-				to.setLocation(0, from.getHeight() - delta * i);
+			for (int i = 0; i <= time; ++i) {
+				int height = (int) (coefficient * Math.pow(time - i, exponent)) - distance;
+				from.setLocation(0, height);
+				to.setLocation(0, from.getHeight() + height);
 				try {
-					Thread.sleep(16);
-				} catch (Exception e) {
+					Thread.sleep(ANIMATION_INTERVAL);
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			to.setBounds(toBounds);
+			to.setLocation(0, 0);
 			remove(from);
 			revalidate();
 			repaint();
 		}).start();
 	}
 
-	private void switchPanelWithScaleAnimation(JPanel from, JPanel to) {
+	/**
+	 * Change JPanel contained in this JFrame from one to another with nonlinear animation
+	 *
+	 * @param from the JPanel that will be removed
+	 * @param to   the JPanel that will be added
+	 */
+	private void changePanelWithNonlinearSlideAnimation(JPanel from, JPanel to) {
+		changePanelWithSlideAnimation(from, to, 7); // When set exponent as a number not equal to 1, the slide animation is nonlinear. It looks good when being set as 7.
+	}
+
+	/**
+	 * Change JPanel contained in this JFrame from one to another with nonlinear animation
+	 *
+	 * @param from the JPanel that will be removed
+	 * @param to   the JPanel that will be added
+	 */
+	private void changePanelWithLinearSlideAnimation(JPanel from, JPanel to) {
+		changePanelWithSlideAnimation(from, to, 1); // when set exponent as 1, the slide animation is linear
+	}
+
+	private void changePanelWithScaleAnimation(JPanel from, JPanel to) {
 		new Thread(() -> {
 			Rectangle fromBounds = from.getBounds();
 			Rectangle toBounds = to.getBounds();
-			int count = 15;
+			int count = ANIMATION_FRAMES;
 			for (int i = 1; i <= count; ++i) {
 				int newFromWidth = (int) (fromBounds.getWidth() * (count - i) / count);
 				int newFromHeight = (int) (fromBounds.getWidth() * (count - i) / count);
 				from.setBounds(getWidth() / 2 - newFromWidth / 2, getHeight() / 2 - newFromHeight / 2, newFromWidth, newFromHeight);
 				try {
-					Thread.sleep(16);
-				} catch (Exception e) {
+					Thread.sleep(ANIMATION_INTERVAL);
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -96,8 +162,8 @@ public class MainFrame extends JFrame {
 				int newToHeight = (int) (toBounds.getHeight() * i / count);
 				to.setBounds(getWidth() / 2 - newToWidth / 2, getHeight() / 2 - newToHeight / 2, newToWidth, newToHeight);
 				try {
-					Thread.sleep(16);
-				} catch (Exception e) {
+					Thread.sleep(ANIMATION_INTERVAL);
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -106,4 +172,22 @@ public class MainFrame extends JFrame {
 			repaint();
 		}).start();
 	}
+
+	/** Types of animation */
+	public enum AnimationType {
+		NONE, NONLINEAR_SLIDE, LINEAR_SLIDE, SCALE
+	}
+
+	/** Direction of animation */
+	public enum AnimationDirection {
+		UP_TO_DOWN(0, +1), DOWN_TO_UP(0, -1),
+		LEFT_TO_RIGHT(+1, 0), RIGHT_TO_LEFT(-1, 0);
+		int x, y;
+
+		AnimationDirection(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
+
 }
