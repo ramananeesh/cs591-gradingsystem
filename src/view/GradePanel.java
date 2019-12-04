@@ -19,6 +19,7 @@ import model.Item;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.text.DecimalFormat;
 
 /**
  * The {@code GradePanel} class represents the panel for viewing or modifying
@@ -39,6 +40,8 @@ public class GradePanel extends JPanel implements Observer {
 	private DefaultComboBoxModel<String> itemsModel;
 	private String[] gradeTableColumnNames;
 	private boolean editable;
+
+	DecimalFormat df = new DecimalFormat("##.##");
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
@@ -172,9 +175,9 @@ public class GradePanel extends JPanel implements Observer {
 
 			}
 		});
-		
+
 		gradeOptionsComboBox.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -265,7 +268,7 @@ public class GradePanel extends JPanel implements Observer {
 									double numValue = Double.parseDouble(value);
 									double rawScore = it.getMaxPoints() + numValue; // + because numValue is -ve
 									double percentage = 100.0 * rawScore / it.getMaxPoints();
-									map.put("Percentage", Double.toString(percentage));
+									map.put("Percentage", df.format(percentage));
 									// make value = raw score
 									value = Double.toString(rawScore);
 								}
@@ -274,7 +277,7 @@ public class GradePanel extends JPanel implements Observer {
 								// if score entered is percentage
 								double percentage = Double.parseDouble(value);
 								double rawScore = percentage * it.getMaxPoints() / 100.0;
-								map.put("Percentage", Double.toString(percentage));
+								map.put("Percentage", df.format(percentage));
 								// make value = raw score
 								value = Double.toString(rawScore);
 							}
@@ -297,7 +300,7 @@ public class GradePanel extends JPanel implements Observer {
 					}
 					System.out.println();
 				}
-				
+
 				updateGradesTable(categories);
 			}
 		});
@@ -339,13 +342,13 @@ public class GradePanel extends JPanel implements Observer {
 		}
 		return str;
 	}
-	
+
 	public void updateGradesTable(ArrayList<Category> categories) {
 		Category category = categories.get(categoryComboBox.getSelectedIndex() - 1);
 
 		Item item = controller.getCurrentCourse().getItemByItemName(category.getId(),
 				(String) itemComboBox.getSelectedItem());
-		
+
 		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 
 		String[][] gradeTableRowData = new String[students.size()][];
@@ -353,23 +356,21 @@ public class GradePanel extends JPanel implements Observer {
 			gradeTableRowData[i] = new String[gradeTableColumnNames.length];
 			gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
 			gradeTableRowData[i][1] = students.get(i).getBuid();
-			GradeEntry grade = students.get(i).getGradeEntryForItemInCategory(controller.getCurrentCourse().getCourseId(), category.getId(), item.getId());
-			if(grade!=null) {
-				if(gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
-					double pointsLost = grade.getPointsEarned()-item.getMaxPoints();
+			GradeEntry grade = students.get(i).getGradeEntryForItemInCategory(
+					controller.getCurrentCourse().getCourseId(), category.getId(), item.getId());
+			if (grade != null) {
+				if (gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
+					double pointsLost = grade.getPointsEarned() - item.getMaxPoints();
 					gradeTableRowData[i][2] = Double.toString(pointsLost);
-				}
-				else {
-					System.out.println(grade.getPercentage());
-					gradeTableRowData[i][2] = Double.toString(grade.getPercentage());
+				} else {
+					gradeTableRowData[i][2] = df.format(grade.getPercentage());
 				}
 				gradeTableRowData[i][3] = grade.getComments();
-			}
-			else {
+			} else {
 				gradeTableRowData[i][2] = "";
 				gradeTableRowData[i][3] = "";
 			}
-			
+
 		}
 
 		if (editable) {
