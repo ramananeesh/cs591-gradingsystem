@@ -131,7 +131,6 @@ public class GradePanel extends JPanel {
 		// grade options combo
 		String[] gradeOptionsItems = { "Points Lost", "Percentage" };
 		gradeOptionsComboBox = new JComboBox<>(gradeOptionsItems);
-		gradeOptionsComboBox = new JComboBox<>(convertObjectArrayToString(itemComboItems));
 		gradeOptionsComboBox.setBounds(SizeManager.searchCourseBounds);
 		gradeOptionsComboBox.setFont(FontManager.fontSearch);
 		gradeOptionsComboBox.setRenderer(categoryComboBoxRenderer);
@@ -181,6 +180,13 @@ public class GradePanel extends JPanel {
 		itemLabel.setVerticalAlignment(SwingConstants.CENTER);
 		itemLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(itemLabel);
+		
+		JLabel gradeOptionsLabel = new JLabel("Options : ");
+		gradeOptionsLabel.setBounds(SizeManager.labelSearchBounds);
+		gradeOptionsLabel.setFont(FontManager.fontLabel);
+		gradeOptionsLabel.setVerticalAlignment(SwingConstants.CENTER);
+		gradeOptionsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		add(gradeOptionsLabel);
 
 //		generateRandomTestData(gradeTable);
 
