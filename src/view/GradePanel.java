@@ -13,6 +13,7 @@ import controller.Master;
 import model.Category;
 import model.Course;
 import model.CourseStudent;
+import model.GradeEntry;
 import model.Item;
 
 import java.awt.event.ActionEvent;
@@ -23,7 +24,7 @@ import java.util.*;
  * The {@code GradePanel} class represents the panel for viewing or modifying
  * all the grades
  */
-public class GradePanel extends JPanel {
+public class GradePanel extends JPanel implements Observer {
 	/** The title for the window when GradePanel displays */
 	private static final String TITLE = "Grading System - Grade";
 	private Master controller;
@@ -36,6 +37,8 @@ public class GradePanel extends JPanel {
 	private JComboBox<String> itemComboBox;
 	private JComboBox<String> gradeOptionsComboBox;
 	private DefaultComboBoxModel<String> itemsModel;
+	private String[] gradeTableColumnNames;
+	private boolean editable;
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
@@ -47,18 +50,19 @@ public class GradePanel extends JPanel {
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
 		setOpaque(false);
+		this.editable = editable;
 
 		// grade table
-		List<String> gradeTableColumnNamesList = new ArrayList<>();
-		List<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
-		List<String> categoryNames = new ArrayList<>();
+		ArrayList<String> gradeTableColumnNamesList = new ArrayList<>();
+		ArrayList<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
+		ArrayList<String> categoryNames = new ArrayList<>();
 		for (Category c : categories) {
 			categoryNames.add(c.getFieldName());
 		}
 
 		Course currCourse = controller.getCurrentCourse();
 		ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
-		String[] gradeTableColumnNames = { "Student Name", "BUID", "Score", "Comments" };
+		gradeTableColumnNames = new String[] { "Student Name", "BUID", "Score", "Comments" };
 
 		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 
@@ -152,6 +156,30 @@ public class GradePanel extends JPanel {
 					DefaultComboBoxModel<String> newComboModel = new DefaultComboBoxModel<String>(itemComboNames);
 
 					itemComboBox.setModel(newComboModel);
+					updateGradesTable(categories);
+				}
+			}
+		});
+
+		itemComboBox.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (categoryComboBox.getSelectedIndex() != 0) {
+					updateGradesTable(categories);
+				}
+
+			}
+		});
+		
+		gradeOptionsComboBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (categoryComboBox.getSelectedIndex() != 0) {
+					updateGradesTable(categories);
 				}
 			}
 		});
@@ -269,6 +297,8 @@ public class GradePanel extends JPanel {
 					}
 					System.out.println();
 				}
+				
+				updateGradesTable(categories);
 			}
 		});
 		add(saveButton);
@@ -309,6 +339,56 @@ public class GradePanel extends JPanel {
 		}
 		return str;
 	}
+	
+	public void updateGradesTable(ArrayList<Category> categories) {
+		Category category = categories.get(categoryComboBox.getSelectedIndex() - 1);
+
+		Item item = controller.getCurrentCourse().getItemByItemName(category.getId(),
+				(String) itemComboBox.getSelectedItem());
+		
+		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
+
+		String[][] gradeTableRowData = new String[students.size()][];
+		for (int i = 0; i < gradeTableRowData.length; i++) {
+			gradeTableRowData[i] = new String[gradeTableColumnNames.length];
+			gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
+			gradeTableRowData[i][1] = students.get(i).getBuid();
+			GradeEntry grade = students.get(i).getGradeEntryForItemInCategory(controller.getCurrentCourse().getCourseId(), category.getId(), item.getId());
+			if(grade!=null) {
+				if(gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
+					double pointsLost = grade.getPointsEarned()-item.getMaxPoints();
+					gradeTableRowData[i][2] = Double.toString(pointsLost);
+				}
+				else {
+					System.out.println(grade.getPercentage());
+					gradeTableRowData[i][2] = Double.toString(grade.getPercentage());
+				}
+				gradeTableRowData[i][3] = grade.getComments();
+			}
+			else {
+				gradeTableRowData[i][2] = "";
+				gradeTableRowData[i][3] = "";
+			}
+			
+		}
+
+		if (editable) {
+			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return column > 0;
+				}
+			};
+		} else {
+			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			};
+		}
+		gradeTable.setModel(gradeTableModel);
+	}
 
 	/**
 	 * Generate some random data which is used for testing
@@ -335,5 +415,12 @@ public class GradePanel extends JPanel {
 			tableGrade.setValueAt(String.valueOf(rank.get(rank.size() / 2)), 1, i);
 			tableGrade.setValueAt(String.format("%.2f", sum / rank.size()), 0, i);
 		}
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		ArrayList<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
+		updateGradesTable(categories);
 	}
 }

@@ -64,7 +64,12 @@ public class GradeEntry {
 	}
 	public void setComments(String comments) {
 		this.comments = comments;
+	}
+	public double getPercentage() {
+		return percentage;
+	}
+	public void setPercentage(double percentage) {
+		this.percentage = percentage;
 	} 
 
-	
 }

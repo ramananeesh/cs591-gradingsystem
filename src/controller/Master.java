@@ -241,6 +241,9 @@ public class Master extends Observable {
 			student = editGradeEntryForStudent(course, student, newEntry);
 			course.setStudent(studentIndex, student);
 		}
+		
+		setChanged();
+		notifyObservers();
 	}
 
 	public ArrayList<String> getAllItemNames(Course course) {

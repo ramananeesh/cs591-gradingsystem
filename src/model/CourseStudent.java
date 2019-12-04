@@ -66,5 +66,14 @@ public class CourseStudent extends Student {
 	public void addGradeEntry(GradeEntry entry) {
 		this.grades.add(entry);
 	}
+	
+	public GradeEntry getGradeEntryForItemInCategory(int courseId, int categoryId, int itemId) {
+		for(GradeEntry entry: this.grades) {
+			if(entry.getCourseId()==courseId&&entry.getCategoryId()==categoryId && entry.getItemId()==itemId) {
+				return entry;
+			}
+		}
+		return null; 
+	}
 }
 
