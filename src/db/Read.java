@@ -21,7 +21,7 @@ public class Read {
 
 		try {
 			while (rs.next()) {
-				ArrayList<Item> items = getItemsByCategory(rs.getInt("ID"));
+				ArrayList<Item> items = getItemsByCategory(rs.getInt("ID"), rs.getInt("courseID"));
 
 				Category category = new Category(rs.getInt("ID"), rs.getString("fieldName"), rs.getDouble("weight"),
 						rs.getInt("courseId"), rs.getInt("templateID"), items);
@@ -55,14 +55,14 @@ public class Read {
 //		return items;
 //	} commented out, outdated code
 
-	public static ArrayList<Item> getItemsByCategory(int categoryID){
+	public static ArrayList<Item> getItemsByCategory(int categoryID, int courseID){
 		ArrayList<Item> items = new ArrayList<>();
 		String query = "select id, courseID, fieldName, weight, dateAssigned, dateDue from Item where categoryID = '"
-				+ categoryID + "'";
+				+ categoryID + "' and courseID = '" + courseID + "'";
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
-				ArrayList<GradeEntry> gradeEntries = getEntriesByItem(rs.getInt("ID"));
+				ArrayList<GradeEntry> gradeEntries = getEntriesByItem(rs.getInt("ID"), rs.getInt("categoryID"), rs.getInt("courseID"));
 				Item item = new Item(rs.getInt("ID"), rs.getString("fieldName"), rs.getInt("categoryID"),
 						rs.getDouble("weight"), rs.getInt("courseID"), rs.getDate("dateAssigned"),
 						rs.getDate("dateDue"), gradeEntries);
@@ -74,9 +74,10 @@ public class Read {
 		return items;
 	}
 
-	public static ArrayList<GradeEntry> getEntriesByItem(int itemID){
+	public static ArrayList<GradeEntry> getEntriesByItem(int itemID, int categoryID, int courseID){
 		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
-		String query = "Select * from GradeEntry where itemID = '" + itemID + "'";
+		String query = "Select * from GradeEntry where itemID = '" + itemID + "' and categoryID = '" + categoryID + "' and " +
+				"courseID = '" + courseID + "'";
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
@@ -145,7 +146,7 @@ public class Read {
 		return gradeEntries;
 	}
 
-	// does not currently obtain active status of the students
+	//now properly makes the coursestudent object
 	public static ArrayList<CourseStudent> getCourseStudentsByCourse(int courseID) {
 		ArrayList<CourseStudent> students = new ArrayList<>();
 //		String query = "Select A.* from Student A where A.BUID in (select B.BUID from CourseStudent B where B.courseID ='"
