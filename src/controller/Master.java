@@ -237,7 +237,7 @@ public class Master extends Observable {
 			int studentIndex = course.getStudentIndexById(buid);
 			CourseStudent student = course.getStudent(studentIndex);
 			GradeEntry newEntry = new GradeEntry(item.getFieldName(), itemId, categoryId, item.getMaxPoints(),
-					Double.parseDouble(h.get("Score")), course.getCourseId(), h.get("Comments"));
+					Double.parseDouble(h.get("Score")),Double.parseDouble(h.get("Percentage")), course.getCourseId(), h.get("Comments"));
 			student = editGradeEntryForStudent(course, student, newEntry);
 			course.setStudent(studentIndex, student);
 		}

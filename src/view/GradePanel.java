@@ -102,7 +102,7 @@ public class GradePanel extends JPanel {
 
 		// category combo box
 		ArrayList<String> categoryComboNames = new ArrayList<>();
-		categoryComboNames.add("All");
+		categoryComboNames.add("None");
 		categoryComboNames.addAll(categoryNames);
 		Object[] categoryComboBoxItems = categoryComboNames.toArray(); // TODO
 		categoryComboBox = new JComboBox<>(convertObjectArrayToString(categoryComboBoxItems));
@@ -178,37 +178,56 @@ public class GradePanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if(categoryComboBox.getSelectedIndex()==0) {
-					JOptionPane.showMessageDialog(null,"Please select a category", "Error", 
-							JOptionPane.ERROR_MESSAGE);
-					return; 
+				if (categoryComboBox.getSelectedIndex() == 0) {
+					JOptionPane.showMessageDialog(null, "Please select a category", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				ArrayList<HashMap<String, String>> values = new ArrayList<HashMap<String, String>>();
+
+				Category cat = categories.get(categoryComboBox.getSelectedIndex() - 1);
+				Item it = controller.getCurrentCourse().getItemByItemName(cat.getId(),
+						(String) itemComboBox.getSelectedItem());
+
 				for (int i = 0; i < gradeTableModel.getRowCount(); i++) {
 					// System.out.println(gradeTableModel.getValueAt(count, 0).toString());
 					HashMap<String, String> map = new HashMap<String, String>();
 					map.put("Buid", gradeTableModel.getValueAt(i, 1).toString());
 					for (int j = 2; j < gradeTableModel.getColumnCount(); j++) {
-						map.put(gradeTableColumnNames[j], gradeTableModel.getValueAt(i, j).toString());
+						String value = gradeTableModel.getValueAt(i, j).toString();
+						if (gradeTableColumnNames[j].equals("Score")) {
+							if (gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
+								double numValue = Double.parseDouble(value);
+								double rawScore = it.getMaxPoints() + numValue; // + because numValue is -ve
+								double percentage = 100.0 * rawScore / it.getMaxPoints();
+								map.put("Percentage", Double.toString(percentage));
+								// make value = raw score
+								value = Double.toString(rawScore);
+							} else {
+								// if score entered is percentage
+								double percentage = Double.parseDouble(value);
+								double rawScore = percentage * it.getMaxPoints() / 100.0;
+								map.put("Percentage", Double.toString(percentage));
+								// make value = raw score
+								value = Double.toString(rawScore);
+							}
+						}
+						map.put(gradeTableColumnNames[j], value);
 					}
 					values.add(map);
 				}
 
-				controller.editGradesForCategoryItemInCourse(controller.getCurrentCourse(),
-						categories.get(categoryComboBox.getSelectedIndex() - 1).getId(),
-						controller.getCurrentCourse().getItemIdByItemName(
-								categories.get(categoryComboBox.getSelectedIndex() - 1).getId(),
-								(String) itemComboBox.getSelectedItem()),
+				controller.editGradesForCategoryItemInCourse(controller.getCurrentCourse(), cat.getId(), it.getId(),
 						values);
 
-				//test to see if edit works. Remove after linking to db 
+				// test to see if edit works. Remove after linking to db
 				ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 				for (CourseStudent s : students) {
-					System.out.println("Student: "+s.getBuid());
+					System.out.println("Student: " + s.getBuid());
 					HashMap<String, Double> grades = s.getAllGradeEntries();
-					for(String key: grades.keySet()) {
-						System.out.println(key+": "+grades.get(key));
+					for (String key : grades.keySet()) {
+						System.out.print(key + ": " + grades.get(key)+"\t");
 					}
+					System.out.println();
 				}
 			}
 		});

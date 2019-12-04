@@ -8,9 +8,10 @@ public class GradeEntry {
 	private double maxPoints;
 	private double pointsEarned;
 	private int courseId;
+	private double percentage;
 	private String comments;
 	
-	public GradeEntry(String entryName, int itemId, int categoryId, double maxPoints, double pointsEarned, int courseId,
+	public GradeEntry(String entryName, int itemId, int categoryId, double maxPoints, double pointsEarned, double percentage, int courseId,
 			String comments) {
 		super();
 		this.entryName = entryName;
@@ -19,6 +20,7 @@ public class GradeEntry {
 		this.maxPoints = maxPoints;
 		this.pointsEarned = pointsEarned;
 		this.courseId = courseId;
+		this.percentage = percentage; 
 		this.comments = comments;
 	}
 	public String getEntryName() {

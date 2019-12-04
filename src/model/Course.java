@@ -132,4 +132,8 @@ public class Course extends GenericCourse {
 	public int getItemIdByItemName(int categoryId, String itemName) {
 		return this.getCategoryById(categoryId).getItemByItemName(itemName).getId();
 	}
+	
+	public Item getItemByItemName(int categoryId, String itemName) {
+		return this.getCategoryById(categoryId).getItemByItemName(itemName);
+	}
 }
