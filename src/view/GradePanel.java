@@ -205,6 +205,12 @@ public class GradePanel extends JPanel {
 						}
 
 					} else {
+						if (value.equals("")) {
+							JOptionPane.showMessageDialog(null,
+									"Percentage Score cannot be empty. Please enter 100 if full score", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							return;
+						}
 						Double val = Double.parseDouble(value);
 						if (val < 0 || val > 100) {
 							JOptionPane.showMessageDialog(null, "Please enter valid percentage values for score",
