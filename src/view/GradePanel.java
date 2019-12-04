@@ -10,44 +10,74 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 import controller.Master;
+import model.Category;
+import model.Course;
+import model.CourseStudent;
+import model.GradeEntry;
+import model.Item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.text.DecimalFormat;
 
 /**
- * The {@code GradePanel} class represents the panel for viewing or modifying all the grades
+ * The {@code GradePanel} class represents the panel for viewing or modifying
+ * all the grades
  */
-public class GradePanel extends JPanel {
+public class GradePanel extends JPanel implements Observer {
 	/** The title for the window when GradePanel displays */
 	private static final String TITLE = "Grading System - Grade";
 	private Master controller;
 
 	/** The frame which contains this panel. */
 	private MainFrame frame;
+	private DefaultTableModel gradeTableModel;
+	private JTable gradeTable;
+	private JComboBox<String> categoryComboBox;
+	private JComboBox<String> itemComboBox;
+	private JComboBox<String> gradeOptionsComboBox;
+	private DefaultComboBoxModel<String> itemsModel;
+	private String[] gradeTableColumnNames;
+	private boolean editable;
+
+	DecimalFormat df = new DecimalFormat("##.##");
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
 	 */
 	public GradePanel(MainFrame frame, String[] courseData, boolean editable, Master controller) {
 		this.frame = frame;
-		this.controller = controller; 
+		this.controller = controller;
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
 		setOpaque(false);
+		this.editable = editable;
 
 		// grade table
-		String[] gradeTableColumnNames = {
-				"Student Name", "Homework 1", "Homework 2", "Homework 3", "Homework 4", "Homework 5", "Midterm", "Final Exam"
-		}; // TODO test data, need to be replaced when database exists
-		String[][] gradeTableRowData = new String[100][1];
-		gradeTableRowData[0][0] = "Average"; // TODO move statistics part to a separated place
-		gradeTableRowData[1][0] = "Median";
-		for (int i = 3; i < 100; ++i) {
-			gradeTableRowData[i][0] = String.format("Student %02d", i - 2);
+		ArrayList<String> gradeTableColumnNamesList = new ArrayList<>();
+		ArrayList<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
+		ArrayList<String> categoryNames = new ArrayList<>();
+		for (Category c : categories) {
+			categoryNames.add(c.getFieldName());
 		}
-		DefaultTableModel gradeTableModel;
+
+		Course currCourse = controller.getCurrentCourse();
+		ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
+		gradeTableColumnNames = new String[] { "Student Name", "BUID", "Score", "Comments" };
+
+		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
+
+		String[][] gradeTableRowData = new String[students.size()][];
+		for (int i = 0; i < gradeTableRowData.length; i++) {
+			gradeTableRowData[i] = new String[gradeTableColumnNames.length];
+			gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
+			gradeTableRowData[i][1] = students.get(i).getBuid();
+			gradeTableRowData[i][2] = "";
+			gradeTableRowData[i][3] = "";
+		}
+
 		if (editable) {
 			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 				@Override
@@ -63,7 +93,7 @@ public class GradePanel extends JPanel {
 				}
 			};
 		}
-		JTable gradeTable = new JTable(gradeTableModel);
+		gradeTable = new JTable(gradeTableModel);
 		gradeTable.setRowHeight(SizeManager.tableRowHeight);
 		gradeTable.setFont(FontManager.fontTable);
 		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
@@ -78,9 +108,12 @@ public class GradePanel extends JPanel {
 		add(gradeTableScrollPane);
 
 		// category combo box
-		String[] categoryComboBoxItems = {"All", "Homework", "Exam"}; // TODO
-		JComboBox<String> categoryComboBox = new JComboBox<>(categoryComboBoxItems);
-		categoryComboBox.setBounds(SizeManager.filterCourseBounds);
+		ArrayList<String> categoryComboNames = new ArrayList<>();
+		categoryComboNames.add("None");
+		categoryComboNames.addAll(categoryNames);
+		Object[] categoryComboBoxItems = categoryComboNames.toArray(); // TODO
+		categoryComboBox = new JComboBox<>(convertObjectArrayToString(categoryComboBoxItems));
+		categoryComboBox.setBounds(SizeManager.categoryBounds);
 		categoryComboBox.setFont(FontManager.fontFilter);
 		DefaultListCellRenderer categoryComboBoxRenderer = new DefaultListCellRenderer();
 		categoryComboBoxRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -88,14 +121,71 @@ public class GradePanel extends JPanel {
 		add(categoryComboBox);
 
 		// item combo box
-		String[] itemComboBoxItems = {"All", "Homework 1", "Homework 2", "Midterm", "Final Exam"}; // TODO
-		JComboBox<String> itemComboBox = new JComboBox<>(itemComboBoxItems);
-		itemComboBox.setBounds(SizeManager.searchCourseBounds);
+		ArrayList<String> itemComboNames = new ArrayList<>();
+		String[] itemComboItems = { "None" };
+		itemsModel = new DefaultComboBoxModel<String>(itemComboItems);
+		itemComboBox = new JComboBox<>(itemComboItems);
+		itemComboBox.setBounds(SizeManager.itemBounds);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
 		add(itemComboBox);
-		categoryComboBox.addActionListener(e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox));
-		itemComboBox.addActionListener(e -> searchGradeTable(gradeTableRowSorter, categoryComboBox, itemComboBox));
+
+		// grade options combo
+		String[] gradeOptionsItems = { "Points Lost", "Percentage" };
+		gradeOptionsComboBox = new JComboBox<>(gradeOptionsItems);
+		// gradeOptionsComboBox.setBounds(SizeManager.filterCourseBounds);
+		gradeOptionsComboBox.setBounds(SizeManager.comboBounds);
+		gradeOptionsComboBox.setFont(FontManager.fontFilter);
+		gradeOptionsComboBox.setRenderer(categoryComboBoxRenderer);
+		add(gradeOptionsComboBox);
+
+		categoryComboBox.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int index = categoryComboBox.getSelectedIndex();
+				if (index != 0) {
+					// index-1 here because index=0 is "All"
+					ArrayList<Item> items = controller.getAllItemsForCourseCategory(controller.getCurrentCourse(),
+							index - 1);
+
+					String[] itemComboNames = new String[items.size()];
+					int i = 0;
+					for (Item item : items) {
+						itemComboNames[i++] = item.getFieldName();
+					}
+
+					DefaultComboBoxModel<String> newComboModel = new DefaultComboBoxModel<String>(itemComboNames);
+
+					itemComboBox.setModel(newComboModel);
+					updateGradesTable(categories);
+				}
+			}
+		});
+
+		itemComboBox.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (categoryComboBox.getSelectedIndex() != 0) {
+					updateGradesTable(categories);
+				}
+
+			}
+		});
+
+		gradeOptionsComboBox.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (categoryComboBox.getSelectedIndex() != 0) {
+					updateGradesTable(categories);
+				}
+			}
+		});
 
 		// back button
 		JButton backButton = new JButton("Back");
@@ -114,14 +204,111 @@ public class GradePanel extends JPanel {
 		saveButton.setBounds(SizeManager.buttonViewBounds);
 		saveButton.setForeground(ColorManager.lightColor);
 		saveButton.setBackground(ColorManager.primaryColor);
-		saveButton.addActionListener(e -> {
-			// TODO save grade data to database
+		saveButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (categoryComboBox.getSelectedIndex() == 0) {
+					JOptionPane.showMessageDialog(null, "Please select a category", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				ArrayList<HashMap<String, String>> values = new ArrayList<HashMap<String, String>>();
+
+				Category cat = categories.get(categoryComboBox.getSelectedIndex() - 1);
+				Item it = controller.getCurrentCourse().getItemByItemName(cat.getId(),
+						(String) itemComboBox.getSelectedItem());
+
+				DefaultTableModel duplicate = gradeTableModel;
+				for (int i = 0; i < gradeTableModel.getRowCount(); i++) {
+					int j = 2;
+					String value = gradeTableModel.getValueAt(i, j).toString().trim();
+
+					if (gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
+						if (value.equals("")) {
+						} else {
+							Double val = Double.parseDouble(value);
+							if (val > 0) {
+								JOptionPane.showMessageDialog(null, "Points lost means score has to be negative",
+										"Error", JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+						}
+
+					} else {
+						if (value.equals("")) {
+							JOptionPane.showMessageDialog(null,
+									"Percentage Score cannot be empty. Please enter 100 if full score", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+						Double val = Double.parseDouble(value);
+						if (val < 0 || val > 100) {
+							JOptionPane.showMessageDialog(null, "Please enter valid percentage values for score",
+									"Error", JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+					}
+
+				}
+
+				for (int i = 0; i < gradeTableModel.getRowCount(); i++) {
+					// System.out.println(gradeTableModel.getValueAt(count, 0).toString());
+					HashMap<String, String> map = new HashMap<String, String>();
+					map.put("Buid", gradeTableModel.getValueAt(i, 1).toString());
+					for (int j = 2; j < gradeTableModel.getColumnCount(); j++) {
+						String value = gradeTableModel.getValueAt(i, j).toString();
+						if (gradeTableColumnNames[j].equals("Score")) {
+							if (gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
+								if (value.equals("")) {
+									// if value is empty then it means no points lost
+									value = Double.toString(it.getMaxPoints());
+									map.put("Percentage", Double.toString(100));
+								} else {
+									double numValue = Double.parseDouble(value);
+									double rawScore = it.getMaxPoints() + numValue; // + because numValue is -ve
+									double percentage = 100.0 * rawScore / it.getMaxPoints();
+									map.put("Percentage", df.format(percentage));
+									// make value = raw score
+									value = Double.toString(rawScore);
+								}
+
+							} else {
+								// if score entered is percentage
+								double percentage = Double.parseDouble(value);
+								double rawScore = percentage * it.getMaxPoints() / 100.0;
+								map.put("Percentage", df.format(percentage));
+								// make value = raw score
+								value = Double.toString(rawScore);
+							}
+						}
+						map.put(gradeTableColumnNames[j], value);
+					}
+					values.add(map);
+				}
+
+				controller.editGradesForCategoryItemInCourse(controller.getCurrentCourse(), cat.getId(), it.getId(),
+						values);
+
+				// test to see if edit works. Remove after linking to db
+				ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
+				for (CourseStudent s : students) {
+					System.out.println("Student: " + s.getBuid());
+					HashMap<String, Double> grades = s.getAllGradeEntries();
+					for (String key : grades.keySet()) {
+						System.out.print(key + ": " + grades.get(key) + "\t");
+					}
+					System.out.println();
+				}
+
+				updateGradesTable(categories);
+			}
 		});
 		add(saveButton);
 
 		// category label
 		JLabel categoryLabel = new JLabel("Category : ");
-		categoryLabel.setBounds(SizeManager.labelFilterBounds);
+		categoryLabel.setBounds(SizeManager.labelCategoryBounds);
 		categoryLabel.setFont(FontManager.fontLabel);
 		categoryLabel.setVerticalAlignment(SwingConstants.CENTER);
 		categoryLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -129,26 +316,79 @@ public class GradePanel extends JPanel {
 
 		// item label
 		JLabel itemLabel = new JLabel("Item : ");
-		itemLabel.setBounds(SizeManager.labelSearchBounds);
+		itemLabel.setBounds(SizeManager.labelItemBounds);
 		itemLabel.setFont(FontManager.fontLabel);
 		itemLabel.setVerticalAlignment(SwingConstants.CENTER);
 		itemLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(itemLabel);
 
-		generateRandomTestData(gradeTable);
+		JLabel gradeOptionsLabel = new JLabel("Options : ");
+		gradeOptionsLabel.setBounds(SizeManager.labelComboBounds);
+		gradeOptionsLabel.setFont(FontManager.fontLabel);
+		gradeOptionsLabel.setVerticalAlignment(SwingConstants.CENTER);
+		gradeOptionsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		add(gradeOptionsLabel);
+
+//		generateRandomTestData(gradeTable);
 
 		setVisible(true);
 	}
 
-	/**
-	 * Search something in the grade table by specified text and filter
-	 *
-	 * @param gradeTableRowSorter a TableRowSorter for a JTable
-	 * @param categoryComboBox    a JComboBox which can be used for selecting a category
-	 * @param itemComboBox        a JComboBox which can be used for selecting an item
-	 */
-	private static void searchGradeTable(TableRowSorter<DefaultTableModel> gradeTableRowSorter, JComboBox<String> categoryComboBox, JComboBox<String> itemComboBox) {
-		// TODO
+	public String[] convertObjectArrayToString(Object[] arr) {
+		String[] str = new String[arr.length];
+		int i = 0;
+		for (Object o : arr) {
+			str[i++] = o.toString();
+		}
+		return str;
+	}
+
+	public void updateGradesTable(ArrayList<Category> categories) {
+		Category category = categories.get(categoryComboBox.getSelectedIndex() - 1);
+
+		Item item = controller.getCurrentCourse().getItemByItemName(category.getId(),
+				(String) itemComboBox.getSelectedItem());
+
+		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
+
+		String[][] gradeTableRowData = new String[students.size()][];
+		for (int i = 0; i < gradeTableRowData.length; i++) {
+			gradeTableRowData[i] = new String[gradeTableColumnNames.length];
+			gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
+			gradeTableRowData[i][1] = students.get(i).getBuid();
+			GradeEntry grade = students.get(i).getGradeEntryForItemInCategory(
+					controller.getCurrentCourse().getCourseId(), category.getId(), item.getId());
+			if (grade != null) {
+				if (gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
+					double pointsLost = grade.getPointsEarned() - item.getMaxPoints();
+					gradeTableRowData[i][2] = Double.toString(pointsLost);
+				} else {
+					gradeTableRowData[i][2] = df.format(grade.getPercentage());
+				}
+				gradeTableRowData[i][3] = grade.getComments();
+			} else {
+				gradeTableRowData[i][2] = "";
+				gradeTableRowData[i][3] = "";
+			}
+
+		}
+
+		if (editable) {
+			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return column > 0;
+				}
+			};
+		} else {
+			gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			};
+		}
+		gradeTable.setModel(gradeTableModel);
 	}
 
 	/**
@@ -176,5 +416,12 @@ public class GradePanel extends JPanel {
 			tableGrade.setValueAt(String.valueOf(rank.get(rank.size() / 2)), 1, i);
 			tableGrade.setValueAt(String.format("%.2f", sum / rank.size()), 0, i);
 		}
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		ArrayList<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
+		updateGradesTable(categories);
 	}
 }
