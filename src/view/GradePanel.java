@@ -110,7 +110,7 @@ public class GradePanel extends JPanel {
 		categoryComboNames.addAll(categoryNames);
 		Object[] categoryComboBoxItems = categoryComboNames.toArray(); // TODO
 		categoryComboBox = new JComboBox<>(convertObjectArrayToString(categoryComboBoxItems));
-		categoryComboBox.setBounds(SizeManager.filterCourseBounds);
+		categoryComboBox.setBounds(SizeManager.categoryBounds);
 		categoryComboBox.setFont(FontManager.fontFilter);
 		DefaultListCellRenderer categoryComboBoxRenderer = new DefaultListCellRenderer();
 		categoryComboBoxRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -123,7 +123,7 @@ public class GradePanel extends JPanel {
 		itemComboNames.addAll(allItemNames);
 		Object[] itemComboItems = itemComboNames.toArray(); // TODO
 		itemComboBox = new JComboBox<>(convertObjectArrayToString(itemComboItems));
-		itemComboBox.setBounds(SizeManager.searchCourseBounds);
+		itemComboBox.setBounds(SizeManager.itemBounds);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
 		add(itemComboBox);
@@ -168,7 +168,7 @@ public class GradePanel extends JPanel {
 
 		// category label
 		JLabel categoryLabel = new JLabel("Category : ");
-		categoryLabel.setBounds(SizeManager.labelFilterBounds);
+		categoryLabel.setBounds(SizeManager.labelCategoryBounds);
 		categoryLabel.setFont(FontManager.fontLabel);
 		categoryLabel.setVerticalAlignment(SwingConstants.CENTER);
 		categoryLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -176,14 +176,14 @@ public class GradePanel extends JPanel {
 
 		// item label
 		JLabel itemLabel = new JLabel("Item : ");
-		itemLabel.setBounds(SizeManager.labelSearchBounds);
+		itemLabel.setBounds(SizeManager.labelItemBounds);
 		itemLabel.setFont(FontManager.fontLabel);
 		itemLabel.setVerticalAlignment(SwingConstants.CENTER);
 		itemLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(itemLabel);
 		
 		JLabel gradeOptionsLabel = new JLabel("Options : ");
-		gradeOptionsLabel.setBounds(SizeManager.labelSearchBounds);
+		gradeOptionsLabel.setBounds(SizeManager.labelComboBounds);
 		gradeOptionsLabel.setFont(FontManager.fontLabel);
 		gradeOptionsLabel.setVerticalAlignment(SwingConstants.CENTER);
 		gradeOptionsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
