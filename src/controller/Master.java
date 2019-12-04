@@ -70,11 +70,11 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
-	public void addItemForCourseCategory(Course course, int categoryIndex, String fieldName, double weight) {
+	public void addItemForCourseCategory(Course course, int categoryIndex, String fieldName, double weight, double maxPoints) {
 
 		Category category = course.getCategories().get(categoryIndex);
-		category.addItem(new Item(category.getItems().size() + 1, fieldName, category.getId(), weight,
-				course.getCourseId()));
+		category.addItem(
+				new Item(category.getItems().size() + 1, fieldName, category.getId(), weight, maxPoints, course.getCourseId()));
 
 		setChanged();
 		notifyObservers();
@@ -115,8 +115,8 @@ public class Master extends Observable {
 		ArrayList<Item> existingItems = category.getItems();
 
 		for (Item i : existingItems) {
-			newItems.add(new Item(i.getId(), i.getFieldName(), i.getCategoryId(), i.getWeight(), i.getCourseId(),
-					i.getDateAssigned(), i.getDateDue()));
+			newItems.add(new Item(i.getId(), i.getFieldName(), i.getCategoryId(), i.getWeight(), i.getMaxPoints(),
+					i.getCourseId(), i.getDateAssigned(), i.getDateDue()));
 		}
 
 		return newItems;
@@ -171,6 +171,92 @@ public class Master extends Observable {
 		return ans;
 	}
 
+	public ArrayList<Item> getAllItemsForCourseCategory(Course course, int categoryIndex) {
+		return course.getCategory(categoryIndex).getItems();
+	}
+
+	public ArrayList<Category> getAllCategoriesForCourse(Course course) {
+		return course.getCategories();
+	}
+
+	public ArrayList<HashMap<String, Double>> getAllGradeEntriesForAllStudents(Course course) {
+		ArrayList<HashMap<String, Double>> l = new ArrayList<>();
+		for (CourseStudent student : course.getStudents()) {
+			l.add(student.getAllGradeEntries());
+		}
+
+		return l;
+	}
+
+	/*
+	 * Method loops through all students to get the student with particular buid
+	 * Then, goes through all grade entry's for the student and checks if there
+	 * exists a grade entry for the given categoryId and itemId if yes, returns the
+	 * index of grade entry. If not returns -1 Every grade entry for a student is
+	 * unique to a (categoryId + itemId)
+	 */
+	public int doesGradeEntryExistForStudent(Course course, String buid, int categoryId, int itemId) {
+		ArrayList<CourseStudent> students = course.getStudents();
+
+		for (CourseStudent student : students) {
+			if (student.getBuid().equals(buid)) {
+				ArrayList<GradeEntry> entries = student.getGrades();
+				for (int i = 0; i < entries.size(); i++) {
+					GradeEntry e = entries.get(i);
+					if (e.getCategoryId() == categoryId && e.getItemId() == itemId) {
+						return i;
+					}
+				}
+			}
+		}
+		return -1;
+	}
+
+	public CourseStudent editGradeEntryForStudent(Course course, CourseStudent student, GradeEntry gradeEntry) {
+
+		int gradeEntryIndex = doesGradeEntryExistForStudent(course, student.getBuid(), gradeEntry.getCategoryId(),
+				gradeEntry.getItemId());
+
+		// if index returns as -1, add new gradeEntry
+		if (gradeEntryIndex == -1) {
+			student.addGradeEntry(gradeEntry);
+		} else {
+			student.setGradeEntry(gradeEntryIndex, gradeEntry);
+		}
+
+		return student;
+	}
+
+	public void editGradesForCategoryItemInCourse(Course course, int categoryId, int itemId,
+			ArrayList<HashMap<String, String>> maps) {
+		Category category = course.getCategoryById(categoryId);
+		Item item = category.getItemById(itemId);
+
+		for (HashMap<String, String> h : maps) {
+			String buid = h.get("Buid");
+			int studentIndex = course.getStudentIndexById(buid);
+			CourseStudent student = course.getStudent(studentIndex);
+			GradeEntry newEntry = new GradeEntry(item.getFieldName(), itemId, categoryId, item.getMaxPoints(),
+					Double.parseDouble(h.get("Score")),Double.parseDouble(h.get("Percentage")), course.getCourseId(), h.get("Comments"));
+			student = editGradeEntryForStudent(course, student, newEntry);
+			course.setStudent(studentIndex, student);
+		}
+		
+		setChanged();
+		notifyObservers();
+	}
+
+	public ArrayList<String> getAllItemNames(Course course) {
+		ArrayList<String> names = new ArrayList<>();
+
+		for (Category category : course.getCategories()) {
+			for (Item i : category.getItems()) {
+				names.add(i.getFieldName());
+			}
+		}
+		return names;
+	}
+
 	public String[][] getItemDetailsForCourseCategory(Course course, int categoryIndex) {
 		return course.getCategories().get(categoryIndex).getItemsForList();
 	}
@@ -208,10 +294,9 @@ public class Master extends Observable {
 			}
 		}
 	}
-	
+
 	public void setCourse(int index, Course newCourse) {
 		this.courses.remove(index);
 		this.courses.add(index, newCourse);
 	}
 }
-

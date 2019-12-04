@@ -47,4 +47,33 @@ public class CourseStudent extends Student {
 	public void setGrades(ArrayList<GradeEntry> grades) {
 		this.grades = grades;
 	}
+
+	public HashMap<String, Double>getAllGradeEntries(){
+		HashMap<String, Double> map = new HashMap<String, Double>();
+		for(GradeEntry entry: this.getGrades()){
+			map.put(entry.getEntryName(),entry.getPointsEarned());
+		}
+
+		return map;
+	}
+	
+	public void setGradeEntry(int index, GradeEntry gradeEntry) {
+		GradeEntry existing = this.grades.get(index);
+		this.grades.remove(index);
+		this.grades.add(index, gradeEntry);
+	}
+	
+	public void addGradeEntry(GradeEntry entry) {
+		this.grades.add(entry);
+	}
+	
+	public GradeEntry getGradeEntryForItemInCategory(int courseId, int categoryId, int itemId) {
+		for(GradeEntry entry: this.grades) {
+			if(entry.getCourseId()==courseId&&entry.getCategoryId()==categoryId && entry.getItemId()==itemId) {
+				return entry;
+			}
+		}
+		return null; 
+	}
 }
+
