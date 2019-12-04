@@ -222,7 +222,7 @@ public class CoursePanel extends JPanel implements Observer {
 		Course course = controller.getCourse(0);
 		
 		ArrayList<Item> items = new ArrayList<Item>();
-		items.add(new Item(1, "HW1", 1,0.4,course.getCourseId()));
+		items.add(new Item(1, "HW1", 1,0.4,150,course.getCourseId()));
 		ArrayList<Category> categories = new ArrayList<Category>();
 		categories.add(new Category(1, "Homework", 0.3, course.getCourseId(), items));
 		Course newCourse = new Course(course.getCourseId(),course.getCourseNumber(),course.getCourseName(), course.getTerm(), categories);

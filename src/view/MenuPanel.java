@@ -178,8 +178,9 @@ public class MenuPanel extends JPanel implements Observer {
 								}
 								JTextField itemField = new JTextField();
 								JTextField percentageField = new JTextField();
+								JTextField maxPointsField = new JTextField();
 								Object[] fields = { "Category: ", categoryCombo, "Item: ", itemField, "Percentage: ",
-										percentageField, };
+										percentageField, "Max Points: ",maxPointsField,};
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item",
@@ -198,9 +199,9 @@ public class MenuPanel extends JPanel implements Observer {
 										String fieldName = itemField.getText();
 										try {
 											double itemWeight = Double.parseDouble(percentageField.getText());
-
+											double maxPoints = Double.parseDouble(maxPointsField.getText());
 											controller.addItemForCourseCategory(controller.getCurrentCourse(),
-													categoryIndex, fieldName, itemWeight);
+													categoryIndex, fieldName, itemWeight, maxPoints);
 
 										} catch (Exception ex) {
 											JOptionPane.showMessageDialog(null, "Error",

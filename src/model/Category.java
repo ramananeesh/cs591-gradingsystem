@@ -81,5 +81,21 @@ public class Category extends GenericCategory {
 		
 		return str;
 	}
+	
+	public Item getItemById(int itemId) {
+		for(Item i: this.items) {
+			if(i.getId()==itemId)
+				return i;
+		}
+		return null;
+	}
+	
+	public Item getItemByItemName(String itemName) {
+		for(Item i: this.items) {
+			if(i.getFieldName().equals(itemName))
+				return i;
+		}
+		return null;
+	}
 
 }

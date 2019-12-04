@@ -111,4 +111,25 @@ public class Course extends GenericCourse {
 
 		return str;
 	}
+	
+	public Category getCategoryById(int categoryId) {
+		for(Category c: this.categories) {
+			if(c.getId()==categoryId)
+				return c;
+		}
+		return null;
+	}
+	
+	public int getStudentIndexById(String buid) {
+		for(int i=0;i<this.students.size();i++) {
+			if(this.students.get(i).getBuid().equals(buid))
+				return i;
+		}
+		
+		return -1;
+	}
+	
+	public int getItemIdByItemName(int categoryId, String itemName) {
+		return this.getCategoryById(categoryId).getItemByItemName(itemName).getId();
+	}
 }

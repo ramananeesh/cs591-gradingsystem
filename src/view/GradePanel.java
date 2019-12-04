@@ -173,8 +173,44 @@ public class GradePanel extends JPanel {
 		saveButton.setBounds(SizeManager.buttonViewBounds);
 		saveButton.setForeground(ColorManager.lightColor);
 		saveButton.setBackground(ColorManager.primaryColor);
-		saveButton.addActionListener(e -> {
-			// TODO save grade data to database
+		saveButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(categoryComboBox.getSelectedIndex()==0) {
+					JOptionPane.showMessageDialog(null,"Please select a category", "Error", 
+							JOptionPane.ERROR_MESSAGE);
+					return; 
+				}
+				ArrayList<HashMap<String, String>> values = new ArrayList<HashMap<String, String>>();
+				for (int i = 0; i < gradeTableModel.getRowCount(); i++) {
+					// System.out.println(gradeTableModel.getValueAt(count, 0).toString());
+					HashMap<String, String> map = new HashMap<String, String>();
+					map.put("Buid", gradeTableModel.getValueAt(i, 1).toString());
+					for (int j = 2; j < gradeTableModel.getColumnCount(); j++) {
+						map.put(gradeTableColumnNames[j], gradeTableModel.getValueAt(i, j).toString());
+					}
+					values.add(map);
+				}
+
+				controller.editGradesForCategoryItemInCourse(controller.getCurrentCourse(),
+						categories.get(categoryComboBox.getSelectedIndex() - 1).getId(),
+						controller.getCurrentCourse().getItemIdByItemName(
+								categories.get(categoryComboBox.getSelectedIndex() - 1).getId(),
+								(String) itemComboBox.getSelectedItem()),
+						values);
+
+				//test to see if edit works. Remove after linking to db 
+				ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
+				for (CourseStudent s : students) {
+					System.out.println("Student: "+s.getBuid());
+					HashMap<String, Double> grades = s.getAllGradeEntries();
+					for(String key: grades.keySet()) {
+						System.out.println(key+": "+grades.get(key));
+					}
+				}
+			}
 		});
 		add(saveButton);
 
