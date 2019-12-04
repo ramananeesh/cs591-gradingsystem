@@ -56,4 +56,15 @@ public class CourseStudent extends Student {
 
 		return map;
 	}
+	
+	public void setGradeEntry(int index, GradeEntry gradeEntry) {
+		GradeEntry existing = this.grades.get(index);
+		this.grades.remove(index);
+		this.grades.add(index, gradeEntry);
+	}
+	
+	public void addGradeEntry(GradeEntry entry) {
+		this.grades.add(entry);
+	}
 }
+

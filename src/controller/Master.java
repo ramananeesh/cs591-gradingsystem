@@ -189,6 +189,45 @@ public class Master extends Observable {
 
 		return l;
 	}
+	
+	/*
+	 * Method loops through all students to get the student with particular buid
+	 * Then, goes through all grade entry's for the student and 
+	 * checks if there exists a grade entry for the given categoryId and itemId
+	 * if yes, returns the index of grade entry. If not returns -1
+	 * Every grade entry for a student is unique to a (categoryId + itemId)
+	 */
+	public int doesGradeEntryExistForStudent(Course course, String buid, int categoryId, int itemId) {
+		ArrayList<CourseStudent> students = course.getStudents();
+		
+		for(CourseStudent student: students) {
+			if(student.getBuid().equals(buid)) {
+				ArrayList<GradeEntry> entries = student.getGrades();
+				for(int i=0;i<entries.size();i++) {
+					GradeEntry e = entries.get(i);
+					if(e.getCategoryId()==categoryId && e.getItemId()==itemId) {
+						return i;
+					}
+				}
+			}
+		}
+		return -1;
+	}
+	
+	public CourseStudent editGradeEntryForStudent(Course course, CourseStudent student, GradeEntry gradeEntry) {
+		
+		int gradeEntryIndex = doesGradeEntryExistForStudent(course,student.getBuid(), gradeEntry.getCategoryId(), gradeEntry.getItemId());
+		
+		//if index returns as -1, add new gradeEntry
+		if(gradeEntryIndex==-1) {
+			student.addGradeEntry(gradeEntry);
+		}
+		else {
+			student.setGradeEntry(gradeEntryIndex, gradeEntry);
+		}
+		
+		return student;
+	}
 
 	public ArrayList<String> getAllItemNames(Course course){
 		ArrayList<String> names = new ArrayList<>();
