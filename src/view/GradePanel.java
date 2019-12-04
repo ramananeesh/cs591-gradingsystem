@@ -188,6 +188,33 @@ public class GradePanel extends JPanel {
 				Item it = controller.getCurrentCourse().getItemByItemName(cat.getId(),
 						(String) itemComboBox.getSelectedItem());
 
+				DefaultTableModel duplicate = gradeTableModel;
+				for (int i = 0; i < gradeTableModel.getRowCount(); i++) {
+					int j = 2;
+					String value = gradeTableModel.getValueAt(i, j).toString().trim();
+
+					if (gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
+						if (value.equals("")) {
+						} else {
+							Double val = Double.parseDouble(value);
+							if (val > 0) {
+								JOptionPane.showMessageDialog(null, "Points lost means score has to be negative",
+										"Error", JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+						}
+
+					} else {
+						Double val = Double.parseDouble(value);
+						if (val < 0 || val > 100) {
+							JOptionPane.showMessageDialog(null, "Please enter valid percentage values for score",
+									"Error", JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+					}
+
+				}
+
 				for (int i = 0; i < gradeTableModel.getRowCount(); i++) {
 					// System.out.println(gradeTableModel.getValueAt(count, 0).toString());
 					HashMap<String, String> map = new HashMap<String, String>();
@@ -196,12 +223,19 @@ public class GradePanel extends JPanel {
 						String value = gradeTableModel.getValueAt(i, j).toString();
 						if (gradeTableColumnNames[j].equals("Score")) {
 							if (gradeOptionsComboBox.getSelectedItem().equals("Points Lost")) {
-								double numValue = Double.parseDouble(value);
-								double rawScore = it.getMaxPoints() + numValue; // + because numValue is -ve
-								double percentage = 100.0 * rawScore / it.getMaxPoints();
-								map.put("Percentage", Double.toString(percentage));
-								// make value = raw score
-								value = Double.toString(rawScore);
+								if (value.equals("")) {
+									// if value is empty then it means no points lost
+									value = Double.toString(it.getMaxPoints());
+									map.put("Percentage", Double.toString(100));
+								} else {
+									double numValue = Double.parseDouble(value);
+									double rawScore = it.getMaxPoints() + numValue; // + because numValue is -ve
+									double percentage = 100.0 * rawScore / it.getMaxPoints();
+									map.put("Percentage", Double.toString(percentage));
+									// make value = raw score
+									value = Double.toString(rawScore);
+								}
+
 							} else {
 								// if score entered is percentage
 								double percentage = Double.parseDouble(value);
@@ -225,7 +259,7 @@ public class GradePanel extends JPanel {
 					System.out.println("Student: " + s.getBuid());
 					HashMap<String, Double> grades = s.getAllGradeEntries();
 					for (String key : grades.keySet()) {
-						System.out.print(key + ": " + grades.get(key)+"\t");
+						System.out.print(key + ": " + grades.get(key) + "\t");
 					}
 					System.out.println();
 				}
