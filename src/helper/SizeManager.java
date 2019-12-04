@@ -47,14 +47,19 @@ public class SizeManager {
 
 	public static final int searchFilterCourseWidth = windowWidth / 6;
 	public static final int searchFilterCourseHeight = windowHeight / 20;
-	public static final int searchCourseX = windowWidth / 2 + midSearchFilter;
+	public static final int searchCourseX = windowWidth / 2 - searchFilterCourseWidth+ midSearchFilter;
 	public static final int searchFilterCourseY = tableCourseY / 2 - searchFilterCourseHeight / 2;
 	public static final Rectangle searchCourseBounds = new Rectangle(searchCourseX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
 	public static final float fontSearchSize = (int) (searchFilterCourseHeight * 0.6f);
+	
+	public static final int comboX = windowWidth / 2 + searchFilterCourseWidth;
+	public static final Rectangle comboBounds = new Rectangle(comboX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
+	public static final float comboFilterSize = (int) (searchFilterCourseHeight * 0.6f);
 
-	public static final int filterCourseX = windowWidth / 2 - searchFilterCourseWidth - midSearchFilter;
+	public static final int filterCourseX = windowWidth / 2 - 2*searchFilterCourseWidth - midSearchFilter;
 	public static final Rectangle filterCourseBounds = new Rectangle(filterCourseX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
 	public static final float fontFilterSize = (int) (searchFilterCourseHeight * 0.6f);
+	
 
 	public static final int labelHeight = windowHeight / 20;
 	public static final float fontLabelSize = (int) (labelHeight * 0.6f);
