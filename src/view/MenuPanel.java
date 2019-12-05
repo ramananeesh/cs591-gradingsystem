@@ -268,6 +268,9 @@ public class MenuPanel extends JPanel implements Observer {
 							int reply = JOptionPane.showConfirmDialog(this, categoryScrollPane, "Edit Category",
 									JOptionPane.OK_CANCEL_OPTION);
 							if (reply == JOptionPane.OK_OPTION) {
+								/**
+								 * to do 
+								 */
 								break;
 							} else {
 								return;
