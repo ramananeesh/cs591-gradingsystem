@@ -25,8 +25,8 @@ public class Master extends Observable {
 	 */
 	// -------------------------------------------------------------------------------------------------------------------------------------//
 
-	public void addNewCourse(String courseId, String courseName, String term) {
-		Course newCourse = new Course(generateCourseId(), courseId, courseName, term);
+	public void addNewCourse(String courseNumber, String courseName, String term) {
+		Course newCourse = new Course(generateCourseId(), courseNumber, courseName, term);
 		this.courses.add(newCourse);
 
 		// write to db
@@ -36,9 +36,9 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
-	public void addNewCourse(String courseId, String courseName, String term, ArrayList<Category> categories,
+	public void addNewCourse(String courseNumber, String courseName, String term, ArrayList<Category> categories,
 			ArrayList<CourseStudent> students) {
-		Course newCourse = new Course(generateCourseId(), courseId, courseName, term, categories, students);
+		Course newCourse = new Course(generateCourseId(), courseNumber, courseName, term, categories, students);
 		this.courses.add(newCourse);
 
 		// write to db
@@ -60,14 +60,20 @@ public class Master extends Observable {
 	}
 
 	public void addNewCategoryForCourse(Course course, String fieldName, double weight, int courseId) {
-		course.addCategory(new Category(course.getCategories().size() + 1, fieldName, weight, courseId));
+		Category category = new Category(generateCategoryId(course), fieldName, weight, courseId);
+		course.addCategory(category);
+
+		Create.insertNewCategory(category);
 
 		setChanged();
 		notifyObservers();
 	}
 
 	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, int courseId) {
-		course.addCategory(new Category(id, fieldName, weight, courseId));
+		Category category = new Category(id, fieldName, weight, courseId);
+		course.addCategory(category);
+
+		Create.insertNewCategory(category);
 
 		setChanged();
 		notifyObservers();
@@ -75,7 +81,10 @@ public class Master extends Observable {
 
 	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, int courseId,
 			ArrayList<Item> items) {
-		course.addCategory(new Category(id, fieldName, weight, courseId, items));
+		Category category = new Category(id, fieldName, weight, courseId, items);
+		course.addCategory(category);
+
+		Create.insertNewCategory(category);
 
 		setChanged();
 		notifyObservers();
@@ -85,8 +94,11 @@ public class Master extends Observable {
 			double maxPoints) {
 
 		Category category = course.getCategories().get(categoryIndex);
-		category.addItem(new Item(category.getItems().size() + 1, fieldName, category.getId(), weight, maxPoints,
-				course.getCourseId()));
+		Item item = new Item(generateItemId(category), fieldName, category.getId(), weight, maxPoints,
+				course.getCourseId());
+		category.addItem(item);
+
+		Create.insertNewItem(item);
 
 		setChanged();
 		notifyObservers();
@@ -98,6 +110,8 @@ public class Master extends Observable {
 			CourseStudent cs = new CourseStudent(student.get("fname"), student.get("lname"), student.get("buid"),
 					student.get("email"), student.get("type"), course.getCourseId(), true);
 			course.addStudent(cs);
+
+			Create.insertNewCourseStudent(cs);
 		}
 
 		setChanged();
@@ -128,7 +142,7 @@ public class Master extends Observable {
 
 		for (Item i : existingItems) {
 			newItems.add(new Item(i.getId(), i.getFieldName(), i.getCategoryId(), i.getWeight(), i.getMaxPoints(),
-					i.getCourseId(), i.getDateAssigned(), i.getDateDue()));
+					i.getCourseId()));
 		}
 
 		return newItems;
@@ -307,9 +321,48 @@ public class Master extends Observable {
 			}
 		}
 	}
+	
+	public int generateCategoryId(Course course) {
+		Random rand = new Random();
+		int id;
+		while (true) {
+			id = rand.nextInt(99999) + 1;
+			
+			if (isUniqueCategoryId(course, id)) {
+				return id;
+			}
+		}
+	}
+	
+	public int generateItemId(Category category) {
+		Random rand = new Random();
+		int id;
+		while (true) {
+			id = rand.nextInt(99999) + 1;
+			if (isUniqueItemId(category, id)) {
+				return id;
+			}
+		}
+	}
 
 	public void setCourse(int index, Course newCourse) {
 		this.courses.remove(index);
 		this.courses.add(index, newCourse);
+	}
+
+	public boolean isUniqueCategoryId(Course course, int id) {
+		for (Category category : course.getCategories()) {
+			if (id == category.getId())
+				return false;
+		}
+		return true;
+	}
+
+	public boolean isUniqueItemId(Category category, int id) {
+		for (Item i : category.getItems()) {
+			if (id == i.getId())
+				return false;
+		}
+		return true;
 	}
 }

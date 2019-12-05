@@ -8,7 +8,7 @@ public class Course extends GenericCourse {
 	private ArrayList<CourseStudent> students;
 
 	public Course(int courseId, String courseNumber, String courseName, String term) {
-		super(courseId, courseName, courseName, term);
+		super(courseId, courseNumber, courseName, term);
 
 		this.categories = new ArrayList<Category>();
 		this.students = new ArrayList<CourseStudent>();
