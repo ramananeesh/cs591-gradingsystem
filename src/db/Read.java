@@ -15,8 +15,7 @@ public class Read {
 	// by courseID will avoid this.
 	public static ArrayList<Category> getCategoriesByCourse(int courseId) {
 		ArrayList<Category> categories = new ArrayList<>();
-		String query = "select id, fieldName, weight, courseName, templateID from Category where courseId ='" + courseId
-				+ "'";
+		String query = "select id, fieldName, weight, courseId from Category where courseId ='" + courseId + "'";
 		ResultSet rs = SQLHelper.performRead(query);
 
 		try {
@@ -24,7 +23,7 @@ public class Read {
 				ArrayList<Item> items = getItemsByCategory(rs.getInt("ID"), rs.getInt("courseID"));
 
 				Category category = new Category(rs.getInt("ID"), rs.getString("fieldName"), rs.getDouble("weight"),
-						rs.getInt("courseId"), rs.getInt("templateID"), items);
+						rs.getInt("courseId"), items);
 				categories.add(category);
 			}
 		} catch (SQLException e) {
@@ -57,16 +56,14 @@ public class Read {
 
 	public static ArrayList<Item> getItemsByCategory(int categoryID, int courseID) {
 		ArrayList<Item> items = new ArrayList<>();
-		String query = "select id, courseID, fieldName, weight, dateAssigned, dateDue from Item where categoryID = '"
+		String query = "select id, courseID, fieldName, weight, categoryId, maxPoints from Item where categoryID = '"
 				+ categoryID + "' and courseID = '" + courseID + "'";
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
-				ArrayList<GradeEntry> gradeEntries = getEntriesByItem(rs.getInt("ID"), rs.getInt("categoryID"),
-						rs.getInt("courseID"));
+
 				Item item = new Item(rs.getInt("ID"), rs.getString("fieldName"), rs.getInt("categoryID"),
-						rs.getDouble("weight"), rs.getDouble("maxPoints"), rs.getInt("courseID"),
-						rs.getDate("dateAssigned"), rs.getDate("dateDue"), gradeEntries);
+						rs.getDouble("weight"), rs.getDouble("maxPoints"), rs.getInt("courseID"));
 				items.add(item);
 			}
 		} catch (SQLException e) {
@@ -75,15 +72,16 @@ public class Read {
 		return items;
 	}
 
-	public static ArrayList<GradeEntry> getEntriesByItem(int itemID, int categoryID, int courseID) {
+	public static ArrayList<GradeEntry> getStudentGradeEntriesByItem(String buid, int itemID, int categoryID,
+			int courseID) {
 		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
-		String query = "Select * from GradeEntry where itemID = '" + itemID + "' and categoryID = '" + categoryID
-				+ "' and " + "courseID = '" + courseID + "'";
+		String query = "Select * from GradeEntry where buid = '" + buid + " and itemID = '" + itemID
+				+ "' and categoryID = '" + categoryID + "' and " + "courseID = '" + courseID + "'";
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
 				GradeEntry ge = new GradeEntry(rs.getString("entryName"), rs.getInt("itemID"), rs.getInt("categoryID"),
-						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getDouble("percentages"),
+						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getDouble("percentage"),
 						rs.getInt("courseID"), rs.getString("comment"));
 				gradeEntries.add(ge);
 			}
@@ -130,9 +128,9 @@ public class Read {
 		return gradeEntries;
 	}
 
-	public static ArrayList<GradeEntry> getGradeEntriesByCourseStudent(String BUID) {
+	public static ArrayList<GradeEntry> getGradeEntriesByCourseStudent(String BUID, int courseId) {
 		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
-		String query = "Select * from GradeEntry where BUID='" + BUID + "'";
+		String query = "Select * from GradeEntry where BUID='" + BUID + "' and courseId=" + courseId;
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
@@ -153,12 +151,14 @@ public class Read {
 		// String query = "Select A.* from Student A where A.BUID in (select B.BUID from
 		// CourseStudent B where B.courseID ='"
 		// + courseID + "')";
-		String query = "Select Student.BUID, Student.fName, Student.lName, Student.type, Student.email, CourseStudent.courseID,"
-				+ "CourseStudent.active JOIN CourseStudent ON Student.BUID = CourseStudent.BUID";
+		//String query = "Select Student.BUID, Student.fName, Student.lName, Student.type, Student.email, CourseStudent.courseID,"
+		//		+ "CourseStudent.active from Student, CourseStudent JOIN CourseStudent ON Student.BUID = CourseStudent.BUID";
+		String query = "Select s.buid, s.fname, s.lname, s.type, s.email, cs.courseId, cs.active from student s, coursestudent cs where "
+				+ "s.buid=cs.buid";
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
-				ArrayList<GradeEntry> gradeEntries = getGradeEntriesByCourseStudent(rs.getString("BUID"));
+				ArrayList<GradeEntry> gradeEntries = getGradeEntriesByCourseStudent(rs.getString("BUID"), courseID);
 
 				CourseStudent student = new CourseStudent(rs.getString("fName"), rs.getString("lName"),
 						rs.getString("BUID"), rs.getString("email"), rs.getString("type"), rs.getInt("courseID"),
