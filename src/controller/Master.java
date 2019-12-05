@@ -299,4 +299,14 @@ public class Master extends Observable {
 		this.courses.remove(index);
 		this.courses.add(index, newCourse);
 	}
+
+	public String getStudentScore(CourseStudent student, Course course, String itemName){
+		HashMap<String, Double> grades = student.getAllGradeEntries();
+		for (String key : grades.keySet()) {
+			if(key.equals(itemName)){
+				return Double.toString(grades.get(key));
+			}
+		}
+		return "";
+	}
 }

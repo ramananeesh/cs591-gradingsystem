@@ -349,7 +349,7 @@ public class MenuPanel extends JPanel implements Observer {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}, viewGrades -> { // View Grades
-					frame.changePanel(this, new GradePanel(frame, courseData, false, this.controller));
+					frame.changePanel(this, new ViewGradePanel(frame, courseData, false, this.controller));
 				} } };
 
 		JMenuBar menuBar = new JMenuBar();
