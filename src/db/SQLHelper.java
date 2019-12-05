@@ -11,7 +11,7 @@ public class SQLHelper {
 
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/bankdb?" + "user=root");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/grading_db?" + "user=root");
 
             // Do something with the Connection
 
