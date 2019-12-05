@@ -221,12 +221,9 @@ public class CoursePanel extends JPanel implements Observer {
 		controller.addNewCourse("CS565", "Data Mining", "Fall 2019");
 		Course course = controller.getCourse(0);
 		
-		ArrayList<Item> items = new ArrayList<Item>();
-		items.add(new Item(1, "HW1", 1,0.4,150,course.getCourseId()));
-		ArrayList<Category> categories = new ArrayList<Category>();
-		categories.add(new Category(1, "Homework", 0.3, course.getCourseId(), items));
-		Course newCourse = new Course(course.getCourseId(),course.getCourseNumber(),course.getCourseName(), course.getTerm(), categories);
-		controller.setCourse(0, newCourse);
+		Category category = new Category(1, "Homework", 0.3, course.getCourseId());
+		controller.addNewCategoryForCourse(course, category.getId(),category.getFieldName(),category.getWeight(),category.getCourseId());
+		controller.addItemForCourseCategory(course, 0, "HW1", 0.4, 100);
 	}
 
 	private static void search(TableRowSorter<DefaultTableModel> sorter, JTextField search,

@@ -10,7 +10,7 @@ public class GradeEntry {
 	private int courseId;
 	private double percentage;
 	private String comments;
-	
+
 	public GradeEntry(String entryName, int itemId, int categoryId, double maxPoints, double pointsEarned, double percentage, int courseId,
 			String comments) {
 		super();
