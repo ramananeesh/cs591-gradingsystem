@@ -376,4 +376,16 @@ public class Master extends Observable {
 		}
 		return true;
 	}
+	
+	//----------------------------------------------
+	
+	public void modifyCategoriesForCourse(Course course, ArrayList<HashMap<String,Double>> cats) {
+		ArrayList<Category> categories = course.getCategories();
+		
+	}
+	
+	public void modifyCategoryForCourse(Course course, int categoryIndex, HashMap<String,Double> modification) {
+		
+		
+	}
 }

@@ -19,8 +19,6 @@ import controller.Master;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -180,7 +178,7 @@ public class MenuPanel extends JPanel implements Observer {
 								JTextField percentageField = new JTextField();
 								JTextField maxPointsField = new JTextField();
 								Object[] fields = { "Category: ", categoryCombo, "Item: ", itemField, "Percentage: ",
-										percentageField, "Max Points: ",maxPointsField,};
+										percentageField, "Max Points: ", maxPointsField, };
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item",
@@ -253,9 +251,10 @@ public class MenuPanel extends JPanel implements Observer {
 						 * to do this part
 						 */
 						categoryData = controller.getCurrentCourse().getCategoryDataForList();
-
+						
 						String[] categoryColumn = { "Category", "Percentage" };
-						JTable categoryTable = new JTable(categoryData, categoryColumn) {
+						DefaultTableModel tableModel = new DefaultTableModel(categoryData, categoryColumn);
+						JTable categoryTable = new JTable(tableModel) {
 							public boolean isCellEditable(int row, int column) {
 								return column > 0;
 							}
@@ -267,11 +266,34 @@ public class MenuPanel extends JPanel implements Observer {
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, categoryScrollPane, "Edit Category",
 									JOptionPane.OK_CANCEL_OPTION);
+							boolean flag = false;
 							if (reply == JOptionPane.OK_OPTION) {
-								/**
-								 * to do 
-								 */
-								break;
+								ArrayList<HashMap<String, Double>> modifiedData = new ArrayList<HashMap<String, Double>>();
+								for(int i=0;i<tableModel.getRowCount();i++) {
+									HashMap<String, Double> m = new HashMap<String, Double>();
+									String key = (String)tableModel.getValueAt(i, 0);
+									key = key.trim();
+									if(!key.equals("")) {
+										try {
+											double value = Double.parseDouble((String)tableModel.getValueAt(i, 1));
+											m.put(key, value);
+											modifiedData.add(m);
+										} catch (Exception e) {
+											JOptionPane.showMessageDialog(this, "Please Enter correct Values", "Error", JOptionPane.ERROR_MESSAGE);
+											flag=true;
+											break;
+										}
+									}
+									else {
+										JOptionPane.showMessageDialog(this, "Please Enter correct Values", "Error", JOptionPane.ERROR_MESSAGE);
+										flag=true;
+										break;
+									}
+								}
+								if(flag==false) {
+									
+									break;
+								}
 							} else {
 								return;
 							}
@@ -528,8 +550,8 @@ public class MenuPanel extends JPanel implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
-		
-		this.controller = controller; 
+
+		this.controller = controller;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
