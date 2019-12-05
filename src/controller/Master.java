@@ -1,6 +1,8 @@
 package controller;
 
 import java.util.*;
+
+import db.*;
 import model.*;
 
 public class Master extends Observable {
@@ -27,6 +29,9 @@ public class Master extends Observable {
 		Course newCourse = new Course(generateCourseId(), courseId, courseName, term);
 		this.courses.add(newCourse);
 
+		// write to db
+		Create.insertNewCourse(newCourse);
+
 		setChanged();
 		notifyObservers();
 	}
@@ -36,6 +41,9 @@ public class Master extends Observable {
 		Course newCourse = new Course(generateCourseId(), courseId, courseName, term, categories, students);
 		this.courses.add(newCourse);
 
+		// write to db
+		Create.insertNewCourse(newCourse);
+
 		setChanged();
 		notifyObservers();
 	}
@@ -43,6 +51,9 @@ public class Master extends Observable {
 	public void addNewCourse(String courseId, String courseName, String term, ArrayList<Category> categories) {
 		Course newCourse = new Course(generateCourseId(), courseId, courseName, term, categories);
 		this.courses.add(newCourse);
+
+		// write to db
+		Create.insertNewCourse(newCourse);
 
 		setChanged();
 		notifyObservers();
@@ -70,11 +81,12 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
-	public void addItemForCourseCategory(Course course, int categoryIndex, String fieldName, double weight, double maxPoints) {
+	public void addItemForCourseCategory(Course course, int categoryIndex, String fieldName, double weight,
+			double maxPoints) {
 
 		Category category = course.getCategories().get(categoryIndex);
-		category.addItem(
-				new Item(category.getItems().size() + 1, fieldName, category.getId(), weight, maxPoints, course.getCourseId()));
+		category.addItem(new Item(category.getItems().size() + 1, fieldName, category.getId(), weight, maxPoints,
+				course.getCourseId()));
 
 		setChanged();
 		notifyObservers();
@@ -237,11 +249,12 @@ public class Master extends Observable {
 			int studentIndex = course.getStudentIndexById(buid);
 			CourseStudent student = course.getStudent(studentIndex);
 			GradeEntry newEntry = new GradeEntry(item.getFieldName(), itemId, categoryId, item.getMaxPoints(),
-					Double.parseDouble(h.get("Score")),Double.parseDouble(h.get("Percentage")), course.getCourseId(), h.get("Comments"));
+					Double.parseDouble(h.get("Score")), Double.parseDouble(h.get("Percentage")), course.getCourseId(),
+					h.get("Comments"));
 			student = editGradeEntryForStudent(course, student, newEntry);
 			course.setStudent(studentIndex, student);
 		}
-		
+
 		setChanged();
 		notifyObservers();
 	}
