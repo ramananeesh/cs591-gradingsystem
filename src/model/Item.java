@@ -11,8 +11,8 @@ public class Item {
 	private double weight;
 	private int courseId;
 //	private int templateId;
-	private Date dateAssigned;
-	private Date dateDue;
+//	private Date dateAssigned;
+//	private Date dateDue;
 	private double maxPoints;
 	private ArrayList<GradeEntry> gradeEntries;
 
@@ -27,8 +27,8 @@ public class Item {
 		this.weight = weight;
 		this.courseId = courseId;
 //		this.templateId = templateId;
-		this.dateAssigned = dateAssigned;
-		this.dateDue = dateDue;
+//		this.dateAssigned = dateAssigned;
+//		this.dateDue = dateDue;
 		this.maxPoints = maxPoints;
 		this.gradeEntries = new ArrayList<GradeEntry>();
 	}
@@ -58,8 +58,8 @@ public class Item {
 		this.maxPoints = maxPoints;
 		this.courseId = courseId;
 //		this.templateId = templateId;
-		this.dateAssigned = dateAssigned;
-		this.dateDue = dateDue;
+//		this.dateAssigned = dateAssigned;
+//		this.dateDue = dateDue;
 		this.gradeEntries = gradeEntries;
 	}
 
@@ -108,22 +108,6 @@ public class Item {
 	 * 
 	 * public void setTemplateId(int templateId) { this.templateId = templateId; }
 	 */
-
-	public Date getDateAssigned() {
-		return dateAssigned;
-	}
-
-	public void setDateAssigned(Date dateAssigned) {
-		this.dateAssigned = dateAssigned;
-	}
-
-	public Date getDateDue() {
-		return dateDue;
-	}
-
-	public void setDateDue(Date dateDue) {
-		this.dateDue = dateDue;
-	}
 
 	public String[] getDetails() {
 		return new String[] { this.fieldName, Double.toString(this.weight) };
