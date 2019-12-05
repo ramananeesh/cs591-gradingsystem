@@ -267,8 +267,9 @@ public class MenuPanel extends JPanel implements Observer {
 							int reply = JOptionPane.showConfirmDialog(this, categoryScrollPane, "Edit Category",
 									JOptionPane.OK_CANCEL_OPTION);
 							boolean flag = false;
+							ArrayList<HashMap<String, Double>> modifiedData = new ArrayList<HashMap<String, Double>>();
 							if (reply == JOptionPane.OK_OPTION) {
-								ArrayList<HashMap<String, Double>> modifiedData = new ArrayList<HashMap<String, Double>>();
+								
 								for(int i=0;i<tableModel.getRowCount();i++) {
 									HashMap<String, Double> m = new HashMap<String, Double>();
 									String key = (String)tableModel.getValueAt(i, 0);
@@ -291,7 +292,7 @@ public class MenuPanel extends JPanel implements Observer {
 									}
 								}
 								if(flag==false) {
-									
+									controller.modifyCategoriesForCourse(controller.getCurrentCourse(), modifiedData);
 									break;
 								}
 							} else {

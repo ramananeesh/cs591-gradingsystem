@@ -382,10 +382,22 @@ public class Master extends Observable {
 	public void modifyCategoriesForCourse(Course course, ArrayList<HashMap<String,Double>> cats) {
 		ArrayList<Category> categories = course.getCategories();
 		
+		for(int i=0;i<categories.size();i++) {
+			Category c = categories.get(i);
+			
+			HashMap<String, Double> map = cats.get(i);
+			
+			if(map.get(c.getFieldName())!=c.getWeight()) {
+				Category modified = new Category(c.getId(), c.getFieldName(), map.get(c.getFieldName()), c.getCourseId(), c.getItems());
+				
+				course.setCategory(i, modified);
+				//update db for modification to category 
+				
+			}
+		}
+		
+		setChanged();
+		notifyObservers();
 	}
 	
-	public void modifyCategoryForCourse(Course course, int categoryIndex, HashMap<String,Double> modification) {
-		
-		
-	}
 }
