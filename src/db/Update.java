@@ -32,10 +32,22 @@ public class Update {
     //edit student call, syntax might not be correct.
     // changes both Student AND CourseStudent db tables because the fields are spread across both of them
     public static boolean updateCourseStudent(CourseStudent courseStudent){
+        ArrayList<CourseStudent> courseStudents = Read.getCourseStudentsByCourse(courseStudent.getCourseId());
+        String oldBUID = "";
+        for (CourseStudent student : courseStudents){ //because buID of courseStudent object has already been updated but not the DB model's
+            if ((student.getCourseId() == courseStudent.getCourseId()) &&
+                    student.getFname().equals(courseStudent.getFname()) &&
+                    student.getLname().equals(courseStudent.getLname())){
+                oldBUID = courseStudent.getBuid();
+                break;
+            }
+        }
+
         String sql = "Update Student set BUID = '" + courseStudent.getBuid() + "' and type ='" + courseStudent.getType() + "'" +
                 " and email = '" + courseStudent.getEmail() + "' where fName = '" + courseStudent.getFname() + "' and lName = '" + courseStudent.getLname() + "'";
 
-        String sql2 = "Update CourseStudent set BUID = '" + courseStudent.getBuid() + "' where courseID = '" + courseStudent.getCourseId() + "'";
+        String sql2 = "Update CourseStudent set BUID = '" + courseStudent.getBuid() + "' where courseID = '" + courseStudent.getCourseId() + "'" +
+                " and BUID ='" + oldBUID + "'";
         return SQLHelper.performQuery(sql) && SQLHelper.performQuery(sql2);
     }
 
