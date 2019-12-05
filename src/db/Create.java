@@ -18,7 +18,7 @@ public class Create {
 
 	public static boolean insertNewCourseStudent(CourseStudent cs) {
 		String sql = "insert into CourseStudent (courseId, buid, active) values ('" + cs.getCourseId() + "','"
-				+ cs.getBuid() + "','" + cs.isActive() + "')";
+				+ cs.getBuid() + "'," + cs.isActive() + ")";
 		return SQLHelper.performQuery(sql);
 	}
 
@@ -37,7 +37,7 @@ public class Create {
 
 	public static boolean insertNewStudent(Student student) {
 		String sql = "insert into Student values ('" + student.getBuid() + "','" + student.getFname() + "','"
-				+ student.getLname() + student.getType() + "')";
+				+ student.getLname() + "','"+student.getType() + "','"+student.getEmail()+"')";
 		// student.getEmail()
 		return SQLHelper.performQuery(sql);
 	}
