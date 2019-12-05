@@ -14,8 +14,7 @@ public class Item {
 //	private Date dateAssigned;
 //	private Date dateDue;
 	private double maxPoints;
-	private ArrayList<GradeEntry> gradeEntries;
-
+	
 	// Item(int id, String fieldName, String categoryName, double weight, String
 	// courseId, int templateId, Date dateAssigned, Date dateDue)
 	public Item(int id, String fieldName, int categoryId, double weight, double maxPoints, int courseId,
@@ -30,7 +29,6 @@ public class Item {
 //		this.dateAssigned = dateAssigned;
 //		this.dateDue = dateDue;
 		this.maxPoints = maxPoints;
-		this.gradeEntries = new ArrayList<GradeEntry>();
 	}
 
 	public Item(int id, String fieldName, int categoryId, double weight, double maxPoints, int courseId) {
@@ -42,7 +40,6 @@ public class Item {
 		this.courseId = courseId;
 		this.maxPoints = maxPoints;
 //		this.templateId = templateId;
-		this.gradeEntries = new ArrayList<GradeEntry>();
 	}
 
 	// Item(int id, String fieldName, String categoryName, double weight, String
@@ -60,7 +57,6 @@ public class Item {
 //		this.templateId = templateId;
 //		this.dateAssigned = dateAssigned;
 //		this.dateDue = dateDue;
-		this.gradeEntries = gradeEntries;
 	}
 
 	public int getId() {
@@ -119,13 +115,5 @@ public class Item {
 
 	public void setMaxPoints(double maxPoints) {
 		this.maxPoints = maxPoints;
-	}
-
-	public ArrayList<GradeEntry> getGradeEntries() {
-		return gradeEntries;
-	}
-
-	public void setGradeEntries(ArrayList<GradeEntry> gradeEntries) {
-		this.gradeEntries = gradeEntries;
 	}
 }
