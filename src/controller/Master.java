@@ -13,6 +13,8 @@ public class Master extends Observable {
 	public Master() {
 		this.courses = new ArrayList<Course>();
 		this.currentCourse = null;
+		
+		initialize();
 	}
 
 	public Master(ArrayList<Course> courses) {
@@ -20,6 +22,13 @@ public class Master extends Observable {
 		this.currentCourse = null;
 	}
 
+	public void initialize() {
+		this.courses.addAll(Read.getAllCourses());
+		
+		setChanged();
+		notifyObservers();
+	}
+	
 	/*
 	 * Create Methods
 	 */
