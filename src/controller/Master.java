@@ -110,7 +110,9 @@ public class Master extends Observable {
 			CourseStudent cs = new CourseStudent(student.get("fname"), student.get("lname"), student.get("buid"),
 					student.get("email"), student.get("type"), course.getCourseId(), true);
 			course.addStudent(cs);
-
+			Student st = new Student(cs.getFname(), cs.getLname(), cs.getBuid(), cs.getEmail(), cs.getType());
+			
+			Create.insertNewStudent(st);
 			Create.insertNewCourseStudent(cs);
 		}
 
