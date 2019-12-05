@@ -43,9 +43,9 @@ public class Read {
 		try {
 			while (rs.next()) {
 
-				Item item = new Item(rs.getInt("ID"), rs.getString("fieldName"), rs.getInt("categoryID"),
-						rs.getDouble("weight"), courseID);
-				items.add(item);
+//				Item item = new Item(rs.getInt("ID"), rs.getString("fieldName"), rs.getInt("categoryID"),
+//						rs.getDouble("weight"), courseID);
+//				items.add(item);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -76,10 +76,10 @@ public class Read {
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {
-				GradeEntry ge = new GradeEntry(rs.getString("entryName"), rs.getInt("itemID"), rs.getInt("categoryID"),
-						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getInt("courseID"),
-						rs.getString("comment"));
-				gradeEntries.add(ge);
+//				GradeEntry ge = new GradeEntry(rs.getString("entryName"), rs.getInt("itemID"), rs.getInt("categoryID"),
+//						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getInt("courseID"),
+//						rs.getString("comment"));
+//				gradeEntries.add(ge);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

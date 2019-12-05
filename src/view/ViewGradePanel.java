@@ -126,7 +126,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 
         // item combo box
         ArrayList<String> itemComboNames = new ArrayList<>();
-        String[] itemComboItems = { "All" };
+        String[] itemComboItems = { "All", "None" };
         itemsModel = new DefaultComboBoxModel<String>(itemComboItems);
         itemComboBox = new JComboBox<>(itemComboItems);
         itemComboBox.setBounds(SizeManager.itemBounds);
@@ -149,8 +149,9 @@ public class ViewGradePanel extends JPanel implements Observer {
                     ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
                     gradeTableColumnNamesList.addAll(allItemNames);
 
-                    String[] itemComboNames = new String[1];
+                    String[] itemComboNames = new String[2];
                     itemComboNames[0] = "All";
+                    itemComboNames[1] = "None";
                     DefaultComboBoxModel<String> newComboModel = new DefaultComboBoxModel<String>(itemComboNames);
 
                     itemComboBox.setModel(newComboModel);
@@ -181,7 +182,7 @@ public class ViewGradePanel extends JPanel implements Observer {
                     gradeTableRowData[i] = new String[gradeTableColumnNames.length];
                     gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
                     gradeTableRowData[i][1] = students.get(i).getBuid();
-                    for (int j = 2; j < gradeTableColumnNames.length; j ++){
+                    for (int j = 1; j < gradeTableColumnNames.length; j ++){
                         gradeTableRowData[i][j] = controller.getStudentScore(students.get(i), controller.getCurrentCourse(), gradeTableColumnNamesList.get(j));
                     }
                 }
@@ -226,6 +227,14 @@ public class ViewGradePanel extends JPanel implements Observer {
                             gradeTableColumnNamesList.add(item.getFieldName());
                         }
                     }
+                }
+                else if (categoryIndex == 0 && itemIndex == 1){
+                    ArrayList<String> categoryNames = new ArrayList<>();
+                    ArrayList<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
+                    for (Category c : categories) {
+                        categoryNames.add(c.getFieldName());
+                    }
+                    gradeTableColumnNamesList.addAll(categoryNames);
                 }
                 else{
                     Item item = controller.getAllItemsForCourseCategory(controller.getCurrentCourse(), categoryIndex-1).get(itemIndex-1);
