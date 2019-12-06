@@ -111,29 +111,39 @@ public class Course extends GenericCourse {
 
 		return str;
 	}
-	
+
 	public Category getCategoryById(int categoryId) {
-		for(Category c: this.categories) {
-			if(c.getId()==categoryId)
+		for (Category c : this.categories) {
+			if (c.getId() == categoryId)
 				return c;
 		}
 		return null;
 	}
-	
+
 	public int getStudentIndexById(String buid) {
-		for(int i=0;i<this.students.size();i++) {
-			if(this.students.get(i).getBuid().equals(buid))
+		for (int i = 0; i < this.students.size(); i++) {
+			if (this.students.get(i).getBuid().equals(buid))
 				return i;
 		}
-		
+
 		return -1;
 	}
-	
+
 	public int getItemIdByItemName(int categoryId, String itemName) {
 		return this.getCategoryById(categoryId).getItemByItemName(itemName).getId();
 	}
-	
+
 	public Item getItemByItemName(int categoryId, String itemName) {
 		return this.getCategoryById(categoryId).getItemByItemName(itemName);
+	}
+	
+	public String[] getStudentNamesAsList() {
+		String[] str = new String[this.students.size()];
+		int i=0;
+		for(CourseStudent student: this.students) {
+			str[i++] = new String(student.getName() + " - "+student.getBuid());
+		}
+		
+		return str; 
 	}
 }
