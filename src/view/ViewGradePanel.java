@@ -580,10 +580,14 @@ public class ViewGradePanel extends JPanel implements Observer {
     }
 
     static class MyTableModel extends DefaultTableModel{
-        List<Color> rowColor = Arrays.asList(Color.RED, Color.GREEN,Color.CYAN);
+        List<Color> rowColor;
 
         public MyTableModel(String[][] gradeTableRowData, Object[] gradeTableColumnNames) {
             super(gradeTableRowData,gradeTableColumnNames);
+            rowColor = new ArrayList<Color>();
+            for(int i=0; i<gradeTableRowData.length;i++) {
+            	rowColor.add(Color.white);
+            }
         }
 
         public void setRowColor(int row, Color c){
