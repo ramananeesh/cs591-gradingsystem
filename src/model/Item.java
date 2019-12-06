@@ -10,53 +10,30 @@ public class Item {
 	private int categoryId;
 	private double weight;
 	private int courseId;
-//	private int templateId;
-	private Date dateAssigned;
-	private Date dateDue;
-	private ArrayList<GradeEntry> gradeEntries;
+	// private int templateId;
+	// private Date dateAssigned;
+	// private Date dateDue;
+	private double maxPoints;
 
 	// Item(int id, String fieldName, String categoryName, double weight, String
 	// courseId, int templateId, Date dateAssigned, Date dateDue)
-	public Item(int id, String fieldName, int categoryId, double weight, int courseId, Date dateAssigned,
-			Date dateDue) {
-		super();
-		this.id = id;
-		this.fieldName = fieldName;
-		this.categoryId = categoryId;
-		this.weight = weight;
-		this.courseId = courseId;
-//		this.templateId = templateId;
-		this.dateAssigned = dateAssigned;
-		this.dateDue = dateDue;
-		this.gradeEntries = new ArrayList<GradeEntry>();
-	}
+	/*
+	 * public Item(int id, String fieldName, int categoryId, double weight, double
+	 * maxPoints, int courseId, ) { super(); this.id = id; this.fieldName =
+	 * fieldName; this.categoryId = categoryId; this.weight = weight; this.courseId
+	 * = courseId; // this.templateId = templateId; // this.dateAssigned =
+	 * dateAssigned; // this.dateDue = dateDue; this.maxPoints = maxPoints; }
+	 */
 
-	public Item(int id, String fieldName, int categoryId, double weight, int courseId) {
+	public Item(int id, String fieldName, int categoryId, double weight, double maxPoints, int courseId) {
 		super();
 		this.id = id;
 		this.fieldName = fieldName;
 		this.categoryId = categoryId;
 		this.weight = weight;
 		this.courseId = courseId;
-//		this.templateId = templateId;
-		this.gradeEntries = new ArrayList<GradeEntry>();
-	}
-	
-	// Item(int id, String fieldName, String categoryName, double weight, String
-	// courseId, int templateId, Date dateAssigned, Date dateDue,
-	// ArrayList<GradeEntry> gradeEntries)
-	public Item(int id, String fieldName, int categoryId, double weight, int courseId, Date dateAssigned,
-			Date dateDue, ArrayList<GradeEntry> gradeEntries) {
-		super();
-		this.id = id;
-		this.fieldName = fieldName;
-		this.categoryId = categoryId;
-		this.weight = weight;
-		this.courseId = courseId;
-//		this.templateId = templateId;
-		this.dateAssigned = dateAssigned;
-		this.dateDue = dateDue;
-		this.gradeEntries = gradeEntries;
+		this.maxPoints = maxPoints;
+		// this.templateId = templateId;
 	}
 
 	public int getId() {
@@ -105,23 +82,19 @@ public class Item {
 	 * public void setTemplateId(int templateId) { this.templateId = templateId; }
 	 */
 
-	public Date getDateAssigned() {
-		return dateAssigned;
-	}
-
-	public void setDateAssigned(Date dateAssigned) {
-		this.dateAssigned = dateAssigned;
-	}
-
-	public Date getDateDue() {
-		return dateDue;
-	}
-
-	public void setDateDue(Date dateDue) {
-		this.dateDue = dateDue;
-	}
-
 	public String[] getDetails() {
-		return new String[]{this.fieldName,Double.toString(this.weight)};
+		return new String[] { this.fieldName, Double.toString(this.weight) };
+	}
+
+	public String[] getDetailsWithMaxPoints() {
+		return new String[] { this.fieldName, Double.toString(this.weight), Double.toString(this.maxPoints) };
+	}
+
+	public double getMaxPoints() {
+		return maxPoints;
+	}
+
+	public void setMaxPoints(double maxPoints) {
+		this.maxPoints = maxPoints;
 	}
 }
