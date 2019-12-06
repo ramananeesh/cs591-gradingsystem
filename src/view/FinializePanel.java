@@ -60,13 +60,12 @@ public class FinializePanel extends JPanel {
 		TableModel gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false;
+				return column == 3;
 			}
 		};
 		JTable gradeTable = new JTable(gradeTableModel);
 		gradeTable.setRowHeight(SizeManager.tableRowHeight);
 		gradeTable.setFont(FontManager.fontTable);
-		gradeTable.setEnabled(false);
 		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
 		gradeTableRender.setHorizontalAlignment(SwingConstants.CENTER);
 		gradeTableRender.setVerticalAlignment(SwingConstants.CENTER);
@@ -95,6 +94,7 @@ public class FinializePanel extends JPanel {
 		curveButton.setForeground(ColorManager.lightColor);
 		curveButton.setBackground(ColorManager.primaryColor);
 		curveButton.addActionListener(e -> {
+			// TODO curve
 			JTextField percentageTextField = new JTextField();
 			Object[] fields = {
 					"Percentage: ", percentageTextField
@@ -111,12 +111,38 @@ public class FinializePanel extends JPanel {
 		});
 		add(curveButton);
 
+		JButton saveButton = new JButton("Save");
+		saveButton.setFont(FontManager.fontButton);
+		saveButton.setBounds(SizeManager.finalizeButtonSaveBounds);
+		saveButton.setForeground(ColorManager.lightColor);
+		saveButton.setBackground(ColorManager.primaryColor);
+		saveButton.addActionListener(e -> {
+			// TODO save
+			JLabel label = new JLabel("Saved");
+			label.setHorizontalAlignment(SwingConstants.CENTER);
+			label.setFont(FontManager.fontTitle);
+			Object[] fields = {
+					label
+			};
+			while (true) {
+				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve",
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				if (reply == JOptionPane.OK_OPTION) {
+					break;
+				} else {
+					return;
+				}
+			}
+		});
+		add(saveButton);
+
 		JButton finalizeButton = new JButton("Finalize");
 		finalizeButton.setFont(FontManager.fontButton);
 		finalizeButton.setBounds(SizeManager.finalizeButtonFinalizeBounds);
 		finalizeButton.setForeground(ColorManager.lightColor);
 		finalizeButton.setBackground(ColorManager.primaryColor);
 		finalizeButton.addActionListener(e -> {
+			// TODO finalize
 			JLabel label = new JLabel("Finalized");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);

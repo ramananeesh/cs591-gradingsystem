@@ -117,17 +117,19 @@ public class SizeManager {
 
 	public static final Rectangle finalizeTitleLabelBounds = new Rectangle(0, 0, windowWidth, windowHeight / 20);
 	public static final Rectangle labelGradeStatisticsBounds = new Rectangle(0, windowHeight / 20, windowWidth, windowHeight / 20);
-	private static final int midFinalize = windowWidth / 20;
+	private static final int midFinalize = windowWidth / 16;
 	private static final int[] buttonBackCurveFinalizeX = {
-			windowWidth / 2 - buttonWidth * 3 / 2 - midFinalize,
-			windowWidth / 2 - buttonWidth  / 2 ,
-			windowWidth / 2 + buttonWidth  / 2 + midFinalize
+			windowWidth / 2 - buttonWidth * 2 - midFinalize * 3 / 2,
+			windowWidth / 2 - buttonWidth - midFinalize / 2,
+			windowWidth / 2 + midFinalize / 2,
+			windowWidth / 2 + buttonWidth  + midFinalize * 3 / 2
 	};
 	private static final int buttonBackCurveFinalizeY = windowHeight * 179 / 200;
-	private static final int buttonBackCurveFinalizeWidth = windowWidth/10;
+	private static final int buttonBackCurveFinalizeWidth = windowWidth / 10;
 	public static final Rectangle finalizeButtonBackBounds = new Rectangle(buttonBackCurveFinalizeX[0], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
 	public static final Rectangle finalizeButtonCurveBounds = new Rectangle(buttonBackCurveFinalizeX[1], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
-	public static final Rectangle finalizeButtonFinalizeBounds = new Rectangle(buttonBackCurveFinalizeX[2], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
+	public static final Rectangle finalizeButtonSaveBounds = new Rectangle(buttonBackCurveFinalizeX[2], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
+	public static final Rectangle finalizeButtonFinalizeBounds = new Rectangle(buttonBackCurveFinalizeX[3], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
 
 
 	public static final Dimension optionPaneDimension = new Dimension(getScaledSize(600), getScaledSize(600));
