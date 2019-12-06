@@ -3,6 +3,7 @@ package view;
 import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
+import javafx.scene.control.ComboBox;
 import model.*;
 
 import javax.swing.*;
@@ -19,8 +20,6 @@ import controller.Master;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,6 +58,10 @@ public class MenuPanel extends JPanel implements Observer {
 
 	private JTable tableStudent;
 
+	private DefaultComboBoxModel studentComboModel;
+
+	private JComboBox<String> studentComboEdit;
+
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
 	 */
@@ -89,7 +92,7 @@ public class MenuPanel extends JPanel implements Observer {
 		String[][] menuItemName = {
 				{ "Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit" },
 				{ "Edit Student", "Edit Category", "Edit Item" },
-				{ "Edit All Grades", "Edit by Student", "View Grade" } };
+				{ "Edit All Grades", "Edit by Student", "View Grade", "Finalize Grade" } };
 		ActionListener[][] menuActionListener = { // TODO complete menu action
 				{ // File
 						addStudent -> { // Add Student
@@ -180,7 +183,7 @@ public class MenuPanel extends JPanel implements Observer {
 								JTextField percentageField = new JTextField();
 								JTextField maxPointsField = new JTextField();
 								Object[] fields = { "Category: ", categoryCombo, "Item: ", itemField, "Percentage: ",
-										percentageField, "Max Points: ",maxPointsField,};
+										percentageField, "Max Points: ", maxPointsField, };
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item",
@@ -223,21 +226,42 @@ public class MenuPanel extends JPanel implements Observer {
 						exit -> System.exit(0) },
 				{ editStudent -> { // Edit Student
 					try {
-						JComboBox<String> studentCombo = new JComboBox<>();
-						/**
-						 * to do this part
-						 */
+						String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
+						studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
+						studentComboEdit = new JComboBox<>(studentComboModel);
 
 						JTextField BUIDField = new JTextField();
+						JTextField nameField = new JTextField();
 						JTextField emailField = new JTextField();
-						JComboBox<String> levelCombo = new JComboBox<>(new String[] { "Undergraduate", "Graduate" });
-						Object[] fields = { "Student: ", studentCombo, "BU ID: ", BUIDField, "Email: ", emailField,
-								"Level: ", levelCombo, };
+						JComboBox<String> levelCombo = new JComboBox<String>(
+								new String[] { "Undergraduate", "Graduate" });
+						Object[] fields = { "Student: ", studentComboEdit, "BU ID: ", BUIDField, "Name:", nameField,
+								"Email: ", emailField, "Level: ", levelCombo, };
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Student",
 									JOptionPane.OK_CANCEL_OPTION);
 							if (reply == JOptionPane.OK_OPTION) {
+								int chosenIndex = studentComboEdit.getSelectedIndex();
+								if (chosenIndex != -1) {
+
+									String buid = BUIDField.getText().trim();
+									String name = nameField.getText().trim();
+									String email = emailField.getText().trim();
+									String level = (String) levelCombo.getSelectedItem();
+
+									if (buid.equals("") && email.equals("")) {
+										return;
+									}
+									HashMap<String, String> map = new HashMap<String, String>();
+
+									map.put("Buid", buid);
+									map.put("Name", name);
+									map.put("Email", email);
+									map.put("Type", level);
+
+									controller.modifyStudentForCourse(controller.getCurrentCourse(), chosenIndex, map);
+								}
 								break;
 							} else {
 								return;
@@ -249,13 +273,12 @@ public class MenuPanel extends JPanel implements Observer {
 				}, editCategory -> { // Edit Category
 					try {
 						String[][] categoryData;
-						/**
-						 * to do this part
-						 */
+
 						categoryData = controller.getCurrentCourse().getCategoryDataForList();
 
 						String[] categoryColumn = { "Category", "Percentage" };
-						JTable categoryTable = new JTable(categoryData, categoryColumn) {
+						DefaultTableModel tableModel = new DefaultTableModel(categoryData, categoryColumn);
+						JTable categoryTable = new JTable(tableModel) {
 							public boolean isCellEditable(int row, int column) {
 								return column > 0;
 							}
@@ -267,8 +290,36 @@ public class MenuPanel extends JPanel implements Observer {
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, categoryScrollPane, "Edit Category",
 									JOptionPane.OK_CANCEL_OPTION);
+							boolean flag = false;
+							ArrayList<HashMap<String, Double>> modifiedData = new ArrayList<HashMap<String, Double>>();
 							if (reply == JOptionPane.OK_OPTION) {
-								break;
+
+								for (int i = 0; i < tableModel.getRowCount(); i++) {
+									HashMap<String, Double> m = new HashMap<String, Double>();
+									String key = (String) tableModel.getValueAt(i, 0);
+									key = key.trim();
+									if (!key.equals("")) {
+										try {
+											double value = Double.parseDouble((String) tableModel.getValueAt(i, 1));
+											m.put(key, value);
+											modifiedData.add(m);
+										} catch (Exception e) {
+											JOptionPane.showMessageDialog(this, "Please Enter correct Values", "Error",
+													JOptionPane.ERROR_MESSAGE);
+											flag = true;
+											break;
+										}
+									} else {
+										JOptionPane.showMessageDialog(this, "Please Enter correct Values", "Error",
+												JOptionPane.ERROR_MESSAGE);
+										flag = true;
+										break;
+									}
+								}
+								if (flag == false) {
+									controller.modifyCategoriesForCourse(controller.getCurrentCourse(), modifiedData);
+									break;
+								}
 							} else {
 								return;
 							}
@@ -279,26 +330,23 @@ public class MenuPanel extends JPanel implements Observer {
 				}, editItem -> { // Edit Item
 					try {
 						JComboBox<String> categoryCombo = new JComboBox<>();
-						/**
-						 * to do this part
-						 */
+
 						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
 						for (int i = 0; i < categories.size(); i++) {
 							categoryCombo.addItem(categories.get(i).getFieldName());
 						}
 
 						String[][] itemData;
-						/**
-						 * to do this part
-						 */
-
 						if (categoryCombo.getSelectedIndex() < 0)
 							return;
 
 						Category chosenCategory = categories.get(categoryCombo.getSelectedIndex());
-						itemData = chosenCategory.getItemsForList();
-						String[] itemColumn = { "Item", "Percentage" };
-						JTable itemTable = new JTable(itemData, itemColumn) {
+						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
+								categoryCombo.getSelectedIndex(), true);
+						String[] itemColumn = { "Item", "Percentage", "Max Points" };
+						DefaultTableModel tableModel = new DefaultTableModel(itemData, itemColumn);
+
+						JTable itemTable = new JTable(tableModel) {
 							public boolean isCellEditable(int row, int column) {
 								return column > 0;
 							}
@@ -311,9 +359,39 @@ public class MenuPanel extends JPanel implements Observer {
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item",
 									JOptionPane.OK_CANCEL_OPTION);
+							boolean flag = false;
+							HashMap<String, ArrayList<Double>> map = new HashMap<String, ArrayList<Double>>();
 							if (reply == JOptionPane.OK_OPTION) {
+								for (int i = 0; i < tableModel.getRowCount(); i++) {
+									String key = (String) tableModel.getValueAt(i, 0);
+									ArrayList<Double> l = new ArrayList<Double>();
+									for (int j = 1; j < tableModel.getColumnCount(); j++) {
+										String str = (String) tableModel.getValueAt(i, j);
+										if (str.trim().equals("")) {
+											flag = true;
+											break;
+										}
+										try {
+											double value = Double.parseDouble((String) tableModel.getValueAt(i, j));
+											l.add(value);
+										} catch (Exception e) {
+											JOptionPane.showMessageDialog(this, "Please Enter correct Values", "Error",
+													JOptionPane.ERROR_MESSAGE);
+											flag = true;
+											break;
+										}
+									}
+									if (flag) {
+										break;
+									}
+									map.put(key, l);
+								}
+								if (flag == false) {
+									controller.modifyItemsForCourseCategory(controller.getCurrentCourse(),
+											categoryCombo.getSelectedIndex(), map);
+									break;
+								}
 
-								break;
 							} else {
 								return;
 							}
@@ -350,7 +428,9 @@ public class MenuPanel extends JPanel implements Observer {
 					}
 				}, viewGrades -> { // View Grades
 					frame.changePanel(this, new ViewGradePanel(frame, courseData, false, this.controller));
-				} } };
+				}, finalize -> {
+					frame.changePanel(this, new FinializePanel(frame,controller));
+		} } };
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setLayout(new GridBagLayout());
@@ -450,7 +530,7 @@ public class MenuPanel extends JPanel implements Observer {
 							return;
 						}
 						newTableItemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
-								tableCategory.getSelectedRow());
+								tableCategory.getSelectedRow(), false);
 						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumns);
 						tableItem.setModel(newTableItemModel);
 						for (int i = 0; i < 2; ++i) {
@@ -525,8 +605,8 @@ public class MenuPanel extends JPanel implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
-		
-		this.controller = controller; 
+
+		this.controller = controller;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
@@ -556,5 +636,9 @@ public class MenuPanel extends JPanel implements Observer {
 			}
 		};
 		tableStudent.setModel(studentTableModel);
+		
+		String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
+		studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
+		studentComboEdit.setModel(studentComboModel);
 	}
 }
