@@ -13,7 +13,7 @@ public class Master extends Observable {
 	public Master() {
 		this.courses = new ArrayList<Course>();
 		this.currentCourse = null;
-		
+
 		initialize();
 	}
 
@@ -24,11 +24,11 @@ public class Master extends Observable {
 
 	public void initialize() {
 		this.courses.addAll(Read.getAllCourses());
-		
+
 		setChanged();
 		notifyObservers();
 	}
-	
+
 	/*
 	 * Create Methods
 	 */
@@ -120,7 +120,7 @@ public class Master extends Observable {
 					student.get("email"), student.get("type"), course.getCourseId(), true);
 			course.addStudent(cs);
 			Student st = new Student(cs.getFname(), cs.getLname(), cs.getBuid(), cs.getEmail(), cs.getType());
-			
+
 			Create.insertNewStudent(st);
 			Create.insertNewCourseStudent(cs);
 		}
@@ -295,8 +295,11 @@ public class Master extends Observable {
 		return names;
 	}
 
-	public String[][] getItemDetailsForCourseCategory(Course course, int categoryIndex) {
-		return course.getCategories().get(categoryIndex).getItemsForList();
+	public String[][] getItemDetailsForCourseCategory(Course course, int categoryIndex, boolean includeMaxPoints) {
+		if (!includeMaxPoints)
+			return course.getCategories().get(categoryIndex).getItemsForList();
+		else
+			return course.getCategories().get(categoryIndex).getItemsForListWithMaxPoints();
 	}
 
 	public String[][] getAllStudentsForCourse(Course course) {
@@ -332,19 +335,19 @@ public class Master extends Observable {
 			}
 		}
 	}
-	
+
 	public int generateCategoryId(Course course) {
 		Random rand = new Random();
 		int id;
 		while (true) {
 			id = rand.nextInt(99999) + 1;
-			
+
 			if (isUniqueCategoryId(course, id)) {
 				return id;
 			}
 		}
 	}
-	
+
 	public int generateItemId(Category category) {
 		Random rand = new Random();
 		int id;
@@ -376,28 +379,65 @@ public class Master extends Observable {
 		}
 		return true;
 	}
-	
-	//----------------------------------------------
-	
-	public void modifyCategoriesForCourse(Course course, ArrayList<HashMap<String,Double>> cats) {
+
+	// ----------------------------------------------
+
+	public void modifyCategoriesForCourse(Course course, ArrayList<HashMap<String, Double>> cats) {
 		ArrayList<Category> categories = course.getCategories();
-		
-		for(int i=0;i<categories.size();i++) {
+
+		for (int i = 0; i < categories.size(); i++) {
 			Category c = categories.get(i);
-			
+
 			HashMap<String, Double> map = cats.get(i);
-			
-			if(map.get(c.getFieldName())!=c.getWeight()) {
-				Category modified = new Category(c.getId(), c.getFieldName(), map.get(c.getFieldName()), c.getCourseId(), c.getItems());
-				
+
+			if (map.get(c.getFieldName()) != c.getWeight()) {
+				Category modified = new Category(c.getId(), c.getFieldName(), map.get(c.getFieldName()),
+						c.getCourseId(), c.getItems());
+
 				course.setCategory(i, modified);
-				//update db for modification to category 
-				
+				// update db for modification to category
+
 			}
 		}
-		
+
 		setChanged();
 		notifyObservers();
 	}
-	
+
+	public void modifyItemsForCourseCategory(Course course, int categoryIndex, HashMap<String, ArrayList<Double>> map) {
+		Category cat = course.getCategory(categoryIndex);
+
+		ArrayList<Item> items = cat.getItems();
+
+		for (int i = 0; i < items.size(); i++) {
+			Item item = items.get(i);
+
+			boolean flag = false;
+			ArrayList<Double> l = map.get(item.getFieldName());
+			if (item.getWeight() != l.get(0))
+				flag = true;
+			else if (item.getMaxPoints() != l.get(1))
+				flag = true;
+
+			if (flag) {
+				Item modifiedItem = new Item(item.getId(), item.getFieldName(), item.getCategoryId(), l.get(0),
+						l.get(1), item.getCourseId());
+				cat.setItem(i, modifiedItem);
+				course.setCategory(categoryIndex, cat);
+
+				for (CourseStudent student : course.getStudents()) {
+					student.modifyMaxPointsInGradeEntryByItem(item.getId(), l.get(1));
+				}
+
+				// modify in db
+				/**
+				 * to do
+				 */
+			}
+		}
+
+		setChanged();
+		notifyObservers();
+	}
+
 }

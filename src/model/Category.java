@@ -82,6 +82,17 @@ public class Category extends GenericCategory {
 		return str;
 	}
 	
+	public String[][] getItemsForListWithMaxPoints(){
+		String [][]str = new String[this.items.size()][];
+		
+		int i=0;
+		for(Item item: this.items) {
+			str[i++]=item.getDetailsWithMaxPoints();
+		}
+		
+		return str;
+	}
+	
 	public Item getItemById(int itemId) {
 		for(Item i: this.items) {
 			if(i.getId()==itemId)
