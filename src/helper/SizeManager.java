@@ -47,28 +47,28 @@ public class SizeManager {
 
 	public static final int searchFilterCourseWidth = windowWidth / 6;
 	public static final int searchFilterCourseHeight = windowHeight / 20;
-	public static final int searchCourseX = windowWidth / 2+ midSearchFilter;
+	public static final int searchCourseX = windowWidth / 2 + midSearchFilter;
 	public static final int searchFilterCourseY = tableCourseY / 2 - searchFilterCourseHeight / 2;
 	public static final Rectangle searchCourseBounds = new Rectangle(searchCourseX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
 	public static final float fontSearchSize = (int) (searchFilterCourseHeight * 0.6f);
-	
+
 	public static final int filterCourseX = windowWidth / 2 - searchFilterCourseWidth - midSearchFilter;
 	public static final Rectangle filterCourseBounds = new Rectangle(filterCourseX, searchFilterCourseY, searchFilterCourseWidth, searchFilterCourseHeight);
 	public static final float fontFilterSize = (int) (searchFilterCourseHeight * 0.6f);
-	
+
 	public static final int comboWidth = windowWidth / 8;
-	
-	public static final int categoryX = filterCourseX+midSearchFilter/5;//windowWidth / 2 - 2*searchFilterCourseWidth;
+
+	public static final int categoryX = filterCourseX + midSearchFilter / 5;//windowWidth / 2 - 2*searchFilterCourseWidth;
 	public static final int categoryY = tableCourseY / 2 - searchFilterCourseHeight / 2;
 	public static final Rectangle categoryBounds = new Rectangle(categoryX, categoryY, comboWidth, searchFilterCourseHeight);
 	public static final float categorySize = (int) (searchFilterCourseHeight * 0.6f);
-	
-	public static final int itemX = categoryX + 3*midSearchFilter;//windowWidth / 2 - searchFilterCourseWidth -  midSearchFilter;
+
+	public static final int itemX = categoryX + 3 * midSearchFilter;//windowWidth / 2 - searchFilterCourseWidth -  midSearchFilter;
 	public static final Rectangle itemBounds = new Rectangle(itemX, searchFilterCourseY, comboWidth, searchFilterCourseHeight);
 	public static final float fontItemSize = (int) (searchFilterCourseHeight * 0.6f);
-	
-	
-	public static final int comboX = itemX + 3*midSearchFilter+midSearchFilter/2;
+
+
+	public static final int comboX = itemX + 3 * midSearchFilter + midSearchFilter / 2;
 	public static final Rectangle comboBounds = new Rectangle(comboX, searchFilterCourseY, comboWidth, searchFilterCourseHeight);
 	public static final float comboFilterSize = (int) (searchFilterCourseHeight * 0.6f);
 
@@ -78,10 +78,10 @@ public class SizeManager {
 
 	public static final Rectangle labelFilterBounds = new Rectangle(0, searchFilterCourseY, filterCourseX, labelHeight);
 	public static final Rectangle labelSearchBounds = new Rectangle(filterCourseX + searchFilterCourseWidth, searchFilterCourseY, searchCourseX - filterCourseX - searchFilterCourseWidth, labelHeight);
-	
+
 	public static final Rectangle labelCategoryBounds = new Rectangle(0, searchFilterCourseY, filterCourseX, labelHeight);
-	public static final Rectangle labelItemBounds = new Rectangle(categoryX + 2*midSearchFilter/3, searchFilterCourseY, searchCourseX - filterCourseX - searchFilterCourseWidth, labelHeight);
-	public static final Rectangle labelComboBounds = new Rectangle(categoryX+4*midSearchFilter, searchFilterCourseY, searchCourseX - filterCourseX - searchFilterCourseWidth, labelHeight);
+	public static final Rectangle labelItemBounds = new Rectangle(categoryX + 2 * midSearchFilter / 3, searchFilterCourseY, searchCourseX - filterCourseX - searchFilterCourseWidth, labelHeight);
+	public static final Rectangle labelComboBounds = new Rectangle(categoryX + 4 * midSearchFilter, searchFilterCourseY, searchCourseX - filterCourseX - searchFilterCourseWidth, labelHeight);
 
 
 	public static final int buttonWidth = windowWidth / 15;
@@ -114,6 +114,21 @@ public class SizeManager {
 	public static final int[] tableCategoryItemColumnWidth = {panelWidth * 3 / 4, panelWidth / 4};
 	public static final int menuTableRowHeight = (int) (panelHeight * 0.051);
 	public static final float fontMenuTableSize = (int) (menuTableRowHeight * 0.6f);
+
+	public static final Rectangle finalizeTitleLabelBounds = new Rectangle(0, 0, windowWidth, windowHeight / 20);
+	public static final Rectangle labelGradeStatisticsBounds = new Rectangle(0, windowHeight / 20, windowWidth, windowHeight / 20);
+	private static final int midFinalize = windowWidth / 20;
+	private static final int[] buttonBackCurveFinalizeX = {
+			windowWidth / 2 - buttonWidth * 3 / 2 - midFinalize,
+			windowWidth / 2 - buttonWidth  / 2 ,
+			windowWidth / 2 + buttonWidth  / 2 + midFinalize
+	};
+	private static final int buttonBackCurveFinalizeY = windowHeight * 179 / 200;
+	private static final int buttonBackCurveFinalizeWidth = windowWidth/10;
+	public static final Rectangle finalizeButtonBackBounds = new Rectangle(buttonBackCurveFinalizeX[0], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
+	public static final Rectangle finalizeButtonCurveBounds = new Rectangle(buttonBackCurveFinalizeX[1], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
+	public static final Rectangle finalizeButtonFinalizeBounds = new Rectangle(buttonBackCurveFinalizeX[2], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
+
 
 	public static final Dimension optionPaneDimension = new Dimension(getScaledSize(600), getScaledSize(600));
 

@@ -89,7 +89,7 @@ public class MenuPanel extends JPanel implements Observer {
 		String[][] menuItemName = {
 				{ "Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit" },
 				{ "Edit Student", "Edit Category", "Edit Item" },
-				{ "Edit All Grades", "Edit by Student", "View Grade" } };
+				{ "Edit All Grades", "Edit by Student", "View Grade", "Finalize Grade" } };
 		ActionListener[][] menuActionListener = { // TODO complete menu action
 				{ // File
 						addStudent -> { // Add Student
@@ -350,7 +350,9 @@ public class MenuPanel extends JPanel implements Observer {
 					}
 				}, viewGrades -> { // View Grades
 					frame.changePanel(this, new GradePanel(frame, courseData, false, this.controller));
-				} } };
+				}, finalize -> {
+					frame.changePanel(this, new FinializePanel(frame,controller));
+		} } };
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setLayout(new GridBagLayout());
@@ -525,8 +527,8 @@ public class MenuPanel extends JPanel implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
-		
-		this.controller = controller; 
+
+		this.controller = controller;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
