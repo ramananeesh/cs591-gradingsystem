@@ -30,7 +30,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 
     /** The frame which contains this panel. */
     private MainFrame frame;
-    private DefaultTableModel gradeTableModel;
+    private MyTableModel gradeTableModel;
     private JTable gradeTable;
     private JComboBox<String> categoryComboBox;
     private JComboBox<String> itemComboBox;
@@ -98,30 +98,16 @@ public class ViewGradePanel extends JPanel implements Observer {
         }
 
         if (editable) {
-            gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
-                List<Color> rowColor = Arrays.asList(Color.RED, Color.GREEN,Color.CYAN);
-
-                public void setRowColor(int row, Color c){
-                    rowColor.set(row, c);
-                    fireTableRowsUpdated(row,row);
-                }
+            gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
+                
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return column > 0;
                 }
             };
         } else {
-            gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
-                List<Color> rowColor = Arrays.asList(Color.RED, Color.GREEN,Color.CYAN);
-
-                public void setRowColor(int row, Color c){
-                    rowColor.set(row, c);
-                    fireTableRowsUpdated(row,row);
-                }
-
-                public Color getRowColor(int row){
-                    return rowColor.get(row);
-                }
+            gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
+               
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
@@ -134,7 +120,7 @@ public class ViewGradePanel extends JPanel implements Observer {
         DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
         DefaultTableCellRenderer gradeRender = new DefaultTableCellRenderer(){
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
-                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                MyTableModel model = (MyTableModel) table.getModel();
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 c.setBackground(model.getRowColor(row));
                 return c;
