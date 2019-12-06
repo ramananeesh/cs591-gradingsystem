@@ -75,5 +75,22 @@ public class CourseStudent extends Student {
 		}
 		return null; 
 	}
+
+	public double getGradeEntryForCategory(int courseId, int categoryId, List<Item> allItems){
+		double score = 0;
+		for(GradeEntry entry: this.grades) {
+			if(entry.getCourseId()==courseId&&entry.getCategoryId()==categoryId) {
+				int itemId = entry.getItemId();
+				for(Item i : allItems){
+					if(itemId == i.getId()){
+						double percentage = i.getWeight();
+						score += percentage*(entry.getPointsEarned()/entry.getMaxPoints());
+						break;
+					}
+				}
+			}
+		}
+		return score;
+	}
 }
 

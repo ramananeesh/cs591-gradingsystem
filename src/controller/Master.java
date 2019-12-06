@@ -352,15 +352,45 @@ public class Master extends Observable {
 		this.courses.add(index, newCourse);
 	}
 
-	public String getStudentScore(CourseStudent student, Course course, String itemName){
-		HashMap<String, Double> grades = student.getAllGradeEntries();
-		for (String key : grades.keySet()) {
-			if(key.equals(itemName)){
-				return Double.toString(grades.get(key));
+	public ArrayList<Item> getAllItemsForCourse(Course course){
+		ArrayList<Item> allItem = new ArrayList<>();
+
+		for (Category category : course.getCategories()) {
+			for (Item i : category.getItems()) {
+				allItem.add(i);
 			}
 		}
-		return "";
+		return allItem;
 	}
+
+	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID, int itemID){
+		GradeEntry entry = student.getGradeEntryForItemInCategory(courseID, categoryID, itemID);
+		if(entry != null) {
+			String grade = Double.toString(entry.getPointsEarned() / entry.getMaxPoints());
+			if (!entry.getComments().equals("")) {	// has comment
+				return grade + " 1";
+			}
+			else{
+				return grade + " 0";
+			}
+		}
+		return "0.0 0";
+	}
+
+	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID){
+		Course currCourse = null;
+		for(Course c : courses){
+			if(c.getCourseId() == courseID){
+				currCourse = c;
+				break;
+			}
+		}
+		Category category = currCourse.getCategoryById(categoryID);
+		List<Item> allItem = category.getItems();
+		String grade = Double.toString(student.getGradeEntryForCategory(courseID, categoryID, allItem));
+		return grade + " 0";
+	}
+
 	public boolean isUniqueCategoryId(Course course, int id) {
 		for (Category category : course.getCategories()) {
 			if (id == category.getId())

@@ -10,16 +10,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 import controller.Master;
-import model.Category;
-import model.Course;
-import model.CourseStudent;
-import model.GradeEntry;
-import model.Item;
+import model.*;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  * The {@code GradePanel} class represents the panel for viewing or modifying
@@ -40,6 +38,7 @@ public class ViewGradePanel extends JPanel implements Observer {
     private DefaultComboBoxModel<String> itemsModel;
     private Object[] gradeTableColumnNames;
     private boolean editable;
+    private boolean hasComment;
 
     DecimalFormat df = new DecimalFormat("##.##");
 
@@ -63,8 +62,16 @@ public class ViewGradePanel extends JPanel implements Observer {
 
         // grade table
         ArrayList<String> gradeTableColumnNamesList = new ArrayList<>();
-        ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
-
+        List<Item> allItems = controller.getAllItemsForCourse(controller.getCurrentCourse());
+        List<String> allItemNames = new ArrayList<>();
+        List<Integer> allCategoryIDs = new ArrayList<>();
+        List<Integer> allItemIDs = new ArrayList<>();
+        for(Item item : allItems){
+            allItemNames.add(item.getFieldName());
+            allCategoryIDs.add(item.getCategoryId());
+            allItemIDs.add(item.getId());
+        }
+//        ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
         gradeTableColumnNamesList.add("Student Name");
         gradeTableColumnNamesList.add("BUID");
         gradeTableColumnNamesList.addAll(allItemNames);
@@ -73,17 +80,31 @@ public class ViewGradePanel extends JPanel implements Observer {
         ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 
         String[][] gradeTableRowData = new String[students.size()][];
+        Boolean[] gradeTableRowComment = new Boolean[students.size()];
         for (int i = 0; i < gradeTableRowData.length; i++) {
             gradeTableRowData[i] = new String[gradeTableColumnNames.length];
             gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
             gradeTableRowData[i][1] = students.get(i).getBuid();
             for (int j = 2; j < gradeTableColumnNames.length; j ++){
-                gradeTableRowData[i][j] = controller.getStudentScore(students.get(i), controller.getCurrentCourse(), gradeTableColumnNamesList.get(j));
+                String temp = controller.getStudentScoreByID(students.get(i), controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j-2), allItemIDs.get(j-2));
+                gradeTableRowData[i][j] = temp.split(" ")[0];
+                if(temp.split(" ")[1] == "1"){
+                    gradeTableRowComment[i] = true;
+                }
+                else{
+                    gradeTableRowComment[i] = false;
+                }
             }
         }
 
         if (editable) {
             gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+                List<Color> rowColor = Arrays.asList(Color.RED, Color.GREEN,Color.CYAN);
+
+                public void setRowColor(int row, Color c){
+                    rowColor.set(row, c);
+                    fireTableRowsUpdated(row,row);
+                }
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return column > 0;
@@ -91,6 +112,16 @@ public class ViewGradePanel extends JPanel implements Observer {
             };
         } else {
             gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+                List<Color> rowColor = Arrays.asList(Color.RED, Color.GREEN,Color.CYAN);
+
+                public void setRowColor(int row, Color c){
+                    rowColor.set(row, c);
+                    fireTableRowsUpdated(row,row);
+                }
+
+                public Color getRowColor(int row){
+                    return rowColor.get(row);
+                }
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
@@ -101,9 +132,17 @@ public class ViewGradePanel extends JPanel implements Observer {
         gradeTable.setRowHeight(SizeManager.tableRowHeight);
         gradeTable.setFont(FontManager.fontTable);
         DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer gradeRender = new DefaultTableCellRenderer(){
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                c.setBackground(model.getRowColor(row));
+                return c;
+            }
+        };
         gradeTableRender.setHorizontalAlignment(SwingConstants.CENTER);
         gradeTableRender.setVerticalAlignment(SwingConstants.CENTER);
-        gradeTable.setDefaultRenderer(Object.class, gradeTableRender);
+        gradeTable.setDefaultRenderer(Object.class, gradeRender);
         TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
         gradeTable.setRowSorter(gradeTableRowSorter);
         gradeTable.getTableHeader().setFont(gradeTable.getFont());
@@ -142,6 +181,8 @@ public class ViewGradePanel extends JPanel implements Observer {
                 int index = categoryComboBox.getSelectedIndex();
                 // grade table
                 ArrayList<String> gradeTableColumnNamesList = new ArrayList<>();
+                List<Integer> categoryIDs = new ArrayList<>();
+                List<Integer> itemIDs = new ArrayList<>();
 
                 gradeTableColumnNamesList.add("Student Name");
                 gradeTableColumnNamesList.add("BUID");
@@ -162,11 +203,14 @@ public class ViewGradePanel extends JPanel implements Observer {
                             index - 1);
 
                     String[] itemComboNames = new String[items.size() + 1];
+
                     int k = 1;
                     itemComboNames[0] = "All";
                     for (Item item : items) {
                         itemComboNames[k] = item.getFieldName();
                         gradeTableColumnNamesList.add(itemComboNames[k]);
+                        categoryIDs.add(item.getCategoryId());
+                        itemIDs.add(item.getId());
                         k++;
                     }
 
@@ -178,23 +222,42 @@ public class ViewGradePanel extends JPanel implements Observer {
                 gradeTableColumnNames = gradeTableColumnNamesList.toArray();
                 ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
                 String[][] gradeTableRowData = new String[students.size()][];
+                Boolean[] gradeTableRowComment = new Boolean[students.size()];
+
                 for (int i = 0; i < gradeTableRowData.length; i++) {
+                    hasComment = false;
                     gradeTableRowData[i] = new String[gradeTableColumnNames.length];
                     gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
                     gradeTableRowData[i][1] = students.get(i).getBuid();
-                    for (int j = 1; j < gradeTableColumnNames.length; j ++){
-                        gradeTableRowData[i][j] = controller.getStudentScore(students.get(i), controller.getCurrentCourse(), gradeTableColumnNamesList.get(j));
+                    for (int j = 2; j < gradeTableColumnNames.length; j ++){
+                        String temp;
+                        if(index == 0){
+                            temp = controller.getStudentScoreByID(students.get(i), controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j-2), allItemIDs.get(j-2));
+
+                        }
+                        else{
+                            temp = controller.getStudentScoreByID(students.get(i), controller.getCurrentCourse().getCourseId(), categoryIDs.get(j-2), itemIDs.get(j-2));
+                        }
+                        gradeTableRowData[i][j] = temp.split(" ")[0];
+                        if(temp.split(" ")[1] == "1"){
+                            gradeTableRowComment[i] = true;
+                        }
+                        else{
+                            gradeTableRowComment[i] = false;
+                        }
                     }
                 }
                 if (editable) {
-                    gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+                    gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
+
                         @Override
                         public boolean isCellEditable(int row, int column) {
                             return column > 0;
                         }
                     };
                 } else {
-                    gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+                    gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
+
                         @Override
                         public boolean isCellEditable(int row, int column) {
                             return false;
@@ -202,6 +265,16 @@ public class ViewGradePanel extends JPanel implements Observer {
                     };
                 }
                 gradeTable.setModel(gradeTableModel);
+//                gradeTable.setSelectionBackground(Color.YELLOW);
+                gradeTableModel.setRowColor(1, Color.YELLOW);
+
+//                for(int i = 0; i < gradeTableRowData.length; i++){
+//                    if(gradeTableRowComment[i] == true){
+//                        // TODO: highlight row
+//                        gradeTable.setSelectionBackground(Color.YELLOW);
+//                    }
+//                }
+
             }
         });
 
@@ -215,51 +288,74 @@ public class ViewGradePanel extends JPanel implements Observer {
                 gradeTableColumnNamesList.add("Student Name");
                 gradeTableColumnNamesList.add("BUID");
                 // TODO Auto-generated method stub
+                ArrayList<Category> allCategories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
+                List<String> allItemNames = new ArrayList<>();
+                List<Integer> allCategoryIDs = new ArrayList<>();
+                List<Integer> allItemIDs = new ArrayList<>();
                 if (itemIndex == 0) {
                     if(categoryIndex == 0){
-                        ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
-                        gradeTableColumnNamesList.addAll(allItemNames);
+                        List<Item> allItems = controller.getAllItemsForCourse(controller.getCurrentCourse());
+                        for(Item item : allItems){
+                            allItemNames.add(item.getFieldName());
+                            allCategoryIDs.add(item.getCategoryId());
+                            allItemIDs.add(item.getId());
+                        }
                     }
                     else{
-                        ArrayList<Item> items = controller.getAllItemsForCourseCategory(controller.getCurrentCourse(),
+                        ArrayList<Item> allItems = controller.getAllItemsForCourseCategory(controller.getCurrentCourse(),
                                 categoryIndex - 1);
-                        for (Item item : items) {
-                            gradeTableColumnNamesList.add(item.getFieldName());
+                        for(Item item : allItems){
+                            allItemNames.add(item.getFieldName());
+                            allCategoryIDs.add(item.getCategoryId());
+                            allItemIDs.add(item.getId());
                         }
                     }
                 }
                 else if (categoryIndex == 0 && itemIndex == 1){
-                    ArrayList<String> categoryNames = new ArrayList<>();
-                    ArrayList<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
-                    for (Category c : categories) {
-                        categoryNames.add(c.getFieldName());
+                    for (Category c : allCategories) {
+                        allItemNames.add(c.getFieldName());
+                        allCategoryIDs.add(c.getId());
                     }
-                    gradeTableColumnNamesList.addAll(categoryNames);
                 }
                 else{
                     Item item = controller.getAllItemsForCourseCategory(controller.getCurrentCourse(), categoryIndex-1).get(itemIndex-1);
-                    gradeTableColumnNamesList.add(item.getFieldName());
+                    allItemNames.add(item.getFieldName());
+                    allCategoryIDs.add(item.getCategoryId());
+                    allItemIDs.add(item.getId());
+
                 }
+                gradeTableColumnNamesList.addAll(allItemNames);
                 gradeTableColumnNames = gradeTableColumnNamesList.toArray();
                 ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
                 String[][] gradeTableRowData = new String[students.size()][];
                 for (int i = 0; i < gradeTableRowData.length; i++) {
+                    hasComment = false;
                     gradeTableRowData[i] = new String[gradeTableColumnNames.length];
                     gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
                     gradeTableRowData[i][1] = students.get(i).getBuid();
                     for (int j = 2; j < gradeTableColumnNames.length; j ++){
-                        gradeTableRowData[i][j] = controller.getStudentScore(students.get(i), controller.getCurrentCourse(), gradeTableColumnNamesList.get(j));
+                        String temp;
+                        if(allItemIDs.size()>0){
+                            temp = controller.getStudentScoreByID(students.get(i), controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j-2), allItemIDs.get(j-2));
+                        }
+                        else{
+                            temp = controller.getStudentScoreByID(students.get(i), controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j-2));
+                        }
+                        gradeTableRowData[i][j] = temp.split(" ")[0];
+                        if(temp.split(" ")[1] == "1"){
+                            hasComment = true;
+                        }
                     }
                 }
                 if (editable) {
-                    gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+                    gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
                         @Override
                         public boolean isCellEditable(int row, int column) {
                             return column > 0;
                         }
                     };
                 } else {
-                    gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+                    gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
                         @Override
                         public boolean isCellEditable(int row, int column) {
                             return false;
@@ -451,14 +547,14 @@ public class ViewGradePanel extends JPanel implements Observer {
         }
 
         if (editable) {
-            gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+            gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return column > 0;
                 }
             };
         } else {
-            gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+            gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
@@ -467,6 +563,8 @@ public class ViewGradePanel extends JPanel implements Observer {
         }
         gradeTable.setModel(gradeTableModel);
     }
+
+
 
     /**
      * Generate some random data which is used for testing
@@ -492,6 +590,23 @@ public class ViewGradePanel extends JPanel implements Observer {
             rank.sort(Integer::compareTo);
             tableGrade.setValueAt(String.valueOf(rank.get(rank.size() / 2)), 1, i);
             tableGrade.setValueAt(String.format("%.2f", sum / rank.size()), 0, i);
+        }
+    }
+
+    static class MyTableModel extends DefaultTableModel{
+        List<Color> rowColor = Arrays.asList(Color.RED, Color.GREEN,Color.CYAN);
+
+        public MyTableModel(String[][] gradeTableRowData, Object[] gradeTableColumnNames) {
+            super(gradeTableRowData,gradeTableColumnNames);
+        }
+
+        public void setRowColor(int row, Color c){
+            rowColor.set(row, c);
+            fireTableRowsUpdated(row,row);
+        }
+
+        public Color getRowColor(int row){
+            return rowColor.get(row);
         }
     }
 
