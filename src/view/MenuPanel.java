@@ -3,6 +3,7 @@ package view;
 import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
+import javafx.scene.control.ComboBox;
 import model.*;
 
 import javax.swing.*;
@@ -56,6 +57,10 @@ public class MenuPanel extends JPanel implements Observer {
 	private JTable tableItem;
 
 	private JTable tableStudent;
+
+	private DefaultComboBoxModel studentComboModel;
+
+	private JComboBox<String> studentComboEdit;
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
@@ -221,21 +226,42 @@ public class MenuPanel extends JPanel implements Observer {
 						exit -> System.exit(0) },
 				{ editStudent -> { // Edit Student
 					try {
-						JComboBox<String> studentCombo = new JComboBox<>();
-						/**
-						 * to do this part
-						 */
+						String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
+						studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
+						studentComboEdit = new JComboBox<>(studentComboModel);
 
 						JTextField BUIDField = new JTextField();
+						JTextField nameField = new JTextField();
 						JTextField emailField = new JTextField();
-						JComboBox<String> levelCombo = new JComboBox<>(new String[] { "Undergraduate", "Graduate" });
-						Object[] fields = { "Student: ", studentCombo, "BU ID: ", BUIDField, "Email: ", emailField,
-								"Level: ", levelCombo, };
+						JComboBox<String> levelCombo = new JComboBox<String>(
+								new String[] { "Undergraduate", "Graduate" });
+						Object[] fields = { "Student: ", studentComboEdit, "BU ID: ", BUIDField, "Name:", nameField,
+								"Email: ", emailField, "Level: ", levelCombo, };
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Student",
 									JOptionPane.OK_CANCEL_OPTION);
 							if (reply == JOptionPane.OK_OPTION) {
+								int chosenIndex = studentComboEdit.getSelectedIndex();
+								if (chosenIndex != -1) {
+
+									String buid = BUIDField.getText().trim();
+									String name = nameField.getText().trim();
+									String email = emailField.getText().trim();
+									String level = (String) levelCombo.getSelectedItem();
+
+									if (buid.equals("") && email.equals("")) {
+										return;
+									}
+									HashMap<String, String> map = new HashMap<String, String>();
+
+									map.put("Buid", buid);
+									map.put("Name", name);
+									map.put("Email", email);
+									map.put("Type", level);
+
+									controller.modifyStudentForCourse(controller.getCurrentCourse(), chosenIndex, map);
+								}
 								break;
 							} else {
 								return;
@@ -608,5 +634,9 @@ public class MenuPanel extends JPanel implements Observer {
 			}
 		};
 		tableStudent.setModel(studentTableModel);
+		
+		String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
+		studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
+		studentComboEdit.setModel(studentComboModel);
 	}
 }

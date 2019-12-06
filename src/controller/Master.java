@@ -440,4 +440,80 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
+	public void modifyStudentForCourse(Course course, HashMap<String, ArrayList<String>> map) {
+		ArrayList<CourseStudent> students = course.getStudents();
+		for (int i = 0; i < students.size(); i++) {
+			CourseStudent student = students.get(i);
+			ArrayList<String> mods = map.get(student.getName());
+
+			String modBuid = mods.get(0).trim();
+			String modName = mods.get(1).trim();
+			String modType = mods.get(2).trim();
+
+			boolean flag = false;
+			if (!modBuid.equals("")) {
+				student.setBuid(modBuid);
+				flag = true;
+			}
+
+			if (!modName.equals("")) {
+				student.setName(modName);
+				flag = true;
+			}
+
+			if (!modType.equals("")) {
+				student.setType(modType);
+				flag = true;
+			}
+
+			if (flag) {
+				course.setStudent(i, student);
+			}
+		}
+		
+		setChanged();
+		notifyObservers();
+	}
+
+	public void modifyStudentForCourse(Course course, int studentIndex, HashMap<String, String> map) {
+
+		CourseStudent student = course.getStudent(studentIndex);
+
+		String modBuid = map.get("Buid").trim();
+		String modName = map.get("Name").trim();
+		String modEmail = map.get("Email").trim();
+		String modType = map.get("Type").trim();
+
+		boolean flag = false;
+		if (!modBuid.equals("")) {
+			student.setBuid(modBuid);
+			flag = true;
+		}
+
+		if (!modEmail.equals("")) {
+			student.setEmail(modEmail);
+			flag = true;
+		}
+
+		if (!modName.equals("")) {
+			student.setName(modName);
+			flag = true;
+		}
+
+		if (!modType.equals("")) {
+			student.setType(modType);
+			flag = true;
+		}
+
+		if (flag) {
+			course.setStudent(studentIndex, student);
+			/**
+			 * to do db mod
+			 */
+			setChanged();
+			notifyObservers();
+		}
+		
+	}
+
 }

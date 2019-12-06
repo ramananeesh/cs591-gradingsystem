@@ -51,5 +51,18 @@ public class Student extends Person {
 		str+="\nStudent Type: "+this.getType();
 		return str; 
 	}
+	
+	public String getName() {
+		return this.getFname()+" "+this.getLname();
+	}
+	
+	public void setName(String name) {
+		String[] names = name.split(" ");
+		String fname = names[0];
+		String lname = names[1];
+		
+		this.setFname(fname);
+		this.setLname(lname);
+	}
 
 }

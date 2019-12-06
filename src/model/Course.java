@@ -136,4 +136,14 @@ public class Course extends GenericCourse {
 	public Item getItemByItemName(int categoryId, String itemName) {
 		return this.getCategoryById(categoryId).getItemByItemName(itemName);
 	}
+	
+	public String[] getStudentNamesAsList() {
+		String[] str = new String[this.students.size()];
+		int i=0;
+		for(CourseStudent student: this.students) {
+			str[i++] = new String(student.getName() + " - "+student.getBuid());
+		}
+		
+		return str; 
+	}
 }
