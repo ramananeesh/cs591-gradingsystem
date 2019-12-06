@@ -10,7 +10,7 @@ public class SQLHelper {
         Connection conn = null;
 
         try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/grading_db?" + "user=root");
 
             // Do something with the Connection
