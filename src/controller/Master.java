@@ -437,7 +437,7 @@ public class Master extends Observable {
 
 				course.setCategory(i, modified);
 				// update db for modification to category
-
+				Update.updateCategory(modified);
 			}
 		}
 
@@ -471,9 +471,7 @@ public class Master extends Observable {
 				}
 
 				// modify in db
-				/**
-				 * to do
-				 */
+				Update.updateItem(modifiedItem);
 			}
 		}
 

@@ -58,8 +58,8 @@ public class Update {
 			}
 		}
 
-		String sql = "Update Student set BUID = '" + courseStudent.getBuid() + "' and type ='" + courseStudent.getType()
-				+ "'" + " and email = '" + courseStudent.getEmail() + "' where fName = '" + courseStudent.getFname()
+		String sql = "Update Student set BUID = '" + courseStudent.getBuid() + "' , type ='" + courseStudent.getType()
+				+ "'" + ", email = '" + courseStudent.getEmail() + "' where fName = '" + courseStudent.getFname()
 				+ "' and lName = '" + courseStudent.getLname() + "'";
 
 		String sql2 = "Update CourseStudent set BUID = '" + courseStudent.getBuid() + "' where courseID = '"
