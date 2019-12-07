@@ -712,5 +712,39 @@ public class Master extends Observable {
 		return grades; 
 	}
 	
-
+	public void initiateCourseFinalization(Course course) {
+		Double[] finalPercentages = getFinalPercentages(course);
+		String[] letterGrades = getFinalLetterGrades(course, finalPercentages);
+		
+		course.initiateFinalize(finalPercentages, letterGrades);
+	}
+	
+	public String[][] getFinalGradesData(Course course){
+		ArrayList<FinalGrade> finalGrades = course.getFinalGrades();
+		String[][] data = new String[finalGrades.size()][];
+		
+		for(int i=0;i<data.length;i++) {
+			data[i] = finalGrades.get(i).getDetailsForList();
+		}
+		
+		return data; 
+	}
+	
+	public void setCurveForCourse(Course course, double curve) {
+		course.setCurve(curve);
+		setCurveOnCoursePercentages(course);
+		
+		setChanged();
+		notifyObservers();
+	}
+	
+	public void setCurveOnCoursePercentages(Course course) {
+		ArrayList<FinalGrade> finalGrades = course.getFinalGrades();
+		
+		for(FinalGrade grade: finalGrades) {
+			grade.setCurvedPercentage(grade.getActualPercentage()+course.getCurve());
+		}
+		
+		course.setFinalGrades(finalGrades);
+	}
 }

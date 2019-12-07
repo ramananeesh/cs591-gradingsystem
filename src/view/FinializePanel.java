@@ -51,11 +51,7 @@ public class FinializePanel extends JPanel {
 		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		add(statisticsLabel);
 
-		Object[][] gradeTableRowData = {
-				{"Test", "123", "e@e.e", "100"},
-				{"Test", "123", "e@e.e", "100"},
-				{"Test", "123", "e@e.e", "100"}
-		};
+		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
 		Object[] gradeTableColumnNames = {"Name", "ID", "Email", "Grade"};
 		TableModel gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override

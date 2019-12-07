@@ -7,12 +7,17 @@ public class Course extends GenericCourse {
 	private ArrayList<Category> categories;
 	private ArrayList<CourseStudent> students;
 	private ArrayList<FinalGrade> finalGrades;
+	private boolean curveApplied;
+	private Double curve;
 
 	public Course(int courseId, String courseNumber, String courseName, String term) {
 		super(courseId, courseNumber, courseName, term);
 
 		this.categories = new ArrayList<Category>();
 		this.students = new ArrayList<CourseStudent>();
+
+		this.curveApplied = false;
+		this.curve = null;
 	}
 
 	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories) {
@@ -20,6 +25,9 @@ public class Course extends GenericCourse {
 
 		this.categories = categories;
 		this.students = new ArrayList<CourseStudent>();
+
+		this.curveApplied = false;
+		this.curve = null;
 	}
 
 	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories,
@@ -28,15 +36,21 @@ public class Course extends GenericCourse {
 
 		this.categories = categories;
 		this.students = students;
+
+		this.curveApplied = false;
+		this.curve = null;
 	}
 
 	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories,
-			ArrayList<CourseStudent> students, ArrayList<FinalGrade> finalGrades) {
+			ArrayList<CourseStudent> students, ArrayList<FinalGrade> finalGrades, boolean curveApplied, Double curve) {
 		super(courseId, courseNumber, courseName, term);
 
 		this.categories = categories;
 		this.students = students;
 		this.finalGrades = finalGrades;
+
+		this.curveApplied = curveApplied;
+		this.curve = curve;
 	}
 
 	/*
@@ -163,5 +177,38 @@ public class Course extends GenericCourse {
 
 	public void setFinalGrades(ArrayList<FinalGrade> finalGrades) {
 		this.finalGrades = finalGrades;
+	}
+
+	public boolean isCurveApplied() {
+		return curveApplied;
+	}
+
+	public void setCurveApplied(boolean curveApplied) {
+		this.curveApplied = curveApplied;
+	}
+
+	public Double getCurve() {
+		return curve;
+	}
+
+	public void setCurve(Double curve) {
+		this.curve = curve;
+	}
+
+	public void initiateFinalize(Double[] percentages, String[] letterGrades) {
+		int i = 0;
+		for (CourseStudent s : this.students) {
+			finalGrades.add(new FinalGrade(s, percentages[i], letterGrades[i]));
+			i++;
+		}
+	}
+
+	public FinalGrade getFinalGrade(int index) {
+		return this.finalGrades.get(index);
+	}
+
+	public void setFinalGrade(int index, FinalGrade newFinal) {
+		this.finalGrades.remove(index);
+		this.finalGrades.add(index, newFinal);
 	}
 }
