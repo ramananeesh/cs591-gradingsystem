@@ -633,4 +633,8 @@ public class Master extends Observable {
 		}
 		return str;
 	}
+	
+	public void modifyGradeEntryForCourseCategoryItem() {
+		
+	}
 }
