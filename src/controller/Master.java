@@ -574,13 +574,12 @@ public class Master extends Observable {
 						if (!entry.getComments().trim().equals(""))
 							indeces.add(i);
 					}
-				} else if(categoryIndex!=-1){
-					if(entry.getCategoryId()==category.getId()) {
+				} else if (categoryIndex != -1) {
+					if (entry.getCategoryId() == category.getId()) {
 						if (!entry.getComments().trim().equals(""))
 							indeces.add(i);
 					}
-				}
-				else {
+				} else {
 					if (!entry.getComments().trim().equals(""))
 						indeces.add(i);
 				}
@@ -591,4 +590,47 @@ public class Master extends Observable {
 		return indeces;
 	}
 
+	public String getCommentsForRowIndex(Course course, int studentIndex, int categoryIndex, int itemIndex) {
+		String str = "";
+		CourseStudent student = course.getStudent(studentIndex);
+		if (categoryIndex == -1) {
+			if (itemIndex == -1) {
+				// all category and all items
+				for (GradeEntry entry : student.getGrades()) {
+					if (!entry.getComments().trim().equals("")) {
+						Category cat = course.getCategoryById(entry.getCategoryId());
+						Item item = cat.getItemById(entry.getItemId());
+						str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName() + "\nComment: "
+								+ entry.getComments() + "\n";
+					}
+				}
+			}
+		} else {
+			if (itemIndex == -1) {
+				// specific category all items
+				for (GradeEntry entry : student.getGrades()) {
+					if (entry.getCategoryId() == categoryIndex)
+						if (!entry.getComments().trim().equals("")) {
+							Category cat = course.getCategoryById(entry.getCategoryId());
+							Item item = cat.getItemById(entry.getItemId());
+							str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName() + "\nComment: "
+									+ entry.getComments() + "\n";
+						}
+				}
+			} else {
+				// specific category specific item
+				for (GradeEntry entry : student.getGrades()) {
+					if (entry.getCategoryId() == categoryIndex)
+						if (entry.getItemId() == itemIndex)
+							if (!entry.getComments().trim().equals("")) {
+								Category cat = course.getCategoryById(entry.getCategoryId());
+								Item item = cat.getItemById(entry.getItemId());
+								str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName()
+										+ "\nComment: " + entry.getComments() + "\n";
+							}
+				}
+			}
+		}
+		return str;
+	}
 }
