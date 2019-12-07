@@ -257,8 +257,11 @@ public class Master extends Observable {
 		// if index returns as -1, add new gradeEntry
 		if (gradeEntryIndex == -1) {
 			student.addGradeEntry(gradeEntry);
+			Create.insertNewGradeEntry(gradeEntry, student.getBuid());
 		} else {
 			student.setGradeEntry(gradeEntryIndex, gradeEntry);
+			Update.updateCourseStudentGradeEntry(student, course.getCourseId(), gradeEntry.getCategoryId(),
+					gradeEntry.getItemId());
 		}
 
 		return student;
@@ -434,7 +437,7 @@ public class Master extends Observable {
 
 				course.setCategory(i, modified);
 				// update db for modification to category
-
+				Update.updateCategory(modified);
 			}
 		}
 
@@ -468,9 +471,7 @@ public class Master extends Observable {
 				}
 
 				// modify in db
-				/**
-				 * to do
-				 */
+				Update.updateItem(modifiedItem);
 			}
 		}
 
@@ -632,5 +633,10 @@ public class Master extends Observable {
 			}
 		}
 		return str;
+	}
+
+	public void modifyGradeEntryForCourseCategoryItem(Course course, int studentIndex, int categoryIndex,
+			int itemIndex) {
+		// CourseStudent student =
 	}
 }
