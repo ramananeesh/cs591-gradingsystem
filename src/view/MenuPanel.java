@@ -637,8 +637,8 @@ public class MenuPanel extends JPanel implements Observer {
 		};
 		tableStudent.setModel(studentTableModel);
 		
-		String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
+		/*String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
 		studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
-		studentComboEdit.setModel(studentComboModel);
+		studentComboEdit.setModel(studentComboModel);*/
 	}
 }

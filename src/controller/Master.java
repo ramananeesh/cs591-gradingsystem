@@ -364,7 +364,7 @@ public class Master extends Observable {
 		this.courses.add(index, newCourse);
 	}
 
-	public ArrayList<Item> getAllItemsForCourse(Course course){
+	public ArrayList<Item> getAllItemsForCourse(Course course) {
 		ArrayList<Item> allItem = new ArrayList<>();
 
 		for (Category category : course.getCategories()) {
@@ -375,24 +375,23 @@ public class Master extends Observable {
 		return allItem;
 	}
 
-	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID, int itemID){
+	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID, int itemID) {
 		GradeEntry entry = student.getGradeEntryForItemInCategory(courseID, categoryID, itemID);
-		if(entry != null) {
+		if (entry != null) {
 			String grade = Double.toString(entry.getPointsEarned() / entry.getMaxPoints());
-			if (!entry.getComments().equals("")) {	// has comment
+			if (!entry.getComments().equals("")) { // has comment
 				return grade + " 1";
-			}
-			else{
+			} else {
 				return grade + " 0";
 			}
 		}
 		return "0.0 0";
 	}
 
-	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID){
+	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID) {
 		Course currCourse = null;
-		for(Course c : courses){
-			if(c.getCourseId() == courseID){
+		for (Course c : courses) {
+			if (c.getCourseId() == courseID) {
 				currCourse = c;
 				break;
 			}
@@ -509,7 +508,7 @@ public class Master extends Observable {
 				course.setStudent(i, student);
 			}
 		}
-		
+
 		setChanged();
 		notifyObservers();
 	}
@@ -552,7 +551,44 @@ public class Master extends Observable {
 			setChanged();
 			notifyObservers();
 		}
-		
+
+	}
+
+	public ArrayList<Integer> getStudentIndecesForComments(Course course, int categoryIndex, int itemIndex) {
+		ArrayList<Integer> indeces = new ArrayList<Integer>();
+		Category category = null;
+		Item item = null;
+		if (categoryIndex != -1) {
+			category = course.getCategory(categoryIndex);
+			if (itemIndex != -1) {
+				item = category.getItem(itemIndex);
+			}
+		}
+
+		int i = 0;
+		for (CourseStudent student : course.getStudents()) {
+			ArrayList<GradeEntry> entries = student.getGrades();
+			for (GradeEntry entry : entries) {
+				if (categoryIndex != -1 && itemIndex != -1) {
+					if (entry.getCategoryId() == category.getId() && entry.getItemId() == item.getId()) {
+						if (!entry.getComments().trim().equals(""))
+							indeces.add(i);
+					}
+				} else if(categoryIndex!=-1){
+					if(entry.getCategoryId()==category.getId()) {
+						if (!entry.getComments().trim().equals(""))
+							indeces.add(i);
+					}
+				}
+				else {
+					if (!entry.getComments().trim().equals(""))
+						indeces.add(i);
+				}
+			}
+			i++;
+		}
+
+		return indeces;
 	}
 
 }
