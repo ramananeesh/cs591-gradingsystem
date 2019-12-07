@@ -44,7 +44,7 @@ public class FinializePanel extends JPanel {
 		add(titleLabel);
 
 		// statistics label
-		JLabel statisticsLabel = new JLabel(String.format("Mean: %.2f    Median: %.2f    Standard Deviation: %.2f", statistics.getMean(), statistics.getMedian(), statistics.getStandardDeviation()));
+		JLabel statisticsLabel = new JLabel();
 		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
 		statisticsLabel.setFont(FontManager.fontLabel);
 		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
