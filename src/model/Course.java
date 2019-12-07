@@ -6,6 +6,7 @@ public class Course extends GenericCourse {
 
 	private ArrayList<Category> categories;
 	private ArrayList<CourseStudent> students;
+	private ArrayList<FinalGrade> finalGrades;
 
 	public Course(int courseId, String courseNumber, String courseName, String term) {
 		super(courseId, courseNumber, courseName, term);
@@ -27,6 +28,15 @@ public class Course extends GenericCourse {
 
 		this.categories = categories;
 		this.students = students;
+	}
+
+	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories,
+			ArrayList<CourseStudent> students, ArrayList<FinalGrade> finalGrades) {
+		super(courseId, courseNumber, courseName, term);
+
+		this.categories = categories;
+		this.students = students;
+		this.finalGrades = finalGrades;
 	}
 
 	/*
@@ -136,14 +146,22 @@ public class Course extends GenericCourse {
 	public Item getItemByItemName(int categoryId, String itemName) {
 		return this.getCategoryById(categoryId).getItemByItemName(itemName);
 	}
-	
+
 	public String[] getStudentNamesAsList() {
 		String[] str = new String[this.students.size()];
-		int i=0;
-		for(CourseStudent student: this.students) {
-			str[i++] = new String(student.getName() + " - "+student.getBuid());
+		int i = 0;
+		for (CourseStudent student : this.students) {
+			str[i++] = new String(student.getName() + " - " + student.getBuid());
 		}
-		
-		return str; 
+
+		return str;
+	}
+
+	public ArrayList<FinalGrade> getFinalGrades() {
+		return finalGrades;
+	}
+
+	public void setFinalGrades(ArrayList<FinalGrade> finalGrades) {
+		this.finalGrades = finalGrades;
 	}
 }
