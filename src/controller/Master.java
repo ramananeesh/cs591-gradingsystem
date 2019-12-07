@@ -364,6 +364,44 @@ public class Master extends Observable {
 		this.courses.add(index, newCourse);
 	}
 
+	public ArrayList<Item> getAllItemsForCourse(Course course) {
+		ArrayList<Item> allItem = new ArrayList<>();
+
+		for (Category category : course.getCategories()) {
+			for (Item i : category.getItems()) {
+				allItem.add(i);
+			}
+		}
+		return allItem;
+	}
+
+	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID, int itemID) {
+		GradeEntry entry = student.getGradeEntryForItemInCategory(courseID, categoryID, itemID);
+		if (entry != null) {
+			String grade = Double.toString(entry.getPointsEarned() / entry.getMaxPoints());
+			if (!entry.getComments().equals("")) { // has comment
+				return grade + " 1";
+			} else {
+				return grade + " 0";
+			}
+		}
+		return "0.0 0";
+	}
+
+	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID) {
+		Course currCourse = null;
+		for (Course c : courses) {
+			if (c.getCourseId() == courseID) {
+				currCourse = c;
+				break;
+			}
+		}
+		Category category = currCourse.getCategoryById(categoryID);
+		List<Item> allItem = category.getItems();
+		String grade = Double.toString(student.getGradeEntryForCategory(courseID, categoryID, allItem));
+		return grade + " 0";
+	}
+
 	public boolean isUniqueCategoryId(Course course, int id) {
 		for (Category category : course.getCategories()) {
 			if (id == category.getId())
@@ -470,7 +508,7 @@ public class Master extends Observable {
 				course.setStudent(i, student);
 			}
 		}
-		
+
 		setChanged();
 		notifyObservers();
 	}
@@ -513,7 +551,86 @@ public class Master extends Observable {
 			setChanged();
 			notifyObservers();
 		}
-		
+
 	}
 
+	public ArrayList<Integer> getStudentIndecesForComments(Course course, int categoryIndex, int itemIndex) {
+		ArrayList<Integer> indeces = new ArrayList<Integer>();
+		Category category = null;
+		Item item = null;
+		if (categoryIndex != -1) {
+			category = course.getCategory(categoryIndex);
+			if (itemIndex != -1) {
+				item = category.getItem(itemIndex);
+			}
+		}
+
+		int i = 0;
+		for (CourseStudent student : course.getStudents()) {
+			ArrayList<GradeEntry> entries = student.getGrades();
+			for (GradeEntry entry : entries) {
+				if (categoryIndex != -1 && itemIndex != -1) {
+					if (entry.getCategoryId() == category.getId() && entry.getItemId() == item.getId()) {
+						if (!entry.getComments().trim().equals(""))
+							indeces.add(i);
+					}
+				} else if (categoryIndex != -1) {
+					if (entry.getCategoryId() == category.getId()) {
+						if (!entry.getComments().trim().equals(""))
+							indeces.add(i);
+					}
+				} else {
+					if (!entry.getComments().trim().equals(""))
+						indeces.add(i);
+				}
+			}
+			i++;
+		}
+
+		return indeces;
+	}
+
+	public String getCommentsForRowIndex(Course course, int studentIndex, int categoryIndex, int itemIndex) {
+		String str = "";
+		CourseStudent student = course.getStudent(studentIndex);
+		if (categoryIndex == -1) {
+			if (itemIndex == -1) {
+				// all category and all items
+				for (GradeEntry entry : student.getGrades()) {
+					if (!entry.getComments().trim().equals("")) {
+						Category cat = course.getCategoryById(entry.getCategoryId());
+						Item item = cat.getItemById(entry.getItemId());
+						str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName() + "\nComment: "
+								+ entry.getComments() + "\n";
+					}
+				}
+			}
+		} else {
+			if (itemIndex == -1) {
+				// specific category all items
+				for (GradeEntry entry : student.getGrades()) {
+					if (entry.getCategoryId() == categoryIndex)
+						if (!entry.getComments().trim().equals("")) {
+							Category cat = course.getCategoryById(entry.getCategoryId());
+							Item item = cat.getItemById(entry.getItemId());
+							str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName() + "\nComment: "
+									+ entry.getComments() + "\n";
+						}
+				}
+			} else {
+				// specific category specific item
+				for (GradeEntry entry : student.getGrades()) {
+					if (entry.getCategoryId() == categoryIndex)
+						if (entry.getItemId() == itemIndex)
+							if (!entry.getComments().trim().equals("")) {
+								Category cat = course.getCategoryById(entry.getCategoryId());
+								Item item = cat.getItemById(entry.getItemId());
+								str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName()
+										+ "\nComment: " + entry.getComments() + "\n";
+							}
+				}
+			}
+		}
+		return str;
+	}
 }

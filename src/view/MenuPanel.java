@@ -427,7 +427,7 @@ public class MenuPanel extends JPanel implements Observer {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}, viewGrades -> { // View Grades
-					frame.changePanel(this, new GradePanel(frame, courseData, false, this.controller));
+					frame.changePanel(this, new ViewGradePanel(frame, courseData, false, this.controller));
 				}, finalize -> {
 					frame.changePanel(this, new FinializePanel(frame,controller));
 		} } };
@@ -637,8 +637,8 @@ public class MenuPanel extends JPanel implements Observer {
 		};
 		tableStudent.setModel(studentTableModel);
 		
-		String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
+		/*String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
 		studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
-		studentComboEdit.setModel(studentComboModel);
+		studentComboEdit.setModel(studentComboModel);*/
 	}
 }
