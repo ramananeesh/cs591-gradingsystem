@@ -65,7 +65,7 @@ public class FinializePanel extends JPanel implements Observer {
 		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return column == 3;
+				return column > 3;
 			}
 		};
 		gradeTable = new JTable(gradeTableModel);
@@ -107,6 +107,14 @@ public class FinializePanel extends JPanel implements Observer {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.QUESTION_MESSAGE);
 				if (reply == JOptionPane.OK_OPTION) {
+					try {
+						double percentage = Double.parseDouble(percentageTextField.getText().trim());
+						controller.setCurveForCourse(controller.getCurrentCourse(), percentage);
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(this, "Please Enter valid weight percentage", "Error",
+								JOptionPane.ERROR_MESSAGE);
+						continue;
+					}
 					break;
 				} else {
 					return;
@@ -167,7 +175,15 @@ public class FinializePanel extends JPanel implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
-		
+		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
+		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
+		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return column>3;
+			}
+		};
+		gradeTable.setModel(gradeTableModel);
 	}
 
 }

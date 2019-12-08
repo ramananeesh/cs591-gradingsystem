@@ -734,6 +734,7 @@ public class Master extends Observable {
 
 	public void setCurveForCourse(Course course, double curve) {
 		course.setCurve(curve);
+		course.setCurveApplied(true);
 		setCurveOnCoursePercentages(course);
 
 		setChanged();
@@ -744,12 +745,25 @@ public class Master extends Observable {
 		ArrayList<FinalGrade> finalGrades = course.getFinalGrades();
 
 		for (FinalGrade grade : finalGrades) {
-			grade.setCurvedPercentage(grade.getActualPercentage() + course.getCurve());
+			if (course.isCurveApplied()) {
+				//if curve is already applied, modify from applied curve 
+				grade.setCurvedPercentage(grade.getCurvedPercentage() + course.getCurve());
+				grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
+			} else {
+				grade.setCurvedPercentage(grade.getActualPercentage() + course.getCurve());
+				grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
+			}
 		}
 
 		course.setFinalGrades(finalGrades);
+		
+		/**
+		 * to do - DB update
+		 */
+
+		fireUpdate();
 	}
-	
+
 	public void fireUpdate() {
 		setChanged();
 		notifyObservers();
