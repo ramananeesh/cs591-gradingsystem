@@ -9,6 +9,7 @@ public class Course extends GenericCourse {
 	private ArrayList<FinalGrade> finalGrades;
 	private boolean curveApplied;
 	private Double curve;
+	private boolean finalized;
 
 	public Course(int courseId, String courseNumber, String courseName, String term) {
 		super(courseId, courseNumber, courseName, term);
@@ -16,8 +17,10 @@ public class Course extends GenericCourse {
 		this.categories = new ArrayList<Category>();
 		this.students = new ArrayList<CourseStudent>();
 
+		this.finalGrades = new ArrayList<FinalGrade>();
 		this.curveApplied = false;
 		this.curve = null;
+		this.finalized = false;
 	}
 
 	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories) {
@@ -26,8 +29,10 @@ public class Course extends GenericCourse {
 		this.categories = categories;
 		this.students = new ArrayList<CourseStudent>();
 
+		this.finalGrades = new ArrayList<FinalGrade>();
 		this.curveApplied = false;
 		this.curve = null;
+		this.finalized = false;
 	}
 
 	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories,
@@ -37,20 +42,25 @@ public class Course extends GenericCourse {
 		this.categories = categories;
 		this.students = students;
 
+		this.finalGrades = new ArrayList<FinalGrade>();
 		this.curveApplied = false;
 		this.curve = null;
+		this.finalized = false;
 	}
 
 	public Course(int courseId, String courseNumber, String courseName, String term, ArrayList<Category> categories,
-			ArrayList<CourseStudent> students, ArrayList<FinalGrade> finalGrades, boolean curveApplied, Double curve) {
+			ArrayList<CourseStudent> students, ArrayList<FinalGrade> finalGrades, boolean curveApplied, Double curve,
+			boolean finalized) {
 		super(courseId, courseNumber, courseName, term);
 
 		this.categories = categories;
 		this.students = students;
 		this.finalGrades = finalGrades;
 
+		this.finalGrades = finalGrades;
 		this.curveApplied = curveApplied;
 		this.curve = curve;
+		this.finalized = finalized;
 	}
 
 	/*
@@ -210,5 +220,20 @@ public class Course extends GenericCourse {
 	public void setFinalGrade(int index, FinalGrade newFinal) {
 		this.finalGrades.remove(index);
 		this.finalGrades.add(index, newFinal);
+	}
+
+	public boolean isFinalized() {
+		return finalized;
+	}
+
+	public void setFinalized(boolean finalized) {
+		this.finalized = finalized;
+	}
+
+	public boolean isFinilizationInitialized() {
+		if (this.finalGrades.size()==0)
+			return true;
+		else
+			return false;
 	}
 }

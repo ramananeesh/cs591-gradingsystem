@@ -19,6 +19,7 @@ import javax.swing.text.StyledDocument;
 import controller.Master;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.io.BufferedReader;
@@ -61,6 +62,10 @@ public class MenuPanel extends JPanel implements Observer {
 	private DefaultComboBoxModel studentComboModel;
 
 	private JComboBox<String> studentComboEdit;
+
+	private JComboBox<String> categoryEditItemCombo;
+
+	private JTable editItemTable;
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
@@ -329,32 +334,33 @@ public class MenuPanel extends JPanel implements Observer {
 					}
 				}, editItem -> { // Edit Item
 					try {
-						JComboBox<String> categoryCombo = new JComboBox<>();
+
+						categoryEditItemCombo = new JComboBox<>();
 
 						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
 						for (int i = 0; i < categories.size(); i++) {
-							categoryCombo.addItem(categories.get(i).getFieldName());
+							categoryEditItemCombo.addItem(categories.get(i).getFieldName());
 						}
 
 						String[][] itemData;
-						if (categoryCombo.getSelectedIndex() < 0)
+						if (categoryEditItemCombo.getSelectedIndex() < 0)
 							return;
 
-						Category chosenCategory = categories.get(categoryCombo.getSelectedIndex());
+						Category chosenCategory = categories.get(categoryEditItemCombo.getSelectedIndex());
 						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
-								categoryCombo.getSelectedIndex(), true);
+								categoryEditItemCombo.getSelectedIndex(), true);
 						String[] itemColumn = { "Item", "Percentage", "Max Points" };
-						DefaultTableModel tableModel = new DefaultTableModel(itemData, itemColumn);
+						DefaultTableModel tableEditItemModel = new DefaultTableModel(itemData, itemColumn);
 
-						JTable itemTable = new JTable(tableModel) {
+						editItemTable = new JTable(tableEditItemModel) {
 							public boolean isCellEditable(int row, int column) {
 								return column > 0;
 							}
 						};
-						itemTable.setRowHeight(SizeManager.tableRowHeight);
-						itemTable.setDefaultRenderer(Object.class, tableRender);
-						JScrollPane itemScrollPane = new JScrollPane(itemTable);
-						Object[] fields = { "Category: ", categoryCombo, "Item: ", itemScrollPane, };
+						editItemTable.setRowHeight(SizeManager.tableRowHeight);
+						editItemTable.setDefaultRenderer(Object.class, tableRender);
+						JScrollPane itemScrollPane = new JScrollPane(editItemTable);
+						Object[] fields = { "Category: ", categoryEditItemCombo, "Item: ", itemScrollPane, };
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item",
@@ -362,17 +368,18 @@ public class MenuPanel extends JPanel implements Observer {
 							boolean flag = false;
 							HashMap<String, ArrayList<Double>> map = new HashMap<String, ArrayList<Double>>();
 							if (reply == JOptionPane.OK_OPTION) {
-								for (int i = 0; i < tableModel.getRowCount(); i++) {
-									String key = (String) tableModel.getValueAt(i, 0);
+								for (int i = 0; i < tableEditItemModel.getRowCount(); i++) {
+									String key = (String) tableEditItemModel.getValueAt(i, 0);
 									ArrayList<Double> l = new ArrayList<Double>();
-									for (int j = 1; j < tableModel.getColumnCount(); j++) {
-										String str = (String) tableModel.getValueAt(i, j);
+									for (int j = 1; j < tableEditItemModel.getColumnCount(); j++) {
+										String str = (String) tableEditItemModel.getValueAt(i, j);
 										if (str.trim().equals("")) {
 											flag = true;
 											break;
 										}
 										try {
-											double value = Double.parseDouble((String) tableModel.getValueAt(i, j));
+											double value = Double
+													.parseDouble((String) tableEditItemModel.getValueAt(i, j));
 											l.add(value);
 										} catch (Exception e) {
 											JOptionPane.showMessageDialog(this, "Please Enter correct Values", "Error",
@@ -388,7 +395,7 @@ public class MenuPanel extends JPanel implements Observer {
 								}
 								if (flag == false) {
 									controller.modifyItemsForCourseCategory(controller.getCurrentCourse(),
-											categoryCombo.getSelectedIndex(), map);
+											categoryEditItemCombo.getSelectedIndex(), map);
 									break;
 								}
 
@@ -564,6 +571,25 @@ public class MenuPanel extends JPanel implements Observer {
 		setVisible(true);
 	}
 
+	/*
+	 * static class MyOptionPane extends JOptionPane implements Observer{
+	 * 
+	 * @Override public void update(Observable arg0, Object arg1) { // TODO
+	 * Auto-generated method stub String[][] itemData; if
+	 * (categoryEditItemCombo.getSelectedIndex() < 0) return;
+	 * 
+	 * ArrayList<Category> categories =
+	 * controller.getCurrentCourse().getCategories(); Category chosenCategory =
+	 * categories.get(categoryEditItemCombo.getSelectedIndex()); itemData =
+	 * controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
+	 * categoryEditItemCombo.getSelectedIndex(), true); String[] itemColumn = {
+	 * "Item", "Percentage", "Max Points" }; DefaultTableModel tableEditItemModel =
+	 * new DefaultTableModel(itemData, itemColumn);
+	 * 
+	 * editItemTable.setModel(tableEditItemModel); }
+	 * 
+	 * }
+	 */
 	public ArrayList<HashMap<String, String>> processCsvFile(String filePath) {
 		BufferedReader br = null;
 		String line = "";
@@ -638,11 +664,5 @@ public class MenuPanel extends JPanel implements Observer {
 		};
 		tableStudent.setModel(studentTableModel);
 
-		/*
-		 * String[] studentDataForCombo =
-		 * controller.getCurrentCourse().getStudentNamesAsList(); studentComboModel =
-		 * new DefaultComboBoxModel(studentDataForCombo);
-		 * studentComboEdit.setModel(studentComboModel);
-		 */
 	}
 }
