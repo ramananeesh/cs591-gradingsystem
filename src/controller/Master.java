@@ -4,6 +4,7 @@ import java.util.*;
 
 import db.*;
 import model.*;
+import helper.*;
 
 public class Master extends Observable {
 
@@ -635,8 +636,136 @@ public class Master extends Observable {
 		return str;
 	}
 
-	public void modifyGradeEntryForCourseCategoryItem(Course course, int studentIndex, int categoryIndex,
-			int itemIndex) {
-		// CourseStudent student =
+	public double getTotalForItemIncludingWeight(Item item, GradeEntry entry) {
+		return item.getWeight() * entry.getPercentage();
+	}
+
+	public ArrayList<GradeEntry> getEntriesByCategory(Category category, ArrayList<GradeEntry> entries) {
+		ArrayList<GradeEntry> grades = new ArrayList<GradeEntry>();
+
+		for (GradeEntry entry : entries) {
+			if (entry.getCategoryId() == category.getId()) {
+				grades.add(entry);
+			}
+		}
+
+		return grades;
+	}
+
+	public GradeEntry getEntryByItem(Item item, ArrayList<GradeEntry> categoryEntries) {
+		GradeEntry entry = null;
+
+		for (GradeEntry e : categoryEntries) {
+			if (e.getItemId() == item.getId()) {
+				entry = e;
+				break;
+			}
+		}
+
+		return entry;
+	}
+
+	public double getTotalForCategoryIncludingWeight(Course course, int categoryId, ArrayList<GradeEntry> entries) {
+		double total = 0;
+
+		Category category = course.getCategoryById(categoryId);
+		ArrayList<Item> items = category.getItems();
+
+		ArrayList<GradeEntry> categoryEntries = getEntriesByCategory(category, entries);
+
+		for (Item i : items) {
+			GradeEntry entry = getEntryByItem(i, categoryEntries);
+			total += (i.getWeight() * entry.getPercentage());
+		}
+
+		double totalIncludingCategoryWeight = total * category.getWeight();
+
+		return totalIncludingCategoryWeight;
+	}
+
+	public Double[] getFinalPercentages(Course course) {
+		Double[] percentages = new Double[course.getStudents().size()];
+		ArrayList<CourseStudent> students = course.getStudents();
+		ArrayList<Category> categories = course.getCategories();
+
+		int i = 0;
+		for (CourseStudent student : students) {
+			double total = 0;
+			ArrayList<GradeEntry> studentEntries = student.getGrades();
+			for (Category category : categories) {
+				total += getTotalForCategoryIncludingWeight(course, category.getId(), studentEntries);
+			}
+
+			percentages[i++] = total;
+		}
+		return percentages;
+	}
+
+	public String[] getFinalLetterGrades(Course course, Double[] finalPercentages) {
+		String[] grades = new String[course.getStudents().size()];
+
+		int i = 0;
+		for (Double p : finalPercentages) {
+			grades[i++] = helper.Statistics.getLetterGrade(p);
+		}
+
+		return grades;
+	}
+
+	public void initiateCourseFinalization(Course course) {
+		if (course.isFinilizationInitialized()) {
+			Double[] finalPercentages = getFinalPercentages(course);
+			String[] letterGrades = getFinalLetterGrades(course, finalPercentages);
+
+			course.initiateFinalize(finalPercentages, letterGrades);
+		}
+	}
+
+	public String[][] getFinalGradesData(Course course) {
+		ArrayList<FinalGrade> finalGrades = course.getFinalGrades();
+		String[][] data = new String[finalGrades.size()][];
+
+		for (int i = 0; i < data.length; i++) {
+			data[i] = finalGrades.get(i).getDetailsForList();
+		}
+
+		return data;
+	}
+
+	public void setCurveForCourse(Course course, double curve) {
+		course.setCurve(curve);
+		course.setCurveApplied(true);
+		setCurveOnCoursePercentages(course);
+
+		setChanged();
+		notifyObservers();
+	}
+
+	public void setCurveOnCoursePercentages(Course course) {
+		ArrayList<FinalGrade> finalGrades = course.getFinalGrades();
+
+		for (FinalGrade grade : finalGrades) {
+			if (course.isCurveApplied()) {
+				//if curve is already applied, modify from applied curve 
+				grade.setCurvedPercentage(grade.getCurvedPercentage() + course.getCurve());
+				grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
+			} else {
+				grade.setCurvedPercentage(grade.getActualPercentage() + course.getCurve());
+				grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
+			}
+		}
+
+		course.setFinalGrades(finalGrades);
+		
+		/**
+		 * to do - DB update
+		 */
+
+		fireUpdate();
+	}
+
+	public void fireUpdate() {
+		setChanged();
+		notifyObservers();
 	}
 }

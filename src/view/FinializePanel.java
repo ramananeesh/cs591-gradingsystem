@@ -12,14 +12,22 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
+
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
 
-public class FinializePanel extends JPanel {
+public class FinializePanel extends JPanel implements Observer {
 
 	/** The title for the window when GradePanel displays */
 	private static final String TITLE = "Grading System - Finalize";
+	private DefaultTableModel gradeTableModel;
+	private JTable gradeTable;
+	private Master controller;
 
 	public FinializePanel(MainFrame frame, Master controller) {
+		this.controller = controller;
+		this.controller.addObserver(this);
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.panelBounds);
@@ -36,7 +44,8 @@ public class FinializePanel extends JPanel {
 		Statistics statistics = new Statistics(grades);
 
 		// title label
-		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
+		JLabel titleLabel = new JLabel(
+				String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
 		titleLabel.setBounds(SizeManager.finalizeTitleLabelBounds);
 		titleLabel.setFont(FontManager.fontLabel);
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -44,26 +53,22 @@ public class FinializePanel extends JPanel {
 		add(titleLabel);
 
 		// statistics label
-		JLabel statisticsLabel = new JLabel(String.format("Mean: %.2f    Median: %.2f    Standard Deviation: %.2f", statistics.getMean(), statistics.getMedian(), statistics.getStandardDeviation()));
+		JLabel statisticsLabel = new JLabel();
 		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
 		statisticsLabel.setFont(FontManager.fontLabel);
 		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		add(statisticsLabel);
 
-		Object[][] gradeTableRowData = {
-				{"Test", "123", "e@e.e", "100"},
-				{"Test", "123", "e@e.e", "100"},
-				{"Test", "123", "e@e.e", "100"}
-		};
-		Object[] gradeTableColumnNames = {"Name", "ID", "Email", "Grade"};
-		TableModel gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
+		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
+		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return column == 3;
+				return column > 3;
 			}
 		};
-		JTable gradeTable = new JTable(gradeTableModel);
+		gradeTable = new JTable(gradeTableModel);
 		gradeTable.setRowHeight(SizeManager.tableRowHeight);
 		gradeTable.setFont(FontManager.fontTable);
 		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
@@ -84,7 +89,8 @@ public class FinializePanel extends JPanel {
 		backButton.setForeground(ColorManager.lightColor);
 		backButton.setBackground(ColorManager.primaryColor);
 		backButton.addActionListener(e -> {
-			frame.changePanel(this, new MenuPanel(frame, new String[]{course.getCourseNumber(), course.getCourseName(), course.getTerm()}, controller));
+			frame.changePanel(this, new MenuPanel(frame,
+					new String[] { course.getCourseNumber(), course.getCourseName(), course.getTerm() }, controller));
 		});
 		add(backButton);
 
@@ -96,13 +102,19 @@ public class FinializePanel extends JPanel {
 		curveButton.addActionListener(e -> {
 			// TODO curve
 			JTextField percentageTextField = new JTextField();
-			Object[] fields = {
-					"Percentage: ", percentageTextField
-			};
+			Object[] fields = { "Percentage: ", percentageTextField };
 			while (true) {
-				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve",
-						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
 				if (reply == JOptionPane.OK_OPTION) {
+					try {
+						double percentage = Double.parseDouble(percentageTextField.getText().trim());
+						controller.setCurveForCourse(controller.getCurrentCourse(), percentage);
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(this, "Please Enter valid weight percentage", "Error",
+								JOptionPane.ERROR_MESSAGE);
+						continue;
+					}
 					break;
 				} else {
 					return;
@@ -121,12 +133,10 @@ public class FinializePanel extends JPanel {
 			JLabel label = new JLabel("Saved");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
-			Object[] fields = {
-					label
-			};
+			Object[] fields = { label };
 			while (true) {
-				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve",
-						JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				if (reply == JOptionPane.OK_OPTION) {
 					break;
 				} else {
@@ -146,12 +156,10 @@ public class FinializePanel extends JPanel {
 			JLabel label = new JLabel("Finalized");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
-			Object[] fields = {
-					label
-			};
+			Object[] fields = { label };
 			while (true) {
-				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve",
-						JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
 				if (reply == JOptionPane.OK_OPTION) {
 					break;
 				} else {
@@ -162,6 +170,20 @@ public class FinializePanel extends JPanel {
 		add(finalizeButton);
 
 		setVisible(true);
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
+		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
+		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return column>3;
+			}
+		};
+		gradeTable.setModel(gradeTableModel);
 	}
 
 }
