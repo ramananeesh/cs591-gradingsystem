@@ -2,6 +2,7 @@ package controller;
 
 import java.util.*;
 
+import com.sun.jmx.snmp.agent.SnmpUserDataFactory;
 import db.*;
 import model.*;
 import helper.*;
@@ -306,6 +307,18 @@ public class Master extends Observable {
 			return course.getCategories().get(categoryIndex).getItemsForListWithMaxPoints();
 	}
 
+	public String[][] getAllItemDetailsForCourse(Course course, boolean includeMaxPoints) {
+		String[][] details = new String[getAllItemsForCourse(course).size()][];
+		int i = 0;
+		for(Item item : getAllItemsForCourse(course)){
+			if (!includeMaxPoints)
+				details[i++] = item.getDetailsWithCategory(course);
+			else
+				details[i++] = item.getDetailsWithMaxPointsWithCategory(course);
+		}
+		return details;
+	}
+
 	public String[][] getAllStudentsForCourse(Course course) {
 		ArrayList<String[]> str = new ArrayList<String[]>();
 
@@ -480,6 +493,39 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
+	public void modifyItemsForCourse(Course course, HashMap<String, ArrayList<Double>> map) {
+		ArrayList<Category> categories = getAllCategoriesForCourse(course);
+		for(int i = 0; i < categories.size(); i++){
+			Category cat = categories.get(i);
+			ArrayList<Item> items = getAllItemsForCourseCategory(course, i);
+			for(int j = 0; j < items.size(); j++){
+				Item item = items.get(j);
+				boolean flag = false;
+				ArrayList<Double> l = map.get(item.getFieldName());
+				if (item.getWeight() != l.get(0))
+					flag = true;
+				else if (item.getMaxPoints() != l.get(1))
+					flag = true;
+
+				if (flag) {
+					Item modifiedItem = new Item(item.getId(), item.getFieldName(), item.getCategoryId(), l.get(0),
+							l.get(1), item.getCourseId());
+					cat.setItem(j, modifiedItem);
+					course.setCategory(i, cat);
+
+					for (CourseStudent student : course.getStudents()) {
+						student.modifyMaxPointsInGradeEntryByItem(item.getId(), l.get(1));
+					}
+
+					// modify in db
+					Update.updateItem(modifiedItem);
+				}
+			}
+		}
+		setChanged();
+		notifyObservers();
+	}
+
 	public void modifyStudentForCourse(Course course, HashMap<String, ArrayList<String>> map) {
 		ArrayList<CourseStudent> students = course.getStudents();
 		for (int i = 0; i < students.size(); i++) {
@@ -611,7 +657,7 @@ public class Master extends Observable {
 			if (itemIndex == -1) {
 				// specific category all items
 				for (GradeEntry entry : student.getGrades()) {
-					if (entry.getCategoryId() == categoryIndex)
+					if (entry.getCategoryId() == categoryIndex+1)		// categoryId starts with 1
 						if (!entry.getComments().trim().equals("")) {
 							Category cat = course.getCategoryById(entry.getCategoryId());
 							Item item = cat.getItemById(entry.getItemId());
@@ -622,14 +668,18 @@ public class Master extends Observable {
 			} else {
 				// specific category specific item
 				for (GradeEntry entry : student.getGrades()) {
-					if (entry.getCategoryId() == categoryIndex)
-						if (entry.getItemId() == itemIndex)
+					List<Item> items = null;
+					if (entry.getCategoryId() == categoryIndex+1) {
+						items = getAllItemsForCourseCategory(course, categoryIndex);
+						if (entry.getItemId() == items.get(itemIndex).getId()) {
 							if (!entry.getComments().trim().equals("")) {
 								Category cat = course.getCategoryById(entry.getCategoryId());
 								Item item = cat.getItemById(entry.getItemId());
 								str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName()
 										+ "\nComment: " + entry.getComments() + "\n";
 							}
+						}
+					}
 				}
 			}
 		}

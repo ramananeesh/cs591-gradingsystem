@@ -63,7 +63,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 	private JComboBox<String> studentComboEdit;
 
-	private JComboBox<String> categoryEditItemCombo;
+//	private JComboBox<String> categoryEditItemCombo;
 
 	private JTable editItemTable;
 
@@ -335,21 +335,22 @@ public class MenuPanel extends JPanel implements Observer {
 				}, editItem -> { // Edit Item
 					try {
 
-						categoryEditItemCombo = new JComboBox<>();
-
+//						categoryEditItemCombo = new JComboBox<>();
+//
 						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
-						for (int i = 0; i < categories.size(); i++) {
-							categoryEditItemCombo.addItem(categories.get(i).getFieldName());
-						}
-
+//						for (int i = 0; i < categories.size(); i++) {
+//							categoryEditItemCombo.addItem(categories.get(i).getFieldName());
+//						}
+//
 						String[][] itemData;
-						if (categoryEditItemCombo.getSelectedIndex() < 0)
-							return;
+//						if (categoryEditItemCombo.getSelectedIndex() < 0)
+//							return;
 
-						Category chosenCategory = categories.get(categoryEditItemCombo.getSelectedIndex());
-						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
-								categoryEditItemCombo.getSelectedIndex(), true);
-						String[] itemColumn = { "Item", "Percentage", "Max Points" };
+//						Category chosenCategory = categories.get(categoryEditItemCombo.getSelectedIndex());
+//						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
+//								categoryEditItemCombo.getSelectedIndex(), true);
+						itemData = controller.getAllItemDetailsForCourse(controller.getCurrentCourse(), true);
+						String[] itemColumn = {"Category", "Item", "Percentage", "Max Points" };
 						DefaultTableModel tableEditItemModel = new DefaultTableModel(itemData, itemColumn);
 
 						editItemTable = new JTable(tableEditItemModel) {
@@ -360,7 +361,8 @@ public class MenuPanel extends JPanel implements Observer {
 						editItemTable.setRowHeight(SizeManager.tableRowHeight);
 						editItemTable.setDefaultRenderer(Object.class, tableRender);
 						JScrollPane itemScrollPane = new JScrollPane(editItemTable);
-						Object[] fields = { "Category: ", categoryEditItemCombo, "Item: ", itemScrollPane, };
+//						Object[] fields = { "Category: ", categoryEditItemCombo, "Item: ", itemScrollPane, };
+						Object[] fields = { itemScrollPane, };
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item",
@@ -369,9 +371,9 @@ public class MenuPanel extends JPanel implements Observer {
 							HashMap<String, ArrayList<Double>> map = new HashMap<String, ArrayList<Double>>();
 							if (reply == JOptionPane.OK_OPTION) {
 								for (int i = 0; i < tableEditItemModel.getRowCount(); i++) {
-									String key = (String) tableEditItemModel.getValueAt(i, 0);
+									String key = (String) tableEditItemModel.getValueAt(i, 1);
 									ArrayList<Double> l = new ArrayList<Double>();
-									for (int j = 1; j < tableEditItemModel.getColumnCount(); j++) {
+									for (int j = 2; j < tableEditItemModel.getColumnCount(); j++) {
 										String str = (String) tableEditItemModel.getValueAt(i, j);
 										if (str.trim().equals("")) {
 											flag = true;
@@ -394,8 +396,8 @@ public class MenuPanel extends JPanel implements Observer {
 									map.put(key, l);
 								}
 								if (flag == false) {
-									controller.modifyItemsForCourseCategory(controller.getCurrentCourse(),
-											categoryEditItemCombo.getSelectedIndex(), map);
+									controller.modifyItemsForCourse(controller.getCurrentCourse(), map);
+									System.out.println(map);
 									break;
 								}
 

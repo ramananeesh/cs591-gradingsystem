@@ -297,63 +297,63 @@ public class ViewGradePanel extends JPanel implements Observer {
 			}
 		});
 
-		gradeTable.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				if (e.getClickCount() >= 2) {
-					int selectedRow = gradeTable.getSelectedRow();
-					int catIndex = categoryComboBox.getSelectedIndex();
-					if (catIndex == 0) {
-						catIndex = -1;
-					} else {
-						catIndex = catIndex - 1;
-					}
-					int itIndex = itemComboBox.getSelectedIndex();
-					if (categoryComboBox.getSelectedIndex() == 0 || itIndex == 0) {
-						itIndex = -1;
-					} else {
-						itIndex -= 1;
-					}
-
-					String comments = controller.getCommentsForRowIndex(controller.getCurrentCourse(), selectedRow,
-							catIndex, itIndex);
-
-					if (!comments.equals("")) {
-						JTextArea text = new JTextArea(comments);
-						text.setEditable(false);
-						Object[] fields = { "Comments", text };
-						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
-								JOptionPane.INFORMATION_MESSAGE);
-					}
-				}
-			}
-		});
+//		gradeTable.addMouseListener(new MouseListener() {
+//
+//			@Override
+//			public void mouseReleased(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void mousePressed(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void mouseExited(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void mouseEntered(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				// TODO Auto-generated method stub
+//				if (e.getClickCount() >= 2) {
+//					int selectedRow = gradeTable.getSelectedRow();
+//					int catIndex = categoryComboBox.getSelectedIndex();
+//					if (catIndex == 0) {
+//						catIndex = -1;
+//					} else {
+//						catIndex = catIndex - 1;
+//					}
+//					int itIndex = itemComboBox.getSelectedIndex();
+//					if (categoryComboBox.getSelectedIndex() == 0 || itIndex == 0) {
+//						itIndex = -1;
+//					} else {
+//						itIndex -= 1;
+//					}
+//
+//					String comments = controller.getCommentsForRowIndex(controller.getCurrentCourse(), selectedRow,
+//							catIndex, itIndex);
+//
+//					if (!comments.equals("")) {
+//						JTextArea text = new JTextArea(comments);
+//						text.setEditable(false);
+//						Object[] fields = { "Comments", text };
+//						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
+//								JOptionPane.INFORMATION_MESSAGE);
+//					}
+//				}
+//			}
+//		});
 
 		itemComboBox.addActionListener(new ActionListener() {
 
