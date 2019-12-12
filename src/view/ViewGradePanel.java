@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 import controller.Master;
+import helper.Statistics;
 import model.*;
 
 import java.awt.*;
@@ -44,6 +45,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 	private Object[] gradeTableColumnNames;
 	private boolean editable;
 	private boolean hasComment;
+	private List<Double> statisticsGrades;
 
 	DecimalFormat df = new DecimalFormat("##.##");
 
@@ -86,6 +88,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 
 		String[][] gradeTableRowData = new String[students.size()][];
 		Boolean[] gradeTableRowComment = new Boolean[students.size()];
+		statisticsGrades = new ArrayList<Double>();
 		for (int i = 0; i < gradeTableRowData.length; i++) {
 			gradeTableRowData[i] = new String[gradeTableColumnNames.length];
 			gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
@@ -94,6 +97,9 @@ public class ViewGradePanel extends JPanel implements Observer {
 				String temp = controller.getStudentScoreByID(students.get(i),
 						controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2), allItemIDs.get(j - 2));
 				gradeTableRowData[i][j] = temp.split(" ")[0];
+				statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
+				double weight = Double.parseDouble(gradeTableRowData[i][j])*100;
+				gradeTableRowData[i][j] = (int)weight + "%";
 				if (temp.split(" ")[1] == "1") {
 					gradeTableRowComment[i] = true;
 				} else {
@@ -101,6 +107,8 @@ public class ViewGradePanel extends JPanel implements Observer {
 				}
 			}
 		}
+		Statistics statistics = new Statistics(statisticsGrades);	// TODO: add the statistics to table
+
 
 		if (editable) {
 			gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
@@ -222,6 +230,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 				String[][] gradeTableRowData = new String[students.size()][];
 				Boolean[] gradeTableRowComment = new Boolean[students.size()];
 
+				statisticsGrades = new ArrayList<Double>();
 				for (int i = 0; i < gradeTableRowData.length; i++) {
 					hasComment = false;
 					gradeTableRowData[i] = new String[gradeTableColumnNames.length];
@@ -240,6 +249,9 @@ public class ViewGradePanel extends JPanel implements Observer {
 									itemIDs.get(j - 2));
 						}
 						gradeTableRowData[i][j] = temp.split(" ")[0];
+						statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
+						double weight = Double.parseDouble(gradeTableRowData[i][j])*100;
+						gradeTableRowData[i][j] = (int)weight + "%";
 						if (temp.split(" ")[1] == "1") {
 							gradeTableRowComment[i] = true;
 						} else {
@@ -247,6 +259,8 @@ public class ViewGradePanel extends JPanel implements Observer {
 						}
 					}
 				}
+				Statistics statistics = new Statistics(statisticsGrades);	// TODO: add the statistics to table
+
 				if (editable) {
 					gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
 
@@ -404,6 +418,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 				gradeTableColumnNames = gradeTableColumnNamesList.toArray();
 				ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 				String[][] gradeTableRowData = new String[students.size()][];
+				statisticsGrades = new ArrayList<Double>();
 				for (int i = 0; i < gradeTableRowData.length; i++) {
 					hasComment = false;
 					gradeTableRowData[i] = new String[gradeTableColumnNames.length];
@@ -420,11 +435,16 @@ public class ViewGradePanel extends JPanel implements Observer {
 									controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2));
 						}
 						gradeTableRowData[i][j] = temp.split(" ")[0];
+						statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
+						double weight = Double.parseDouble(gradeTableRowData[i][j])*100;
+						gradeTableRowData[i][j] = (int)weight + "%";
 						if (temp.split(" ")[1] == "1") {
 							hasComment = true;
 						}
 					}
 				}
+				Statistics statistics = new Statistics(statisticsGrades);	// TODO: add the statistics to table
+
 				if (editable) {
 					gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
 						@Override

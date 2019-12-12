@@ -131,6 +131,19 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
+	public void addStudentForCourse(Course course, String[] student) {
+		CourseStudent cs = new CourseStudent(student[0], student[1], student[2], student[3], student[4],
+				course.getCourseId(), true);
+		course.addStudent(cs);
+		Student st = new Student(cs.getFname(), cs.getLname(), cs.getBuid(), cs.getEmail(), cs.getType());
+
+		Create.insertNewStudent(st);
+		Create.insertNewCourseStudent(cs);
+
+		setChanged();
+		notifyObservers();
+	}
+
 	// helper methods
 	public Course getTemplateCourse(int templateIndex) {
 		return this.courses.get(templateIndex);
@@ -332,6 +345,15 @@ public class Master extends Observable {
 		}
 
 		return ans;
+	}
+
+	public Boolean[] getAllStudentsStatusForCourse(Course course){
+		ArrayList<Boolean> status = new ArrayList<>();
+		for (CourseStudent student : course.getStudents()) {
+			status.add(student.isActive());
+		}
+		Boolean[] ans = new Boolean[status.size()];
+		return status.toArray(ans);
 	}
 
 	public boolean isIdUnique(int id) {
@@ -561,25 +583,14 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
-	public void modifyStudentForCourse(Course course, int studentIndex, HashMap<String, String> map) {
+	public void modifyStudentForCourse(Course course, int studentIndex, HashMap<String, String> map, boolean active) {
 
 		CourseStudent student = course.getStudent(studentIndex);
 
-		String modBuid = map.get("Buid").trim();
 		String modName = map.get("Name").trim();
-		String modEmail = map.get("Email").trim();
 		String modType = map.get("Type").trim();
 
 		boolean flag = false;
-		if (!modBuid.equals("")) {
-			student.setBuid(modBuid);
-			flag = true;
-		}
-
-		if (!modEmail.equals("")) {
-			student.setEmail(modEmail);
-			flag = true;
-		}
 
 		if (!modName.equals("")) {
 			student.setName(modName);
@@ -590,6 +601,8 @@ public class Master extends Observable {
 			student.setType(modType);
 			flag = true;
 		}
+
+		student.setActive(active);
 
 		if (flag) {
 			course.setStudent(studentIndex, student);

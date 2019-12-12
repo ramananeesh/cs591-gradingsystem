@@ -139,7 +139,7 @@ public class Statistics {
 			grade = "B";
 		}
 		else if(total>80) {
-			grade = "A-";
+			grade = "B-";
 		}
 		else if(total>77) {
 			grade = "C+";
