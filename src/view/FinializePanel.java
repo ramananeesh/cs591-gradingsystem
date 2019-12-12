@@ -114,7 +114,7 @@ public class FinializePanel extends JPanel implements Observer {
 				if (reply == JOptionPane.OK_OPTION) {
 					try {
 						double percentage = Double.parseDouble(percentageTextField.getText().trim());
-						controller.setCurveForCourse(controller.getCurrentCourse(), percentage);
+						controller.setCurveForCourse(controller.getCurrentCourse(), percentage, true);
 					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(this, "Please Enter valid weight percentage", "Error",
 								JOptionPane.ERROR_MESSAGE);
