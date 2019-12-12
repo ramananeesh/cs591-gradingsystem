@@ -788,6 +788,9 @@ public class Master extends Observable {
 		// lock all features and editing
 		/**
 		 * to do
+		
+		/**
+		 * to do - DB update
 		 */
 
 		fireUpdate();
