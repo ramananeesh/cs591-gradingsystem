@@ -32,16 +32,17 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
-		setResizable(false);
 		setContentPane(new JLabel(new ImageIcon(BACKGROUND_PICTURE_FILE_NAME)));
-		setBounds(SizeManager.windowBounds);
+		setBounds(GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds());
+		setResizable(false);
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		add(new CoursePanel(this, new Master()));
 		setVisible(true);
+		SizeManager.update(this);
+		add(new CoursePanel(this, new Master()));
 	}
 
 	/**
@@ -72,9 +73,6 @@ public class MainFrame extends JFrame {
 			case LINEAR_SLIDE:
 				changePanelWithLinearSlideAnimation(from, to);
 				break;
-			case SCALE:
-				changePanelWithScaleAnimation(from, to);
-				break;
 		}
 	}
 
@@ -100,7 +98,7 @@ public class MainFrame extends JFrame {
 	private void changePanelWithSlideAnimation(JPanel from, JPanel to, double exponent) {
 		new Thread(() -> { // coefficient * pow(time - i, exponent) = height
 			int time = ANIMATION_FRAMES; // the total frames of the animation
-			int distance = getHeight();
+			int distance = getContentPane().getHeight();
 			double coefficient = distance / Math.pow(time, exponent);
 			add(to);
 			for (int i = 0; i <= time; ++i) {
@@ -140,54 +138,9 @@ public class MainFrame extends JFrame {
 		changePanelWithSlideAnimation(from, to, 1); // when set exponent as 1, the slide animation is linear
 	}
 
-	private void changePanelWithScaleAnimation(JPanel from, JPanel to) {
-		new Thread(() -> {
-			Rectangle fromBounds = from.getBounds();
-			Rectangle toBounds = to.getBounds();
-			int count = ANIMATION_FRAMES;
-			for (int i = 1; i <= count; ++i) {
-				int newFromWidth = (int) (fromBounds.getWidth() * (count - i) / count);
-				int newFromHeight = (int) (fromBounds.getWidth() * (count - i) / count);
-				from.setBounds(getWidth() / 2 - newFromWidth / 2, getHeight() / 2 - newFromHeight / 2, newFromWidth, newFromHeight);
-				try {
-					Thread.sleep(ANIMATION_INTERVAL);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			remove(from);
-			add(to);
-			for (int i = 1; i <= count; ++i) {
-				int newToWidth = (int) (toBounds.getWidth() * i / count);
-				int newToHeight = (int) (toBounds.getHeight() * i / count);
-				to.setBounds(getWidth() / 2 - newToWidth / 2, getHeight() / 2 - newToHeight / 2, newToWidth, newToHeight);
-				try {
-					Thread.sleep(ANIMATION_INTERVAL);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			to.setBounds(toBounds);
-			revalidate();
-			repaint();
-		}).start();
-	}
-
 	/** Types of animation */
 	public enum AnimationType {
-		NONE, NONLINEAR_SLIDE, LINEAR_SLIDE, SCALE
-	}
-
-	/** Direction of animation */
-	public enum AnimationDirection {
-		UP_TO_DOWN(0, +1), DOWN_TO_UP(0, -1),
-		LEFT_TO_RIGHT(+1, 0), RIGHT_TO_LEFT(-1, 0);
-		int x, y;
-
-		AnimationDirection(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
+		NONE, NONLINEAR_SLIDE, LINEAR_SLIDE
 	}
 
 }

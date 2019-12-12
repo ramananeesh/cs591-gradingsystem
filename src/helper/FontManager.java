@@ -6,24 +6,24 @@ import java.io.File;
 
 public class FontManager {
 
-	private static final Font fontBauhaus = setFont("Bauhaus 93");
-	private static final Font fontCascadia = setFont("Cascadia");
-	private static final Font fontConsolas = setFont("Consolas");
-	private static final Font fontProductSans = setFont("Product Sans");
+	private static  Font fontBauhaus = setFont("Bauhaus 93");
+	private static  Font fontCascadia = setFont("Cascadia");
+	private static  Font fontConsolas = setFont("Consolas");
+	private static  Font fontProductSans = setFont("Product Sans");
 
-	public static final Font fontDefault = fontProductSans;
+	public static  Font fontDefault = fontProductSans;
 
-	public static final Font fontTitle = fontDefault.deriveFont(Font.PLAIN, SizeManager.titleFontSize);
-	public static final Font fontLogin = fontDefault.deriveFont(Font.PLAIN, SizeManager.buttonLoginFontSize);
+	public static  Font fontTitle = fontDefault.deriveFont(Font.PLAIN, SizeManager.titleFontSize);
+	public static  Font fontLogin = fontDefault.deriveFont(Font.PLAIN, SizeManager.buttonLoginFontSize);
 
-	public static final Font fontTable = fontDefault.deriveFont(SizeManager.fontTableSize);
-	public static final Font fontSearch = fontDefault.deriveFont(SizeManager.fontSearchSize);
-	public static final Font fontFilter = fontDefault.deriveFont(SizeManager.fontFilterSize);
-	public static final Font fontButton = fontDefault.deriveFont(SizeManager.fontButtonSize);
-	public static final Font fontLabel = fontDefault.deriveFont(SizeManager.fontLabelSize);
-	public static final Font fontMenu = fontDefault.deriveFont(SizeManager.fontMenuSize);
-	public static final Font fontText = fontDefault.deriveFont(SizeManager.fontTextSize);
-	public static final Font fontMenuTable = fontDefault.deriveFont(SizeManager.fontMenuTableSize);
+	public static  Font fontTable = fontDefault.deriveFont(SizeManager.fontTableSize);
+	public static  Font fontSearch = fontDefault.deriveFont(SizeManager.fontSearchSize);
+	public static  Font fontFilter = fontDefault.deriveFont(SizeManager.fontFilterSize);
+	public static  Font fontButton = fontDefault.deriveFont(SizeManager.fontButtonSize);
+	public static  Font fontLabel = fontDefault.deriveFont(SizeManager.fontLabelSize);
+	public static  Font fontMenu = fontDefault.deriveFont(SizeManager.fontMenuSize);
+	public static  Font fontText = fontDefault.deriveFont(SizeManager.fontTextSize);
+	public static  Font fontMenuTable = fontDefault.deriveFont(SizeManager.fontMenuTableSize);
 
 	public static Font setFont(String name) {
 		Font font;
@@ -34,5 +34,19 @@ public class FontManager {
 			font = new JLabel().getFont();
 		}
 		return font;
+	}
+
+	public static void update() {
+		 fontTitle = fontDefault.deriveFont(Font.PLAIN, SizeManager.titleFontSize);
+		 fontLogin = fontDefault.deriveFont(Font.PLAIN, SizeManager.buttonLoginFontSize);
+
+		 fontTable = fontDefault.deriveFont(SizeManager.fontTableSize);
+		 fontSearch = fontDefault.deriveFont(SizeManager.fontSearchSize);
+		 fontFilter = fontDefault.deriveFont(SizeManager.fontFilterSize);
+		 fontButton = fontDefault.deriveFont(SizeManager.fontButtonSize);
+		 fontLabel = fontDefault.deriveFont(SizeManager.fontLabelSize);
+		 fontMenu = fontDefault.deriveFont(SizeManager.fontMenuSize);
+		 fontText = fontDefault.deriveFont(SizeManager.fontTextSize);
+		 fontMenuTable = fontDefault.deriveFont(SizeManager.fontMenuTableSize);
 	}
 }

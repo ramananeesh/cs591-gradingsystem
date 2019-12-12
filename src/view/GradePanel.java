@@ -51,7 +51,7 @@ public class GradePanel extends JPanel implements Observer {
 		this.controller = controller;
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setBounds(SizeManager.contentPaneBounds);
 		setOpaque(false);
 		this.editable = editable;
 
@@ -65,7 +65,7 @@ public class GradePanel extends JPanel implements Observer {
 
 		Course currCourse = controller.getCurrentCourse();
 		ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
-		gradeTableColumnNames = new String[] { "Student Name", "BUID", "Score", "Comments" };
+		gradeTableColumnNames = new String[]{"Student Name", "BUID", "Score", "Comments"};
 
 		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 
@@ -103,6 +103,7 @@ public class GradePanel extends JPanel implements Observer {
 		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
 		gradeTable.setRowSorter(gradeTableRowSorter);
 		gradeTable.getTableHeader().setFont(gradeTable.getFont());
+		gradeTable.getTableHeader().setEnabled(false);
 		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
 		add(gradeTableScrollPane);
@@ -122,7 +123,7 @@ public class GradePanel extends JPanel implements Observer {
 
 		// item combo box
 		ArrayList<String> itemComboNames = new ArrayList<>();
-		String[] itemComboItems = { "None" };
+		String[] itemComboItems = {"None"};
 		itemsModel = new DefaultComboBoxModel<String>(itemComboItems);
 		itemComboBox = new JComboBox<>(itemComboItems);
 		itemComboBox.setBounds(SizeManager.itemBounds);
@@ -131,7 +132,7 @@ public class GradePanel extends JPanel implements Observer {
 		add(itemComboBox);
 
 		// grade options combo
-		String[] gradeOptionsItems = { "Points Lost", "Percentage" };
+		String[] gradeOptionsItems = {"Points Lost", "Percentage"};
 		gradeOptionsComboBox = new JComboBox<>(gradeOptionsItems);
 		// gradeOptionsComboBox.setBounds(SizeManager.filterCourseBounds);
 		gradeOptionsComboBox.setBounds(SizeManager.comboBounds);

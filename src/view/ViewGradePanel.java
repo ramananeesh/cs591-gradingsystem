@@ -1,28 +1,24 @@
 package view;
 
+import controller.Master;
 import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
+import helper.Statistics;
+import model.*;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-
-import controller.Master;
-import model.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.*;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.*;
 
 /**
  * The {@code GradePanel} class represents the panel for viewing or modifying
@@ -31,8 +27,8 @@ import java.util.List;
 public class ViewGradePanel extends JPanel implements Observer {
 	/** The title for the window when GradePanel displays */
 	private static final String TITLE = "Grading System - Grade";
+	DecimalFormat df = new DecimalFormat("##.##");
 	private Master controller;
-
 	/** The frame which contains this panel. */
 	private MainFrame frame;
 	private MyTableModel gradeTableModel;
@@ -45,8 +41,6 @@ public class ViewGradePanel extends JPanel implements Observer {
 	private boolean editable;
 	private boolean hasComment;
 
-	DecimalFormat df = new DecimalFormat("##.##");
-
 	/**
 	 * Initializes a newly created {@code GradePanel} object
 	 */
@@ -55,7 +49,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 		this.controller = controller;
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setBounds(SizeManager.contentPaneBounds);
 		setOpaque(false);
 		this.editable = editable;
 
@@ -132,7 +126,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
 		DefaultTableCellRenderer gradeRender = new DefaultTableCellRenderer() {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
+			                                               boolean hasFocus, int row, int column) {
 				MyTableModel model = (MyTableModel) table.getModel();
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				c.setBackground(model.getRowColor(row));
@@ -145,6 +139,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
 		gradeTable.setRowSorter(gradeTableRowSorter);
 		gradeTable.getTableHeader().setFont(gradeTable.getFont());
+		gradeTable.getTableHeader().setEnabled(false);
 		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
 		add(gradeTableScrollPane);
@@ -160,17 +155,17 @@ public class ViewGradePanel extends JPanel implements Observer {
 		DefaultListCellRenderer categoryComboBoxRenderer = new DefaultListCellRenderer();
 		categoryComboBoxRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		categoryComboBox.setRenderer(categoryComboBoxRenderer);
-		add(categoryComboBox);
+//		add(categoryComboBox);
 
 		// item combo box
 		ArrayList<String> itemComboNames = new ArrayList<>();
-		String[] itemComboItems = { "All", "None" };
+		String[] itemComboItems = {"All", "None"};
 		itemsModel = new DefaultComboBoxModel<String>(itemComboItems);
 		itemComboBox = new JComboBox<>(itemComboItems);
 		itemComboBox.setBounds(SizeManager.itemBounds);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
-		add(itemComboBox);
+//		add(itemComboBox);
 
 		categoryComboBox.addActionListener(new ActionListener() {
 
@@ -347,7 +342,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					if (!comments.equals("")) {
 						JTextArea text = new JTextArea(comments);
 						text.setEditable(false);
-						Object[] fields = { "Comments", text };
+						Object[] fields = {"Comments", text};
 						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -512,7 +507,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					if (!comments.equals("")) {
 						JTextArea text = new JTextArea(comments);
 						text.setEditable(false);
-						Object[] fields = { "Comments", text };
+						Object[] fields = {"Comments", text};
 						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -639,13 +634,38 @@ public class ViewGradePanel extends JPanel implements Observer {
 		});
 		add(saveButton);
 
+		// TODO data for test
+		Course course = controller.getCurrentCourse();
+		double[] grades = new double[100];
+		Random random = new Random();
+		for (int i = 0; i < grades.length; ++i) {
+			grades[i] = 80 + (random.nextDouble() - 0.5) * 40;
+		}
+		Statistics statistics = new Statistics(grades);
+
+		// title label
+		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
+		titleLabel.setBounds(SizeManager.finalizeTitleLabelBounds);
+		titleLabel.setFont(FontManager.fontLabel);
+		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		titleLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+		add(titleLabel);
+
+		// statistics label
+		JLabel statisticsLabel = new JLabel(statistics.toString());
+		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
+		statisticsLabel.setFont(FontManager.fontLabel);
+		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		add(statisticsLabel);
+
 		// category label
 		JLabel categoryLabel = new JLabel("Category : ");
 		categoryLabel.setBounds(SizeManager.labelCategoryBounds);
 		categoryLabel.setFont(FontManager.fontLabel);
 		categoryLabel.setVerticalAlignment(SwingConstants.CENTER);
 		categoryLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		add(categoryLabel);
+//		add(categoryLabel);
 
 		// item label
 		JLabel itemLabel = new JLabel("Item : ");
@@ -653,7 +673,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 		itemLabel.setFont(FontManager.fontLabel);
 		itemLabel.setVerticalAlignment(SwingConstants.CENTER);
 		itemLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		add(itemLabel);
+//		add(itemLabel);
 
 //		generateRandomTestData(gradeTable);
 
@@ -766,7 +786,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					if (!comments.equals("")) {
 						JTextArea text = new JTextArea(comments);
 						text.setEditable(false);
-						Object[] fields = { "Comments", text };
+						Object[] fields = {"Comments", text};
 						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -799,27 +819,6 @@ public class ViewGradePanel extends JPanel implements Observer {
 			rank.sort(Integer::compareTo);
 			tableGrade.setValueAt(String.valueOf(rank.get(rank.size() / 2)), 1, i);
 			tableGrade.setValueAt(String.format("%.2f", sum / rank.size()), 0, i);
-		}
-	}
-
-	static class MyTableModel extends DefaultTableModel {
-		List<Color> rowColor;
-
-		public MyTableModel(String[][] gradeTableRowData, Object[] gradeTableColumnNames) {
-			super(gradeTableRowData, gradeTableColumnNames);
-			rowColor = new ArrayList<Color>();
-			for (int i = 0; i < gradeTableRowData.length; i++) {
-				rowColor.add(Color.white);
-			}
-		}
-
-		public void setRowColor(int row, Color c) {
-			rowColor.set(row, c);
-			fireTableRowsUpdated(row, row);
-		}
-
-		public Color getRowColor(int row) {
-			return rowColor.get(row);
 		}
 	}
 
@@ -879,7 +878,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					if (!comments.equals("")) {
 						JTextArea text = new JTextArea(comments);
 						text.setEditable(false);
-						Object[] fields = { "Comments", text };
+						Object[] fields = {"Comments", text};
 						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -887,5 +886,26 @@ public class ViewGradePanel extends JPanel implements Observer {
 			}
 		});
 
+	}
+
+	static class MyTableModel extends DefaultTableModel {
+		List<Color> rowColor;
+
+		public MyTableModel(String[][] gradeTableRowData, Object[] gradeTableColumnNames) {
+			super(gradeTableRowData, gradeTableColumnNames);
+			rowColor = new ArrayList<Color>();
+			for (int i = 0; i < gradeTableRowData.length; i++) {
+				rowColor.add(Color.white);
+			}
+		}
+
+		public void setRowColor(int row, Color c) {
+			rowColor.set(row, c);
+			fireTableRowsUpdated(row, row);
+		}
+
+		public Color getRowColor(int row) {
+			return rowColor.get(row);
+		}
 	}
 }

@@ -15,6 +15,11 @@ import javax.swing.table.TableRowSorter;
 import controller.Master;
 import model.*;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -33,12 +38,14 @@ public class CoursePanel extends JPanel implements Observer {
 	 * Initializes a newly created {@code CoursePanel} object
 	 */
 	public CoursePanel(MainFrame frame, Master controller) {
+
 		this.controller = controller;
 		this.frame = frame;
 		this.controller.addObserver(this);
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setBounds(SizeManager.contentPaneBounds);
+		setLocation(0,0);
 		setOpaque(false);
 
 		UIManager.put("TextField.font", FontManager.fontSearch);
@@ -77,10 +84,27 @@ public class CoursePanel extends JPanel implements Observer {
 		tableHeader.setBackground(ColorManager.primaryColor);
 		tableHeader.setForeground(ColorManager.lightColor);
 		tableHeader.setFont(tableCourse.getFont());
+		tableHeader.setEnabled(false);
+		tableHeader.setPreferredSize(new Dimension(tableCourse.getWidth(),tableCourse.getRowHeight()));
 		JScrollPane tableCourseScrollPane = new JScrollPane(tableCourse);
 		tableCourseScrollPane.setBounds(tableCourse.getBounds());
 		tableCourse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		add(tableCourseScrollPane);
+		JPanel thisPanel = this;
+		tableCourse.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent mouseEvent) {
+				if (mouseEvent.getClickCount() == 2 && tableCourse.getSelectedRow() != -1) {
+					String[] courseData = new String[3];
+					int selectedRow = tableCourse.getSelectedRow();
+					for (int i = 0; i < 3; ++i) {
+						courseData[i] = tableCourse.getValueAt(selectedRow, i).toString();
+					}
+					controller.setCurrentCourse(selectedRow);
+					frame.changePanel(thisPanel, new MenuPanel(frame, courseData, controller));
+				}
+			}
+		});
 
 		String[] semester = { "All", "Fall 2019", "Spring 2020" }; // TODO
 
@@ -96,21 +120,6 @@ public class CoursePanel extends JPanel implements Observer {
 		textSearch.setBounds(SizeManager.searchCourseBounds);
 		textSearch.setFont(FontManager.fontSearch);
 		textSearch.setHorizontalAlignment(SwingConstants.CENTER);
-//		textSearch.addFocusListener(new FocusListener() { TODO may display hint words in search bar
-//			@Override
-//			public void focusGained(FocusEvent e) {
-//				if (textSearch.getText().equals("Search Bar")) {
-//					textSearch.setText("");
-//				}
-//			}
-//
-//			@Override
-//			public void focusLost(FocusEvent e) {
-//				if (textSearch.getText().equals("")) {
-//					textSearch.setText("Search Bar");
-//				}
-//			}
-//		});
 		add(textSearch);
 
 		textSearch.getDocument().addDocumentListener(new DocumentListener() {
