@@ -54,6 +54,12 @@ public class Master extends Observable {
 		// write to db
 		Create.insertNewCourse(newCourse);
 
+		// write categories to db
+
+		// write items to db
+
+		// write students to db
+
 		setChanged();
 		notifyObservers();
 	}
@@ -65,6 +71,11 @@ public class Master extends Observable {
 		// write to db
 		Create.insertNewCourse(newCourse);
 
+		// write categories to db
+
+		// write items to db
+
+		// write students to db
 		setChanged();
 		notifyObservers();
 	}
@@ -732,11 +743,13 @@ public class Master extends Observable {
 		return data;
 	}
 
-	public void setCurveForCourse(Course course, double curve) {
+	public void setCurveForCourse(Course course, double curve, boolean flag) {
 		course.setCurve(curve);
-		course.setCurveApplied(true);
-		setCurveOnCoursePercentages(course);
 
+		setCurveOnCoursePercentages(course);
+		if (flag) {
+			course.setCurveApplied(true);
+		}
 		setChanged();
 		notifyObservers();
 	}
@@ -746,7 +759,7 @@ public class Master extends Observable {
 
 		for (FinalGrade grade : finalGrades) {
 			if (course.isCurveApplied()) {
-				//if curve is already applied, modify from applied curve 
+				// if curve is already applied, modify from applied curve
 				grade.setCurvedPercentage(grade.getCurvedPercentage() + course.getCurve());
 				grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
 			} else {
@@ -756,9 +769,25 @@ public class Master extends Observable {
 		}
 
 		course.setFinalGrades(finalGrades);
-		
+
+		fireUpdate();
+	}
+
+	public void finalizeCourse(Course course) {
+
+		// check if curve applied. if not, set curved percentage equal to actual
+		// percentage
+		if (!course.isCurveApplied()) {
+			setCurveForCourse(course, 0.0, false);
+		}
+		// write to db
+		for (FinalGrade grade : course.getFinalGrades()) {
+			Create.insertNewFinalGrade(grade);
+		}
+
+		// lock all features and editing
 		/**
-		 * to do - DB update
+		 * to do
 		 */
 
 		fireUpdate();
