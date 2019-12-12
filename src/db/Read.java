@@ -154,7 +154,7 @@ public class Read {
 		//String query = "Select Student.BUID, Student.fName, Student.lName, Student.type, Student.email, CourseStudent.courseID,"
 		//		+ "CourseStudent.active from Student, CourseStudent JOIN CourseStudent ON Student.BUID = CourseStudent.BUID";
 		String query = "Select s.buid, s.fname, s.lname, s.type, s.email, cs.courseId, cs.active from student s, coursestudent cs where "
-				+ "s.buid=cs.buid";
+				+ "s.buid=cs.buid and courseId=" +courseID;
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {

@@ -19,6 +19,7 @@ public class FinalGrade {
 		this.student = student;
 		this.actualPercentage = actualPercentage;
 		this.letterGrade = letterGrade;
+		this.curvedPercentage = null;
 	}
 
 	public CourseStudent getStudent() {

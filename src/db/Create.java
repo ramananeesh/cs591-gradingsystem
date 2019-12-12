@@ -23,9 +23,10 @@ public class Create {
 	}
 
 	public static boolean insertNewGradeEntry(GradeEntry ge, String buid) {
-		String sql = "insert into GradeEntry (entryName, itemId, categoryId, maxPoint, pointsEarned, percentage, courseId, comment, buid) values ('" + ge.getEntryName() + "'," + ge.getItemId() + ","
-				+ ge.getCategoryId() + "," + ge.getMaxPoints() + "," + ge.getPointsEarned() + "," + ge.getPercentage()
-				+ "," + +ge.getCourseId() + ",'" + ge.getComments() + "','" + buid + "')";
+		String sql = "insert into GradeEntry (entryName, itemId, categoryId, maxPoint, pointsEarned, percentage, courseId, comment, buid) values ('"
+				+ ge.getEntryName() + "'," + ge.getItemId() + "," + ge.getCategoryId() + "," + ge.getMaxPoints() + ","
+				+ ge.getPointsEarned() + "," + ge.getPercentage() + "," + +ge.getCourseId() + ",'" + ge.getComments()
+				+ "','" + buid + "')";
 		return SQLHelper.performQuery(sql);
 	}
 
@@ -37,13 +38,20 @@ public class Create {
 
 	public static boolean insertNewStudent(Student student) {
 		String sql = "insert into Student values ('" + student.getBuid() + "','" + student.getFname() + "','"
-				+ student.getLname() + "','"+student.getType() + "','"+student.getEmail()+"')";
+				+ student.getLname() + "','" + student.getType() + "','" + student.getEmail() + "')";
 		// student.getEmail()
 		return SQLHelper.performQuery(sql);
 	}
 
 	public static boolean insertNewTemplate(Template template) {
 		String sql = "insert into Template values('" + template.getTemplateName() + "')";
+		return SQLHelper.performQuery(sql);
+	}
+
+	public static boolean insertNewFinalGrade(FinalGrade grade) {
+		String sql = "insert into gradeEntry values('" + grade.getStudent().getBuid() + "',"
+				+ grade.getActualPercentage() + "," + grade.getCurvedPercentage() + ",'" + grade.getLetterGrade()
+				+ "')";
 		return SQLHelper.performQuery(sql);
 	}
 }
