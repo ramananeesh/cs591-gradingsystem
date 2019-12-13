@@ -148,11 +148,7 @@ public class Statistics {
 	 */
 	@Override
 	public String toString() {
-		return String.format("Statistics [ Mean = %f, Median = %f, Standard Deviation = %f ]", getMean(), getMedian(), getStandardDeviation());
-	}
-
-	public String toText() {
-		return String.format("Mean: %.2f, Median: %.2f, Standard Deviation: %.2f ]", getMean(), getMedian(), getStandardDeviation());
+		return String.format("Mean: %.2f, Median: %.2f, Standard Deviation: %.2f", getMean(), getMedian(), getStandardDeviation());
 	}
 
 }

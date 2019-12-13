@@ -10,6 +10,7 @@ import model.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -133,13 +134,19 @@ public class ViewGradePanel extends JPanel implements Observer {
 				return c;
 			}
 		};
-		gradeTableRender.setHorizontalAlignment(SwingConstants.CENTER);
-		gradeTableRender.setVerticalAlignment(SwingConstants.CENTER);
+		gradeRender.setHorizontalAlignment(SwingConstants.CENTER);
+		gradeRender.setVerticalAlignment(SwingConstants.CENTER);
 		gradeTable.setDefaultRenderer(Object.class, gradeRender);
 		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
 		gradeTable.setRowSorter(gradeTableRowSorter);
-		gradeTable.getTableHeader().setFont(gradeTable.getFont());
-		gradeTable.getTableHeader().setEnabled(false);
+
+		JTableHeader gradeTableHeader = gradeTable.getTableHeader();
+		gradeTableHeader.setFont(gradeTable.getFont());
+		gradeTableHeader.setEnabled(false);
+		gradeTableHeader.setPreferredSize(new Dimension(gradeTable.getWidth(), gradeTable.getRowHeight()));
+		gradeTableHeader.setBackground(ColorManager.primaryColor);
+		gradeTableHeader.setForeground(ColorManager.lightColor);
+
 		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
 		add(gradeTableScrollPane);

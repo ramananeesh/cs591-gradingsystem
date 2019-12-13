@@ -57,7 +57,7 @@ public class FinializePanel extends JPanel implements Observer {
 		add(titleLabel);
 
 		// statistics label
-		JLabel statisticsLabel = new JLabel(statistics.toText());
+		JLabel statisticsLabel = new JLabel(statistics.toString());
 		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
 		statisticsLabel.setFont(FontManager.fontLabel);
 		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);

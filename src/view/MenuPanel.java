@@ -13,6 +13,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -474,7 +475,6 @@ public class MenuPanel extends JPanel implements Observer {
 		informationTextPane.setText(courseString); // TODO load info from database
 		informationTextPane.setFont(FontManager.fontText);
 		informationTextPane.setEditable(false);
-		informationTextPane.setBorder(new LineBorder(ColorManager.primaryColor, SizeManager.lineThickness));
 		StyledDocument doc = informationTextPane.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
@@ -528,7 +528,7 @@ public class MenuPanel extends JPanel implements Observer {
 			tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
 			tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
 		}
-		for (JScrollPane scrollPane : new JScrollPane[]{tableStudentScrollPane,tableCategoryScrollPane,tableItemScrollPane}){
+		for (JScrollPane scrollPane : new JScrollPane[]{tableStudentScrollPane, tableCategoryScrollPane, tableItemScrollPane}) {
 			scrollPane.setOpaque(false);
 			scrollPane.getViewport().setOpaque(false);
 		}
@@ -577,11 +577,23 @@ public class MenuPanel extends JPanel implements Observer {
 			});
 
 			JTableHeader tableHeader = table.getTableHeader();
-			tableHeader.setPreferredSize(new Dimension(SizeManager.panelWidth, SizeManager.menuTableRowHeight));
+			tableHeader.setPreferredSize(new Dimension(table.getWidth(), table.getRowHeight()));
 			tableHeader.setForeground(ColorManager.lightColor);
 			tableHeader.setBackground(ColorManager.primaryColor);
 			tableHeader.setEnabled(false);
 		}
+
+		JButton[] buttons = new JButton[4];
+		for (int i = 0; i < 4; ++i) {
+			buttons[i] = new JButton(menuItemName[2][i]);
+			buttons[i].setForeground(ColorManager.lightColor);
+			buttons[i].setBackground(ColorManager.primaryColor);
+			buttons[i].addActionListener(menuActionListener[2][i]);
+			buttons[i].setBounds(SizeManager.menuButtonsBounds[i]);
+			buttons[i].setFont(FontManager.fontButton);
+			add(buttons[i]);
+		}
+
 
 		setVisible(true);
 	}
