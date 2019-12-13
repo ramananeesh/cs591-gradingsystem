@@ -78,6 +78,7 @@ public class SizeManager {
 	public static int[] tableCategoryItemColumnWidth;
 	public static int menuTableRowHeight;
 	public static float fontMenuTableSize;
+	public static float fontMenuButtonSize;
 
 	public static Rectangle finalizeTitleLabelBounds;
 	public static Rectangle labelGradeStatisticsBounds;
@@ -88,7 +89,9 @@ public class SizeManager {
 
 	public static int optionPaneWidth = getScaledSize(600);
 	public static int optionPaneRowHeight = getScaledSize(70);
-
+	public static Rectangle viewGradeStatBounds;
+	public static Rectangle viewGradeTitleBounds;
+	public static Rectangle[] viewGradeComboBounds;
 
 	public static void update(JFrame frame) {
 
@@ -172,6 +175,7 @@ public class SizeManager {
 		tableCategoryItemColumnWidth = new int[]{panelWidth * 3 / 4, panelWidth / 4};
 		menuTableRowHeight = panelHeight / 20;
 		fontMenuTableSize = (int) (menuTableRowHeight * 0.6f);
+		fontMenuButtonSize = (int) (menuTableRowHeight * 0.5f);
 		int menuButtonsWidth = (panelWidth - buttonHeight * 3) / 2;//panelWidth * 4 / 10;
 		int menuButtonMid = (panelWidth - menuButtonsWidth * 2) / 6;
 		int menuButtonCenterY = menuBarHeight + (panelHeight - 5 * buttonHeight) + 5 * buttonHeight / 2;
@@ -198,6 +202,15 @@ public class SizeManager {
 		finalizeButtonCurveBounds = new Rectangle(buttonBackCurveFinalizeX[1], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
 		finalizeButtonSaveBounds = new Rectangle(buttonBackCurveFinalizeX[2], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
 		finalizeButtonFinalizeBounds = new Rectangle(buttonBackCurveFinalizeX[3], buttonBackCurveFinalizeY, buttonBackCurveFinalizeWidth, buttonHeight);
+
+		viewGradeTitleBounds = new Rectangle(0, 0, contentPaneWidth, contentPaneHeight / 8 / 3);
+		viewGradeStatBounds = new Rectangle(0, contentPaneHeight / 8 / 3, contentPaneWidth, contentPaneHeight / 8 / 3);
+		viewGradeComboBounds = new Rectangle[]{
+				new Rectangle(tableCourseX + tableCourseWidth / 4 - comboWidth, contentPaneHeight / 8 / 3 * 2, comboWidth, contentPaneHeight / 8 / 3),
+				new Rectangle(tableCourseX + tableCourseWidth / 4, contentPaneHeight / 8 / 3 * 2, comboWidth, contentPaneHeight / 8 / 3),
+				new Rectangle(tableCourseX + tableCourseWidth * 3 / 4 - comboWidth * 2, contentPaneHeight / 8 / 3 * 2, comboWidth, contentPaneHeight / 8 / 3),
+				new Rectangle(tableCourseX + tableCourseWidth * 3 / 4 - comboWidth, contentPaneHeight / 8 / 3 * 2, comboWidth, contentPaneHeight / 8 / 3),
+		};
 
 		FontManager.update();
 	}

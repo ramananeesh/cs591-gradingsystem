@@ -24,6 +24,7 @@ public class FontManager {
 	public static  Font fontMenu = fontDefault.deriveFont(SizeManager.fontMenuSize);
 	public static  Font fontText = fontDefault.deriveFont(SizeManager.fontTextSize);
 	public static  Font fontMenuTable = fontDefault.deriveFont(SizeManager.fontMenuTableSize);
+    public static Font fontMenuButton;
 
 	public static Font setFont(String name) {
 		Font font;
@@ -48,5 +49,6 @@ public class FontManager {
 		 fontMenu = fontDefault.deriveFont(SizeManager.fontMenuSize);
 		 fontText = fontDefault.deriveFont(SizeManager.fontTextSize);
 		 fontMenuTable = fontDefault.deriveFont(SizeManager.fontMenuTableSize);
+        fontMenuButton = fontDefault.deriveFont(SizeManager.fontMenuButtonSize);
 	}
 }

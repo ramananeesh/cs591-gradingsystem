@@ -186,22 +186,22 @@ public class ViewGradePanel extends JPanel implements Observer {
 		categoryComboNames.addAll(categoryNames);
 		Object[] categoryComboBoxItems = categoryComboNames.toArray(); // TODO
 		categoryComboBox = new JComboBox<>(convertObjectArrayToString(categoryComboBoxItems));
-		categoryComboBox.setBounds(SizeManager.categoryBounds);
+		categoryComboBox.setBounds(SizeManager.viewGradeComboBounds[1]);
 		categoryComboBox.setFont(FontManager.fontFilter);
 		DefaultListCellRenderer categoryComboBoxRenderer = new DefaultListCellRenderer();
 		categoryComboBoxRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		categoryComboBox.setRenderer(categoryComboBoxRenderer);
-//		add(categoryComboBox);
+		add(categoryComboBox);
 
 		// item combo box
 		ArrayList<String> itemComboNames = new ArrayList<>();
 		String[] itemComboItems = {"All", "None"};
 		itemsModel = new DefaultComboBoxModel<String>(itemComboItems);
 		itemComboBox = new JComboBox<>(itemComboItems);
-		itemComboBox.setBounds(SizeManager.itemBounds);
+		itemComboBox.setBounds(SizeManager.viewGradeComboBounds[3]);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
-//		add(itemComboBox);
+		add(itemComboBox);
 
 		categoryComboBox.addActionListener(new ActionListener() {
 
@@ -693,35 +693,35 @@ public class ViewGradePanel extends JPanel implements Observer {
 
 		// title label
 		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
-		titleLabel.setBounds(SizeManager.finalizeTitleLabelBounds);
+		titleLabel.setBounds(SizeManager.viewGradeTitleBounds);
 		titleLabel.setFont(FontManager.fontLabel);
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		titleLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+		titleLabel.setVerticalAlignment(SwingConstants.CENTER);
 		add(titleLabel);
 
 		// statistics label
 		JLabel statisticsLabel = new JLabel(statistics.toString());
-		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
+		statisticsLabel.setBounds(SizeManager.viewGradeStatBounds);
 		statisticsLabel.setFont(FontManager.fontLabel);
-		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+		statisticsLabel.setVerticalAlignment(SwingConstants.TOP);
 		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		add(statisticsLabel);
 
 		// category label
 		JLabel categoryLabel = new JLabel("Category : ");
-		categoryLabel.setBounds(SizeManager.labelCategoryBounds);
+		categoryLabel.setBounds(SizeManager.viewGradeComboBounds[0]);
 		categoryLabel.setFont(FontManager.fontLabel);
 		categoryLabel.setVerticalAlignment(SwingConstants.CENTER);
 		categoryLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-//		add(categoryLabel);
+		add(categoryLabel);
 
 		// item label
 		JLabel itemLabel = new JLabel("Item : ");
-		itemLabel.setBounds(SizeManager.labelItemBounds);
+		itemLabel.setBounds(SizeManager.viewGradeComboBounds[2]);
 		itemLabel.setFont(FontManager.fontLabel);
 		itemLabel.setVerticalAlignment(SwingConstants.CENTER);
 		itemLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-//		add(itemLabel);
+		add(itemLabel);
 
 //		generateRandomTestData(gradeTable);
 

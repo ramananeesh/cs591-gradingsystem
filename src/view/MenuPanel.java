@@ -82,6 +82,7 @@ public class MenuPanel extends JPanel implements Observer {
 //	private JComboBox<String> categoryEditItemCombo;
 
 	private JTable editItemTable;
+	private final JButton[] buttons = new JButton[4];
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
@@ -632,14 +633,13 @@ public class MenuPanel extends JPanel implements Observer {
 			tableHeader.setEnabled(false);
 		}
 
-		JButton[] buttons = new JButton[4];
 		for (int i = 0; i < 4; ++i) {
 			buttons[i] = new JButton(menuItemName[2][i]);
 			buttons[i].setForeground(ColorManager.lightColor);
 			buttons[i].setBackground(ColorManager.primaryColor);
 			buttons[i].addActionListener(menuActionListener[2][i]);
 			buttons[i].setBounds(SizeManager.menuButtonsBounds[i]);
-			buttons[i].setFont(FontManager.fontButton);
+			buttons[i].setFont(FontManager.fontMenuButton);
 			add(buttons[i]);
 		}
 
