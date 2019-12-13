@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
@@ -12,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -108,6 +110,7 @@ public class FinializePanel extends JPanel implements Observer {
 			// TODO curve
 			JTextField percentageTextField = new JTextField();
 			Object[] fields = {"Percentage: ", percentageTextField};
+			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.QUESTION_MESSAGE);
@@ -139,6 +142,7 @@ public class FinializePanel extends JPanel implements Observer {
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
 			Object[] fields = {label};
+			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
@@ -162,6 +166,7 @@ public class FinializePanel extends JPanel implements Observer {
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
 			Object[] fields = {label};
+			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);

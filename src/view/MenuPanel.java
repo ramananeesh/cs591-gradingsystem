@@ -101,13 +101,12 @@ public class MenuPanel extends JPanel implements Observer {
 		UIManager.put("MenuItem.font", FontManager.fontMenu);
 		UIManager.put("TextField.font", FontManager.fontLabel);
 		UIManager.put("ComboBox.font", FontManager.fontLabel);
-		UIManager.put("OptionPane.minimumSize", SizeManager.optionPaneDimension);
 
 		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
 
 		DefaultTableCellRenderer studentRender = new DefaultTableCellRenderer() {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-														   boolean hasFocus, int row, int column) {
+			                                               boolean hasFocus, int row, int column) {
 				MyTableModel model = (MyTableModel) table.getModel();
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				c.setBackground(model.getRowColor(row));
@@ -135,9 +134,10 @@ public class MenuPanel extends JPanel implements Observer {
 								JTextField BUIDField = new JTextField();
 								JTextField emailField = new JTextField();
 								JComboBox<String> levelCombo = new JComboBox<>(
-										new String[] { "Undergraduate", "Graduate" });
-								Object[] fields = { "First Name: ", fNameField, "Last Name: ", lNameField,"BU ID: ", BUIDField, "Email: ", emailField,
-										"Level: ", levelCombo, };
+										new String[]{"Undergraduate", "Graduate"});
+								Object[] fields = {"First Name: ", fNameField, "Last Name: ", lNameField, "BU ID: ", BUIDField, "Email: ", emailField,
+										"Level: ", levelCombo,};
+								UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student",
@@ -183,6 +183,7 @@ public class MenuPanel extends JPanel implements Observer {
 						JTextField categoryField = new JTextField();
 						JTextField percentageField = new JTextField();
 						Object[] fields = {"Category: ", categoryField, "Percentage: ", percentageField,};
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Add Category",
@@ -223,6 +224,7 @@ public class MenuPanel extends JPanel implements Observer {
 						JTextField maxPointsField = new JTextField();
 						Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage: ",
 								percentageField, "Max Points: ", maxPointsField,};
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item",
@@ -271,11 +273,12 @@ public class MenuPanel extends JPanel implements Observer {
 
 						JTextField nameField = new JTextField();
 						JComboBox<String> levelCombo = new JComboBox<String>(
-								new String[] { "Undergraduate", "Graduate" });
+								new String[]{"Undergraduate", "Graduate"});
 						JComboBox<String> statusCombo = new JComboBox<>(
-								new String[] {"Active", "Freeze"});
-						Object[] fields = { "Student: ", studentComboEdit, "Name:", nameField,
+								new String[]{"Active", "Freeze"});
+						Object[] fields = {"Student: ", studentComboEdit, "Name:", nameField,
 								"Level: ", levelCombo, "status: ", statusCombo,};
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Student",
@@ -287,7 +290,7 @@ public class MenuPanel extends JPanel implements Observer {
 									String name = nameField.getText().trim();
 									String level = (String) levelCombo.getSelectedItem();
 									boolean status;
-									if(statusCombo.getSelectedIndex() == 0)
+									if (statusCombo.getSelectedIndex() == 0)
 										status = true;
 									else
 										status = false;
@@ -382,7 +385,7 @@ public class MenuPanel extends JPanel implements Observer {
 //						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
 //								categoryEditItemCombo.getSelectedIndex(), true);
 						itemData = controller.getAllItemDetailsForCourse(controller.getCurrentCourse(), true);
-						String[] itemColumn = {"Category", "Item", "Percentage", "Max Points" };
+						String[] itemColumn = {"Category", "Item", "Percentage", "Max Points"};
 						DefaultTableModel tableEditItemModel = new DefaultTableModel(itemData, itemColumn);
 
 						editItemTable = new JTable(tableEditItemModel) {
@@ -394,7 +397,8 @@ public class MenuPanel extends JPanel implements Observer {
 						editItemTable.setDefaultRenderer(Object.class, tableRender);
 						JScrollPane itemScrollPane = new JScrollPane(editItemTable);
 //						Object[] fields = { "Category: ", categoryEditItemCombo, "Item: ", itemScrollPane, };
-						Object[] fields = { itemScrollPane, };
+						Object[] fields = {itemScrollPane,};
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item",
@@ -455,6 +459,8 @@ public class MenuPanel extends JPanel implements Observer {
 				JTextField gradeTextField = new JTextField();
 				Object[] fields = {"Student: ", studentComboBox, "Category: ", categoryComboBox, "Item: ",
 						itemComboBox, "Grade: ", gradeTextField,};
+				UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+
 				while (true) {
 					int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student",
 							JOptionPane.OK_CANCEL_OPTION);
@@ -516,9 +522,9 @@ public class MenuPanel extends JPanel implements Observer {
 		};
 
 		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
-			if(statusData[i] == false) {
+			if (statusData[i] == false) {
 				studentTableModel.setRowColor(i, Color.gray);
-			}else{
+			} else {
 				studentTableModel.setRowColor(i, Color.WHITE);
 			}
 		}
@@ -532,9 +538,9 @@ public class MenuPanel extends JPanel implements Observer {
 		tableCategoryColumns = new String[]{"Category Name", "Weight"};
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
-		for(int i = 0; i < tableCategoryData.length; i++){
-			double weight = Double.parseDouble(tableCategoryData[i][1])*100;
-			tableCategoryData[i][1] = (int)weight + "%";
+		for (int i = 0; i < tableCategoryData.length; i++) {
+			double weight = Double.parseDouble(tableCategoryData[i][1]) * 100;
+			tableCategoryData[i][1] = (int) weight + "%";
 		}
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
 			@Override
@@ -549,9 +555,9 @@ public class MenuPanel extends JPanel implements Observer {
 
 		tableItemColumns = new String[]{"Item Name", "Weight"};
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
-		for(int i = 0; i < tableItemData.length; i++){
-			double weight = Double.parseDouble(tableItemData[i][1])*100;
-			tableItemData[i][1] = (int)weight + "%";
+		for (int i = 0; i < tableItemData.length; i++) {
+			double weight = Double.parseDouble(tableItemData[i][1]) * 100;
+			tableItemData[i][1] = (int) weight + "%";
 		}
 		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
 			@Override
@@ -573,10 +579,10 @@ public class MenuPanel extends JPanel implements Observer {
 			scrollPane.getViewport().setOpaque(false);
 		}
 		tableStudent.setDefaultRenderer(Object.class, studentRender);
-		for (JTable table : new JTable[] { tableCategory, tableItem }) {
+		for (JTable table : new JTable[]{tableCategory, tableItem}) {
 			table.setDefaultRenderer(Object.class, tableRender);
 		}
-		for (JTable table : new JTable[] { tableStudent, tableCategory, tableItem }) {
+		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
 			table.setRowHeight(SizeManager.menuTableRowHeight);
 			table.setRowSelectionAllowed(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -727,9 +733,9 @@ public class MenuPanel extends JPanel implements Observer {
 		this.controller = controller;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
-		for(int i = 0; i < tableCategoryData.length; i++){
-			double weight = Double.parseDouble(tableCategoryData[i][1])*100;
-			tableCategoryData[i][1] = (int)weight + "%";
+		for (int i = 0; i < tableCategoryData.length; i++) {
+			double weight = Double.parseDouble(tableCategoryData[i][1]) * 100;
+			tableCategoryData[i][1] = (int) weight + "%";
 		}
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
 			@Override
@@ -740,9 +746,9 @@ public class MenuPanel extends JPanel implements Observer {
 		tableCategory.setModel(categoryTableModel);
 
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
-		for(int i = 0; i < tableItemData.length; i++){
-			double weight = Double.parseDouble(tableItemData[i][1])*100;
-			tableItemData[i][1] = (int)weight + "%";
+		for (int i = 0; i < tableItemData.length; i++) {
+			double weight = Double.parseDouble(tableItemData[i][1]) * 100;
+			tableItemData[i][1] = (int) weight + "%";
 		}
 		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
 			@Override
@@ -764,10 +770,10 @@ public class MenuPanel extends JPanel implements Observer {
 
 		Boolean[] statusData = controller.getAllStudentsStatusForCourse(controller.getCurrentCourse());
 		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
-			if(statusData[i] == false) {
+			if (statusData[i] == false) {
 				System.out.println(i);
 				studentTableModel.setRowColor(i, Color.gray);
-			}else{
+			} else {
 				studentTableModel.setRowColor(i, Color.WHITE);
 			}
 		}

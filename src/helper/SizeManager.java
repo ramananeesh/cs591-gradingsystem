@@ -86,8 +86,8 @@ public class SizeManager {
 	public static Rectangle finalizeButtonSaveBounds;
 	public static Rectangle finalizeButtonFinalizeBounds;
 
-
-	public static Dimension optionPaneDimension = new Dimension(getScaledSize(600), getScaledSize(600));
+	public static int optionPaneWidth = getScaledSize(600);
+	public static int optionPaneRowHeight = getScaledSize(70);
 
 
 	public static void update(JFrame frame) {
