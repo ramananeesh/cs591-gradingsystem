@@ -90,6 +90,14 @@ public class Item {
 		return new String[] { this.fieldName, Double.toString(this.weight), Double.toString(this.maxPoints) };
 	}
 
+	public String[] getDetailsWithCategory(Course course) {
+		return new String[] { course.getCategoryById(this.categoryId).getFieldName(), this.fieldName, Double.toString(this.weight) };
+	}
+
+	public String[] getDetailsWithMaxPointsWithCategory(Course course) {
+		return new String[] {course.getCategoryById(this.categoryId).getFieldName(), this.fieldName, Double.toString(this.weight), Double.toString(this.maxPoints) };
+	}
+
 	public double getMaxPoints() {
 		return maxPoints;
 	}

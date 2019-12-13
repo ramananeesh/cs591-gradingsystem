@@ -2,6 +2,7 @@ package controller;
 
 import java.util.*;
 
+import com.sun.jmx.snmp.agent.SnmpUserDataFactory;
 import db.*;
 import model.*;
 import helper.*;
@@ -136,6 +137,19 @@ public class Master extends Observable {
 			Create.insertNewStudent(st);
 			Create.insertNewCourseStudent(cs);
 		}
+
+		setChanged();
+		notifyObservers();
+	}
+
+	public void addStudentForCourse(Course course, String[] student) {
+		CourseStudent cs = new CourseStudent(student[0], student[1], student[2], student[3], student[4],
+				course.getCourseId(), true);
+		course.addStudent(cs);
+		Student st = new Student(cs.getFname(), cs.getLname(), cs.getBuid(), cs.getEmail(), cs.getType());
+
+		Create.insertNewStudent(st);
+		Create.insertNewCourseStudent(cs);
 
 		setChanged();
 		notifyObservers();
@@ -317,6 +331,18 @@ public class Master extends Observable {
 			return course.getCategories().get(categoryIndex).getItemsForListWithMaxPoints();
 	}
 
+	public String[][] getAllItemDetailsForCourse(Course course, boolean includeMaxPoints) {
+		String[][] details = new String[getAllItemsForCourse(course).size()][];
+		int i = 0;
+		for(Item item : getAllItemsForCourse(course)){
+			if (!includeMaxPoints)
+				details[i++] = item.getDetailsWithCategory(course);
+			else
+				details[i++] = item.getDetailsWithMaxPointsWithCategory(course);
+		}
+		return details;
+	}
+
 	public String[][] getAllStudentsForCourse(Course course) {
 		ArrayList<String[]> str = new ArrayList<String[]>();
 
@@ -330,6 +356,15 @@ public class Master extends Observable {
 		}
 
 		return ans;
+	}
+
+	public Boolean[] getAllStudentsStatusForCourse(Course course){
+		ArrayList<Boolean> status = new ArrayList<>();
+		for (CourseStudent student : course.getStudents()) {
+			status.add(student.isActive());
+		}
+		Boolean[] ans = new Boolean[status.size()];
+		return status.toArray(ans);
 	}
 
 	public boolean isIdUnique(int id) {
@@ -491,6 +526,39 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
+	public void modifyItemsForCourse(Course course, HashMap<String, ArrayList<Double>> map) {
+		ArrayList<Category> categories = getAllCategoriesForCourse(course);
+		for(int i = 0; i < categories.size(); i++){
+			Category cat = categories.get(i);
+			ArrayList<Item> items = getAllItemsForCourseCategory(course, i);
+			for(int j = 0; j < items.size(); j++){
+				Item item = items.get(j);
+				boolean flag = false;
+				ArrayList<Double> l = map.get(item.getFieldName());
+				if (item.getWeight() != l.get(0))
+					flag = true;
+				else if (item.getMaxPoints() != l.get(1))
+					flag = true;
+
+				if (flag) {
+					Item modifiedItem = new Item(item.getId(), item.getFieldName(), item.getCategoryId(), l.get(0),
+							l.get(1), item.getCourseId());
+					cat.setItem(j, modifiedItem);
+					course.setCategory(i, cat);
+
+					for (CourseStudent student : course.getStudents()) {
+						student.modifyMaxPointsInGradeEntryByItem(item.getId(), l.get(1));
+					}
+
+					// modify in db
+					Update.updateItem(modifiedItem);
+				}
+			}
+		}
+		setChanged();
+		notifyObservers();
+	}
+
 	public void modifyStudentForCourse(Course course, HashMap<String, ArrayList<String>> map) {
 		ArrayList<CourseStudent> students = course.getStudents();
 		for (int i = 0; i < students.size(); i++) {
@@ -526,25 +594,14 @@ public class Master extends Observable {
 		notifyObservers();
 	}
 
-	public void modifyStudentForCourse(Course course, int studentIndex, HashMap<String, String> map) {
+	public void modifyStudentForCourse(Course course, int studentIndex, HashMap<String, String> map, boolean active) {
 
 		CourseStudent student = course.getStudent(studentIndex);
 
-		String modBuid = map.get("Buid").trim();
 		String modName = map.get("Name").trim();
-		String modEmail = map.get("Email").trim();
 		String modType = map.get("Type").trim();
 
 		boolean flag = false;
-		if (!modBuid.equals("")) {
-			student.setBuid(modBuid);
-			flag = true;
-		}
-
-		if (!modEmail.equals("")) {
-			student.setEmail(modEmail);
-			flag = true;
-		}
 
 		if (!modName.equals("")) {
 			student.setName(modName);
@@ -555,6 +612,8 @@ public class Master extends Observable {
 			student.setType(modType);
 			flag = true;
 		}
+
+		student.setActive(active);
 
 		if (flag) {
 			course.setStudent(studentIndex, student);
@@ -622,7 +681,7 @@ public class Master extends Observable {
 			if (itemIndex == -1) {
 				// specific category all items
 				for (GradeEntry entry : student.getGrades()) {
-					if (entry.getCategoryId() == categoryIndex)
+					if (entry.getCategoryId() == categoryIndex+1)		// categoryId starts with 1
 						if (!entry.getComments().trim().equals("")) {
 							Category cat = course.getCategoryById(entry.getCategoryId());
 							Item item = cat.getItemById(entry.getItemId());
@@ -633,14 +692,18 @@ public class Master extends Observable {
 			} else {
 				// specific category specific item
 				for (GradeEntry entry : student.getGrades()) {
-					if (entry.getCategoryId() == categoryIndex)
-						if (entry.getItemId() == itemIndex)
+					List<Item> items = null;
+					if (entry.getCategoryId() == categoryIndex+1) {
+						items = getAllItemsForCourseCategory(course, categoryIndex);
+						if (entry.getItemId() == items.get(itemIndex).getId()) {
 							if (!entry.getComments().trim().equals("")) {
 								Category cat = course.getCategoryById(entry.getCategoryId());
 								Item item = cat.getItemById(entry.getItemId());
 								str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName()
 										+ "\nComment: " + entry.getComments() + "\n";
 							}
+						}
+					}
 				}
 			}
 		}
