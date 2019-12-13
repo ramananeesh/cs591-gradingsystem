@@ -1,5 +1,7 @@
 package view;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
@@ -9,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,7 +31,6 @@ import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -43,6 +45,7 @@ import helper.FontManager;
 import helper.SizeManager;
 import model.Category;
 
+
 /**
  * The {@code MenuPanel} class represents the panel for viewing or modifying all
  * the grades
@@ -54,7 +57,7 @@ public class MenuPanel extends JPanel implements Observer {
 	/** The frame which contains this panel. */
 	private MainFrame frame;
 
-	private DefaultTableModel studentTableModel;
+	private MyTableModel studentTableModel;
 
 	private String[] tableStudentColumns;
 
@@ -76,7 +79,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 	private JComboBox<String> studentComboEdit;
 
-	private JComboBox<String> categoryEditItemCombo;
+//	private JComboBox<String> categoryEditItemCombo;
 
 	private JTable editItemTable;
 
@@ -101,6 +104,18 @@ public class MenuPanel extends JPanel implements Observer {
 		UIManager.put("OptionPane.minimumSize", SizeManager.optionPaneDimension);
 
 		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
+
+		DefaultTableCellRenderer studentRender = new DefaultTableCellRenderer() {
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+														   boolean hasFocus, int row, int column) {
+				MyTableModel model = (MyTableModel) table.getModel();
+				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				c.setBackground(model.getRowColor(row));
+				return c;
+			}
+		};
+		studentRender.setHorizontalAlignment(SwingConstants.CENTER);
+		studentRender.setVerticalAlignment(SwingConstants.CENTER);
 		tableRender.setHorizontalAlignment(SwingConstants.CENTER);
 		tableRender.setVerticalAlignment(SwingConstants.CENTER);
 
@@ -115,18 +130,26 @@ public class MenuPanel extends JPanel implements Observer {
 				{ // File
 						addStudent -> { // Add Student
 							try {
-								JTextField nameField = new JTextField();
+								JTextField fNameField = new JTextField();
+								JTextField lNameField = new JTextField();
 								JTextField BUIDField = new JTextField();
 								JTextField emailField = new JTextField();
 								JComboBox<String> levelCombo = new JComboBox<>(
-										new String[]{"Undergraduate", "Graduate"});
-								Object[] fields = {"Name: ", nameField, "BU ID: ", BUIDField, "Email: ", emailField,
-										"Level: ", levelCombo,};
+										new String[] { "Undergraduate", "Graduate" });
+								Object[] fields = { "First Name: ", fNameField, "Last Name: ", lNameField,"BU ID: ", BUIDField, "Email: ", emailField,
+										"Level: ", levelCombo, };
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student",
 											JOptionPane.OK_CANCEL_OPTION);
 									if (reply == JOptionPane.OK_OPTION) {
+										String firstName = fNameField.getText();
+										String lastName = lNameField.getText();
+										String BUID = BUIDField.getText();
+										String email = emailField.getText();
+										String level = (String) levelCombo.getSelectedItem();
+										String[] info = new String[]{firstName, lastName, BUID, email, level};
+										controller.addStudentForCourse(controller.getCurrentCourse(), info);
 
 										break;
 									} else {
@@ -246,13 +269,13 @@ public class MenuPanel extends JPanel implements Observer {
 						studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
 						studentComboEdit = new JComboBox<>(studentComboModel);
 
-						JTextField BUIDField = new JTextField();
 						JTextField nameField = new JTextField();
-						JTextField emailField = new JTextField();
 						JComboBox<String> levelCombo = new JComboBox<String>(
-								new String[]{"Undergraduate", "Graduate"});
-						Object[] fields = {"Student: ", studentComboEdit, "BU ID: ", BUIDField, "Name:", nameField,
-								"Email: ", emailField, "Level: ", levelCombo,};
+								new String[] { "Undergraduate", "Graduate" });
+						JComboBox<String> statusCombo = new JComboBox<>(
+								new String[] {"Active", "Freeze"});
+						Object[] fields = { "Student: ", studentComboEdit, "Name:", nameField,
+								"Level: ", levelCombo, "status: ", statusCombo,};
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Student",
@@ -261,22 +284,20 @@ public class MenuPanel extends JPanel implements Observer {
 								int chosenIndex = studentComboEdit.getSelectedIndex();
 								if (chosenIndex != -1) {
 
-									String buid = BUIDField.getText().trim();
 									String name = nameField.getText().trim();
-									String email = emailField.getText().trim();
 									String level = (String) levelCombo.getSelectedItem();
+									boolean status;
+									if(statusCombo.getSelectedIndex() == 0)
+										status = true;
+									else
+										status = false;
 
-									if (buid.equals("") && email.equals("")) {
-										return;
-									}
 									HashMap<String, String> map = new HashMap<String, String>();
 
-									map.put("Buid", buid);
 									map.put("Name", name);
-									map.put("Email", email);
 									map.put("Type", level);
 
-									controller.modifyStudentForCourse(controller.getCurrentCourse(), chosenIndex, map);
+									controller.modifyStudentForCourse(controller.getCurrentCourse(), chosenIndex, map, status);
 								}
 								break;
 							} else {
@@ -346,21 +367,22 @@ public class MenuPanel extends JPanel implements Observer {
 				}, editItem -> { // Edit Item
 					try {
 
-						categoryEditItemCombo = new JComboBox<>();
-
+//						categoryEditItemCombo = new JComboBox<>();
+//
 						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
-						for (int i = 0; i < categories.size(); i++) {
-							categoryEditItemCombo.addItem(categories.get(i).getFieldName());
-						}
-
+//						for (int i = 0; i < categories.size(); i++) {
+//							categoryEditItemCombo.addItem(categories.get(i).getFieldName());
+//						}
+//
 						String[][] itemData;
-						if (categoryEditItemCombo.getSelectedIndex() < 0)
-							return;
+//						if (categoryEditItemCombo.getSelectedIndex() < 0)
+//							return;
 
-						Category chosenCategory = categories.get(categoryEditItemCombo.getSelectedIndex());
-						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
-								categoryEditItemCombo.getSelectedIndex(), true);
-						String[] itemColumn = {"Item", "Percentage", "Max Points"};
+//						Category chosenCategory = categories.get(categoryEditItemCombo.getSelectedIndex());
+//						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
+//								categoryEditItemCombo.getSelectedIndex(), true);
+						itemData = controller.getAllItemDetailsForCourse(controller.getCurrentCourse(), true);
+						String[] itemColumn = {"Category", "Item", "Percentage", "Max Points" };
 						DefaultTableModel tableEditItemModel = new DefaultTableModel(itemData, itemColumn);
 
 						editItemTable = new JTable(tableEditItemModel) {
@@ -371,7 +393,8 @@ public class MenuPanel extends JPanel implements Observer {
 						editItemTable.setRowHeight(SizeManager.tableRowHeight);
 						editItemTable.setDefaultRenderer(Object.class, tableRender);
 						JScrollPane itemScrollPane = new JScrollPane(editItemTable);
-						Object[] fields = {"Category: ", categoryEditItemCombo, "Item: ", itemScrollPane,};
+//						Object[] fields = { "Category: ", categoryEditItemCombo, "Item: ", itemScrollPane, };
+						Object[] fields = { itemScrollPane, };
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item",
@@ -380,9 +403,9 @@ public class MenuPanel extends JPanel implements Observer {
 							HashMap<String, ArrayList<Double>> map = new HashMap<String, ArrayList<Double>>();
 							if (reply == JOptionPane.OK_OPTION) {
 								for (int i = 0; i < tableEditItemModel.getRowCount(); i++) {
-									String key = (String) tableEditItemModel.getValueAt(i, 0);
+									String key = (String) tableEditItemModel.getValueAt(i, 1);
 									ArrayList<Double> l = new ArrayList<Double>();
-									for (int j = 1; j < tableEditItemModel.getColumnCount(); j++) {
+									for (int j = 2; j < tableEditItemModel.getColumnCount(); j++) {
 										String str = (String) tableEditItemModel.getValueAt(i, j);
 										if (str.trim().equals("")) {
 											flag = true;
@@ -405,8 +428,8 @@ public class MenuPanel extends JPanel implements Observer {
 									map.put(key, l);
 								}
 								if (flag == false) {
-									controller.modifyItemsForCourseCategory(controller.getCurrentCourse(),
-											categoryEditItemCombo.getSelectedIndex(), map);
+									controller.modifyItemsForCourse(controller.getCurrentCourse(), map);
+									System.out.println(map);
 									break;
 								}
 
@@ -484,13 +507,22 @@ public class MenuPanel extends JPanel implements Observer {
 		tableStudentColumns = new String[]{"Student Name", "Student ID"};
 		String[][] tableStudentData; // TODO load student from database
 		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
-
-		studentTableModel = new DefaultTableModel(tableStudentData, tableStudentColumns) {
+		Boolean[] statusData = controller.getAllStudentsStatusForCourse(controller.getCurrentCourse());
+		studentTableModel = new MyTableModel(tableStudentData, tableStudentColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
+
+		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
+			if(statusData[i] == false) {
+				studentTableModel.setRowColor(i, Color.gray);
+			}else{
+				studentTableModel.setRowColor(i, Color.WHITE);
+			}
+		}
+
 		tableStudent = new JTable(studentTableModel);
 		tableStudent.setRowHeight(SizeManager.menuTableRowHeight);
 		JScrollPane tableStudentScrollPane = new JScrollPane(tableStudent);
@@ -500,6 +532,10 @@ public class MenuPanel extends JPanel implements Observer {
 		tableCategoryColumns = new String[]{"Category Name", "Weight"};
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
+		for(int i = 0; i < tableCategoryData.length; i++){
+			double weight = Double.parseDouble(tableCategoryData[i][1])*100;
+			tableCategoryData[i][1] = (int)weight + "%";
+		}
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -513,6 +549,10 @@ public class MenuPanel extends JPanel implements Observer {
 
 		tableItemColumns = new String[]{"Item Name", "Weight"};
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
+		for(int i = 0; i < tableItemData.length; i++){
+			double weight = Double.parseDouble(tableItemData[i][1])*100;
+			tableItemData[i][1] = (int)weight + "%";
+		}
 		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -532,8 +572,11 @@ public class MenuPanel extends JPanel implements Observer {
 			scrollPane.setOpaque(false);
 			scrollPane.getViewport().setOpaque(false);
 		}
-		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
+		tableStudent.setDefaultRenderer(Object.class, studentRender);
+		for (JTable table : new JTable[] { tableCategory, tableItem }) {
 			table.setDefaultRenderer(Object.class, tableRender);
+		}
+		for (JTable table : new JTable[] { tableStudent, tableCategory, tableItem }) {
 			table.setRowHeight(SizeManager.menuTableRowHeight);
 			table.setRowSelectionAllowed(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -596,6 +639,27 @@ public class MenuPanel extends JPanel implements Observer {
 
 
 		setVisible(true);
+	}
+
+	static class MyTableModel extends DefaultTableModel {
+		List<Color> rowColor;
+
+		public MyTableModel(String[][] tableRowData, Object[] tableColumnNames) {
+			super(tableRowData, tableColumnNames);
+			rowColor = new ArrayList<Color>();
+			for (int i = 0; i < tableRowData.length; i++) {
+				rowColor.add(Color.white);
+			}
+		}
+
+		public void setRowColor(int row, Color c) {
+			rowColor.set(row, c);
+			fireTableRowsUpdated(row, row);
+		}
+
+		public Color getRowColor(int row) {
+			return rowColor.get(row);
+		}
 	}
 
 	/*
@@ -663,6 +727,10 @@ public class MenuPanel extends JPanel implements Observer {
 		this.controller = controller;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
+		for(int i = 0; i < tableCategoryData.length; i++){
+			double weight = Double.parseDouble(tableCategoryData[i][1])*100;
+			tableCategoryData[i][1] = (int)weight + "%";
+		}
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -672,6 +740,10 @@ public class MenuPanel extends JPanel implements Observer {
 		tableCategory.setModel(categoryTableModel);
 
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
+		for(int i = 0; i < tableItemData.length; i++){
+			double weight = Double.parseDouble(tableItemData[i][1])*100;
+			tableItemData[i][1] = (int)weight + "%";
+		}
 		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -683,12 +755,22 @@ public class MenuPanel extends JPanel implements Observer {
 		String[][] tableStudentData; // TODO load student from database
 		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
 
-		studentTableModel = new DefaultTableModel(tableStudentData, tableStudentColumns) {
+		studentTableModel = new MyTableModel(tableStudentData, tableStudentColumns) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		};
+
+		Boolean[] statusData = controller.getAllStudentsStatusForCourse(controller.getCurrentCourse());
+		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
+			if(statusData[i] == false) {
+				System.out.println(i);
+				studentTableModel.setRowColor(i, Color.gray);
+			}else{
+				studentTableModel.setRowColor(i, Color.WHITE);
+			}
+		}
 		tableStudent.setModel(studentTableModel);
 	}
 
