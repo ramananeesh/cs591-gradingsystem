@@ -1,12 +1,36 @@
 package view;
 
-import helper.ColorManager;
-import helper.FontManager;
-import helper.SizeManager;
-import model.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-import javax.swing.*;
-import javax.swing.border.LineBorder;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -16,28 +40,20 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import controller.Master;
+import helper.ColorManager;
+import helper.FontManager;
+import helper.SizeManager;
+import model.Category;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.*;
-import java.awt.Desktop;
-import java.util.List;
 
 /**
  * The {@code MenuPanel} class represents the panel for viewing or modifying all
  * the grades
  */
 public class MenuPanel extends JPanel implements Observer {
-	private Master controller;
-
 	/** The title for the window when MenuPanel displays */
 	private static final String TITLE = "Grading System - Main Menu";
-
+	private Master controller;
 	/** The frame which contains this panel. */
 	private MainFrame frame;
 
@@ -66,6 +82,7 @@ public class MenuPanel extends JPanel implements Observer {
 //	private JComboBox<String> categoryEditItemCombo;
 
 	private JTable editItemTable;
+	private final JButton[] buttons = new JButton[4];
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
@@ -76,7 +93,7 @@ public class MenuPanel extends JPanel implements Observer {
 		this.controller.addObserver(this);
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setBounds(SizeManager.contentPaneBounds);
 		setOpaque(false);
 
 		UIManager.put("Table.font", FontManager.fontMenuTable);
@@ -85,32 +102,30 @@ public class MenuPanel extends JPanel implements Observer {
 		UIManager.put("MenuItem.font", FontManager.fontMenu);
 		UIManager.put("TextField.font", FontManager.fontLabel);
 		UIManager.put("ComboBox.font", FontManager.fontLabel);
-		UIManager.put("OptionPane.minimumSize", SizeManager.optionPaneDimension);
 
 		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
-		DefaultTableCellRenderer studentTableRender = new DefaultTableCellRenderer();
 
 		DefaultTableCellRenderer studentRender = new DefaultTableCellRenderer() {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-														   boolean hasFocus, int row, int column) {
+			                                               boolean hasFocus, int row, int column) {
 				MyTableModel model = (MyTableModel) table.getModel();
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				c.setBackground(model.getRowColor(row));
 				return c;
 			}
 		};
-		studentTableRender.setHorizontalAlignment(SwingConstants.CENTER);
-		studentTableRender.setVerticalAlignment(SwingConstants.CENTER);
+		studentRender.setHorizontalAlignment(SwingConstants.CENTER);
+		studentRender.setVerticalAlignment(SwingConstants.CENTER);
 		tableRender.setHorizontalAlignment(SwingConstants.CENTER);
 		tableRender.setVerticalAlignment(SwingConstants.CENTER);
 
 		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2] + "\n\n";
 
-		String[] menuName = { "  File  ", "  Edit  ", "  Grade  " };
+		String[] menuName = {"  File  ", "  Edit  ", "  Grade  "};
 		String[][] menuItemName = {
-				{ "Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit" },
-				{ "Edit Student", "Edit Category", "Edit Item" },
-				{ "Edit All Grades", "Edit by Student", "View Grade", "Finalize Grade" } };
+				{"Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit"},
+				{"Edit Student", "Edit Category", "Edit Item"},
+				{"Edit All Grades", "Edit by Student", "View Grade", "Finalize Grade"}};
 		ActionListener[][] menuActionListener = { // TODO complete menu action
 				{ // File
 						addStudent -> { // Add Student
@@ -120,9 +135,10 @@ public class MenuPanel extends JPanel implements Observer {
 								JTextField BUIDField = new JTextField();
 								JTextField emailField = new JTextField();
 								JComboBox<String> levelCombo = new JComboBox<>(
-										new String[] { "Undergraduate", "Graduate" });
-								Object[] fields = { "First Name: ", fNameField, "Last Name: ", lNameField,"BU ID: ", BUIDField, "Email: ", emailField,
-										"Level: ", levelCombo, };
+										new String[]{"Undergraduate", "Graduate"});
+								Object[] fields = {"First Name: ", fNameField, "Last Name: ", lNameField, "BU ID: ", BUIDField, "Email: ", emailField,
+										"Level: ", levelCombo,};
+								UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student",
@@ -146,111 +162,111 @@ public class MenuPanel extends JPanel implements Observer {
 							}
 						}, addStudentsFromFile -> {
 
-							// create an object of JFileChooser class
-							JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+					// create an object of JFileChooser class
+					JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
-							// invoke the showsOpenDialog function to show the save dialog
-							int r = j.showOpenDialog(null);
+					// invoke the showsOpenDialog function to show the save dialog
+					int r = j.showOpenDialog(null);
 
-							// if the user selects a file
-							if (r == JFileChooser.APPROVE_OPTION)
+					// if the user selects a file
+					if (r == JFileChooser.APPROVE_OPTION) {
+						// set the label to the path of the selected file
+						ArrayList<HashMap<String, String>> students = processCsvFile(
+								j.getSelectedFile().getAbsolutePath());
+						controller.addStudentsForCourse(controller.getCurrentCourse(), students);
+					}
+					// if the user cancelled the operation
+					else {
+						System.out.println("cancelled");
+					}
+				}, addCategory -> { // Add Category
+					try {
+						JTextField categoryField = new JTextField();
+						JTextField percentageField = new JTextField();
+						Object[] fields = {"Category: ", categoryField, "Percentage: ", percentageField,};
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
-							{
-								// set the label to the path of the selected file
-								ArrayList<HashMap<String, String>> students = processCsvFile(
-										j.getSelectedFile().getAbsolutePath());
-								controller.addStudentsForCourse(controller.getCurrentCourse(), students);
-							}
-							// if the user cancelled the operation
-							else {
-								System.out.println("cancelled");
-							}
-						}, addCategory -> { // Add Category
-							try {
-								JTextField categoryField = new JTextField();
-								JTextField percentageField = new JTextField();
-								Object[] fields = { "Category: ", categoryField, "Percentage: ", percentageField, };
-
-								while (true) {
-									int reply = JOptionPane.showConfirmDialog(this, fields, "Add Category",
-											JOptionPane.OK_CANCEL_OPTION);
-									if (reply == JOptionPane.OK_OPTION) {
-										JOptionPane.showMessageDialog(this,
-												"Please edit the percentage for all other categories", "Warning",
-												JOptionPane.WARNING_MESSAGE);
-										String fieldName = categoryField.getText();
-										try {
-											double weight = Double.parseDouble(percentageField.getText());
-											controller.addNewCategoryForCourse(controller.getCurrentCourse(), fieldName,
-													weight, controller.getCurrentCourse().getCourseId());
-										} catch (Exception ex) {
-											JOptionPane.showMessageDialog(this, "Error",
-													"Please Enter valid weight percentage between 0 and 1",
-													JOptionPane.ERROR_MESSAGE);
-											continue;
-										}
-										break;
-									} else {
-										return;
-									}
+						while (true) {
+							int reply = JOptionPane.showConfirmDialog(this, fields, "Add Category",
+									JOptionPane.OK_CANCEL_OPTION);
+							if (reply == JOptionPane.OK_OPTION) {
+								JOptionPane.showMessageDialog(this,
+										"Please edit the percentage for all other categories", "Warning",
+										JOptionPane.WARNING_MESSAGE);
+								String fieldName = categoryField.getText();
+								try {
+									double weight = Double.parseDouble(percentageField.getText());
+									controller.addNewCategoryForCourse(controller.getCurrentCourse(), fieldName,
+											weight, controller.getCurrentCourse().getCourseId());
+								} catch (Exception ex) {
+									JOptionPane.showMessageDialog(this, "Error",
+											"Please Enter valid weight percentage between 0 and 1",
+											JOptionPane.ERROR_MESSAGE);
+									continue;
 								}
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+								break;
+							} else {
+								return;
 							}
-						}, addItem -> { // Add Item
-							try {
-								JComboBox<String> categoryCombo = new JComboBox<>();
+						}
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}, addItem -> { // Add Item
+					try {
+						JComboBox<String> categoryCombo = new JComboBox<>();
 
-								ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
-								for (int i = 0; i < categories.size(); i++) {
-									categoryCombo.addItem(categories.get(i).getFieldName());
+						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
+						for (int i = 0; i < categories.size(); i++) {
+							categoryCombo.addItem(categories.get(i).getFieldName());
+						}
+						JTextField itemField = new JTextField();
+						JTextField percentageField = new JTextField();
+						JTextField maxPointsField = new JTextField();
+						Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage: ",
+								percentageField, "Max Points: ", maxPointsField,};
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+
+						while (true) {
+							int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item",
+									JOptionPane.OK_CANCEL_OPTION);
+							if (reply == JOptionPane.OK_OPTION) {
+
+								JOptionPane.showMessageDialog(null,
+										"Please edit the percentage for all other items", "Warning",
+										JOptionPane.WARNING_MESSAGE);
+								int categoryIndex = categoryCombo.getSelectedIndex();
+								if (categoryIndex < 0) {
+									JOptionPane.showMessageDialog(null, "Error", "Please select a category",
+											JOptionPane.ERROR_MESSAGE);
+									continue;
 								}
-								JTextField itemField = new JTextField();
-								JTextField percentageField = new JTextField();
-								JTextField maxPointsField = new JTextField();
-								Object[] fields = { "Category: ", categoryCombo, "Item: ", itemField, "Percentage: ",
-										percentageField, "Max Points: ", maxPointsField, };
+								String fieldName = itemField.getText();
+								try {
+									double itemWeight = Double.parseDouble(percentageField.getText());
+									double maxPoints = Double.parseDouble(maxPointsField.getText());
+									controller.addItemForCourseCategory(controller.getCurrentCourse(),
+											categoryIndex, fieldName, itemWeight, maxPoints);
 
-								while (true) {
-									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item",
-											JOptionPane.OK_CANCEL_OPTION);
-									if (reply == JOptionPane.OK_OPTION) {
-
-										JOptionPane.showMessageDialog(null,
-												"Please edit the percentage for all other items", "Warning",
-												JOptionPane.WARNING_MESSAGE);
-										int categoryIndex = categoryCombo.getSelectedIndex();
-										if (categoryIndex < 0) {
-											JOptionPane.showMessageDialog(null, "Error", "Please select a category",
-													JOptionPane.ERROR_MESSAGE);
-											continue;
-										}
-										String fieldName = itemField.getText();
-										try {
-											double itemWeight = Double.parseDouble(percentageField.getText());
-											double maxPoints = Double.parseDouble(maxPointsField.getText());
-											controller.addItemForCourseCategory(controller.getCurrentCourse(),
-													categoryIndex, fieldName, itemWeight, maxPoints);
-
-										} catch (Exception ex) {
-											JOptionPane.showMessageDialog(null, "Error",
-													"Please Enter valid weight percentage between 0 and 1",
-													JOptionPane.ERROR_MESSAGE);
-											continue;
-										}
-										break;
-									} else {
-										return;
-									}
+								} catch (Exception ex) {
+									JOptionPane.showMessageDialog(null, "Error",
+											"Please Enter valid weight percentage between 0 and 1",
+											JOptionPane.ERROR_MESSAGE);
+									continue;
 								}
-							} catch (Exception e1) {
-								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+								break;
+							} else {
+								return;
 							}
+						}
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+					}
 
-						}, null, // Separator
+				}, null, // Separator
 						back -> frame.changePanel(this, new CoursePanel(frame, controller)), // Back
-						exit -> System.exit(0) },
-				{ editStudent -> { // Edit Student
+						exit -> System.exit(0)},
+				{editStudent -> { // Edit Student
 					try {
 						String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
 						studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
@@ -258,11 +274,12 @@ public class MenuPanel extends JPanel implements Observer {
 
 						JTextField nameField = new JTextField();
 						JComboBox<String> levelCombo = new JComboBox<String>(
-								new String[] { "Undergraduate", "Graduate" });
+								new String[]{"Undergraduate", "Graduate"});
 						JComboBox<String> statusCombo = new JComboBox<>(
-								new String[] {"Active", "Freeze"});
-						Object[] fields = { "Student: ", studentComboEdit, "Name:", nameField,
+								new String[]{"Active", "Freeze"});
+						Object[] fields = {"Student: ", studentComboEdit, "Name:", nameField,
 								"Level: ", levelCombo, "status: ", statusCombo,};
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Student",
@@ -274,7 +291,7 @@ public class MenuPanel extends JPanel implements Observer {
 									String name = nameField.getText().trim();
 									String level = (String) levelCombo.getSelectedItem();
 									boolean status;
-									if(statusCombo.getSelectedIndex() == 0)
+									if (statusCombo.getSelectedIndex() == 0)
 										status = true;
 									else
 										status = false;
@@ -300,7 +317,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 						categoryData = controller.getCurrentCourse().getCategoryDataForList();
 
-						String[] categoryColumn = { "Category", "Percentage" };
+						String[] categoryColumn = {"Category", "Percentage"};
 						DefaultTableModel tableModel = new DefaultTableModel(categoryData, categoryColumn);
 						JTable categoryTable = new JTable(tableModel) {
 							public boolean isCellEditable(int row, int column) {
@@ -369,7 +386,7 @@ public class MenuPanel extends JPanel implements Observer {
 //						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
 //								categoryEditItemCombo.getSelectedIndex(), true);
 						itemData = controller.getAllItemDetailsForCourse(controller.getCurrentCourse(), true);
-						String[] itemColumn = {"Category", "Item", "Percentage", "Max Points" };
+						String[] itemColumn = {"Category", "Item", "Percentage", "Max Points"};
 						DefaultTableModel tableEditItemModel = new DefaultTableModel(itemData, itemColumn);
 
 						editItemTable = new JTable(tableEditItemModel) {
@@ -381,7 +398,8 @@ public class MenuPanel extends JPanel implements Observer {
 						editItemTable.setDefaultRenderer(Object.class, tableRender);
 						JScrollPane itemScrollPane = new JScrollPane(editItemTable);
 //						Object[] fields = { "Category: ", categoryEditItemCombo, "Item: ", itemScrollPane, };
-						Object[] fields = { itemScrollPane, };
+						Object[] fields = {itemScrollPane,};
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item",
@@ -427,39 +445,41 @@ public class MenuPanel extends JPanel implements Observer {
 					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
-				} }, { editAllGrades -> { // Edit All Grades
-					frame.changePanel(this, new GradePanel(frame, courseData, true, this.controller));
-				}, editByStudent -> { // Edit by Student
-					try {
-						String[] studentComboBoxItems = { "Student 1", "Student 2", "Student 3" }; // TODO test data,
-																									// need to be
-																									// replaced when
-																									// database exists
-						JComboBox<String> studentComboBox = new JComboBox<>(studentComboBoxItems);
-						JComboBox<String> categoryComboBox = new JComboBox<>(new String[] { "Homework", "Exam" });
-						JComboBox<String> itemComboBox = new JComboBox<>(
-								new String[] { "Homework 1", "Homework 2", "Midterm", "Exam" });
-						JTextField gradeTextField = new JTextField();
-						Object[] fields = { "Student: ", studentComboBox, "Category: ", categoryComboBox, "Item: ",
-								itemComboBox, "Grade: ", gradeTextField, };
-						while (true) {
-							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student",
-									JOptionPane.OK_CANCEL_OPTION);
-							if (reply == JOptionPane.OK_OPTION) {
-								break;
-							} else {
-								return;
-							}
-						}
-					} catch (Exception e) {
-						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+				}}, {editAllGrades -> { // Edit All Grades
+			frame.changePanel(this, new GradePanel(frame, courseData, true, this.controller));
+		}, editByStudent -> { // Edit by Student
+			try {
+				String[] studentComboBoxItems = {"Student 1", "Student 2", "Student 3"}; // TODO test data,
+				// need to be
+				// replaced when
+				// database exists
+				JComboBox<String> studentComboBox = new JComboBox<>(studentComboBoxItems);
+				JComboBox<String> categoryComboBox = new JComboBox<>(new String[]{"Homework", "Exam"});
+				JComboBox<String> itemComboBox = new JComboBox<>(
+						new String[]{"Homework 1", "Homework 2", "Midterm", "Exam"});
+				JTextField gradeTextField = new JTextField();
+				Object[] fields = {"Student: ", studentComboBox, "Category: ", categoryComboBox, "Item: ",
+						itemComboBox, "Grade: ", gradeTextField,};
+				UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+
+				while (true) {
+					int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (reply == JOptionPane.OK_OPTION) {
+						break;
+					} else {
+						return;
 					}
-				}, viewGrades -> { // View Grades
-					frame.changePanel(this, new ViewGradePanel(frame, courseData, false, this.controller));
-				}, finalize -> {
-					controller.initiateCourseFinalization(controller.getCurrentCourse());
-					frame.changePanel(this, new FinializePanel(frame, controller));
-				} } };
+				}
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}, viewGrades -> { // View Grades
+			frame.changePanel(this, new ViewGradePanel(frame, courseData, false, this.controller));
+		}, finalize -> {
+			controller.initiateCourseFinalization(controller.getCurrentCourse());
+			frame.changePanel(this, new FinializePanel(frame, controller));
+		}}};
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setLayout(new GridBagLayout());
@@ -485,14 +505,13 @@ public class MenuPanel extends JPanel implements Observer {
 		informationTextPane.setText(courseString); // TODO load info from database
 		informationTextPane.setFont(FontManager.fontText);
 		informationTextPane.setEditable(false);
-		informationTextPane.setBorder(new LineBorder(ColorManager.primaryColor, SizeManager.lineThickness));
 		StyledDocument doc = informationTextPane.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		add(informationTextPane);
 
-		tableStudentColumns = new String[] { "Student Name", "Student ID" };
+		tableStudentColumns = new String[]{"Student Name", "Student ID"};
 		String[][] tableStudentData; // TODO load student from database
 		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
 		Boolean[] statusData = controller.getAllStudentsStatusForCourse(controller.getCurrentCourse());
@@ -504,9 +523,9 @@ public class MenuPanel extends JPanel implements Observer {
 		};
 
 		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
-			if(statusData[i] == false) {
+			if (statusData[i] == false) {
 				studentTableModel.setRowColor(i, Color.gray);
-			}else{
+			} else {
 				studentTableModel.setRowColor(i, Color.WHITE);
 			}
 		}
@@ -517,12 +536,12 @@ public class MenuPanel extends JPanel implements Observer {
 		tableStudentScrollPane.setBounds(SizeManager.tableStudentBounds);
 		add(tableStudentScrollPane);
 
-		tableCategoryColumns = new String[] { "Category Name", "Weight" };
+		tableCategoryColumns = new String[]{"Category Name", "Weight"};
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
-		for(int i = 0; i < tableCategoryData.length; i++){
-			double weight = Double.parseDouble(tableCategoryData[i][1])*100;
-			tableCategoryData[i][1] = (int)weight + "%";
+		for (int i = 0; i < tableCategoryData.length; i++) {
+			double weight = Double.parseDouble(tableCategoryData[i][1]) * 100;
+			tableCategoryData[i][1] = (int) weight + "%";
 		}
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
 			@Override
@@ -535,11 +554,11 @@ public class MenuPanel extends JPanel implements Observer {
 		tableCategoryScrollPane.setBounds(SizeManager.tableCategoryBounds);
 		add(tableCategoryScrollPane);
 
-		tableItemColumns = new String[] { "Item Name", "Weight" };
+		tableItemColumns = new String[]{"Item Name", "Weight"};
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
-		for(int i = 0; i < tableItemData.length; i++){
-			double weight = Double.parseDouble(tableItemData[i][1])*100;
-			tableItemData[i][1] = (int)weight + "%";
+		for (int i = 0; i < tableItemData.length; i++) {
+			double weight = Double.parseDouble(tableItemData[i][1]) * 100;
+			tableItemData[i][1] = (int) weight + "%";
 		}
 		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
 			@Override
@@ -556,11 +575,15 @@ public class MenuPanel extends JPanel implements Observer {
 			tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
 			tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
 		}
+		for (JScrollPane scrollPane : new JScrollPane[]{tableStudentScrollPane, tableCategoryScrollPane, tableItemScrollPane}) {
+			scrollPane.setOpaque(false);
+			scrollPane.getViewport().setOpaque(false);
+		}
 		tableStudent.setDefaultRenderer(Object.class, studentRender);
-		for (JTable table : new JTable[] { tableCategory, tableItem }) {
+		for (JTable table : new JTable[]{tableCategory, tableItem}) {
 			table.setDefaultRenderer(Object.class, tableRender);
 		}
-		for (JTable table : new JTable[] { tableStudent, tableCategory, tableItem }) {
+		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
 			table.setRowHeight(SizeManager.menuTableRowHeight);
 			table.setRowSelectionAllowed(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -604,10 +627,22 @@ public class MenuPanel extends JPanel implements Observer {
 			});
 
 			JTableHeader tableHeader = table.getTableHeader();
-			tableHeader.setPreferredSize(new Dimension(SizeManager.panelWidth, SizeManager.menuTableRowHeight));
+			tableHeader.setPreferredSize(new Dimension(table.getWidth(), table.getRowHeight()));
 			tableHeader.setForeground(ColorManager.lightColor);
 			tableHeader.setBackground(ColorManager.primaryColor);
+			tableHeader.setEnabled(false);
 		}
+
+		for (int i = 0; i < 4; ++i) {
+			buttons[i] = new JButton(menuItemName[2][i]);
+			buttons[i].setForeground(ColorManager.lightColor);
+			buttons[i].setBackground(ColorManager.primaryColor);
+			buttons[i].addActionListener(menuActionListener[2][i]);
+			buttons[i].setBounds(SizeManager.menuButtonsBounds[i]);
+			buttons[i].setFont(FontManager.fontMenuButton);
+			add(buttons[i]);
+		}
+
 
 		setVisible(true);
 	}
@@ -635,11 +670,11 @@ public class MenuPanel extends JPanel implements Observer {
 
 	/*
 	 * static class MyOptionPane extends JOptionPane implements Observer{
-	 * 
+	 *
 	 * @Override public void update(Observable arg0, Object arg1) { // TODO
 	 * Auto-generated method stub String[][] itemData; if
 	 * (categoryEditItemCombo.getSelectedIndex() < 0) return;
-	 * 
+	 *
 	 * ArrayList<Category> categories =
 	 * controller.getCurrentCourse().getCategories(); Category chosenCategory =
 	 * categories.get(categoryEditItemCombo.getSelectedIndex()); itemData =
@@ -647,9 +682,9 @@ public class MenuPanel extends JPanel implements Observer {
 	 * categoryEditItemCombo.getSelectedIndex(), true); String[] itemColumn = {
 	 * "Item", "Percentage", "Max Points" }; DefaultTableModel tableEditItemModel =
 	 * new DefaultTableModel(itemData, itemColumn);
-	 * 
+	 *
 	 * editItemTable.setModel(tableEditItemModel); }
-	 * 
+	 *
 	 * }
 	 */
 	public ArrayList<HashMap<String, String>> processCsvFile(String filePath) {
@@ -698,9 +733,9 @@ public class MenuPanel extends JPanel implements Observer {
 		this.controller = controller;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
-		for(int i = 0; i < tableCategoryData.length; i++){
-			double weight = Double.parseDouble(tableCategoryData[i][1])*100;
-			tableCategoryData[i][1] = (int)weight + "%";
+		for (int i = 0; i < tableCategoryData.length; i++) {
+			double weight = Double.parseDouble(tableCategoryData[i][1]) * 100;
+			tableCategoryData[i][1] = (int) weight + "%";
 		}
 		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
 			@Override
@@ -711,9 +746,9 @@ public class MenuPanel extends JPanel implements Observer {
 		tableCategory.setModel(categoryTableModel);
 
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
-		for(int i = 0; i < tableItemData.length; i++){
-			double weight = Double.parseDouble(tableItemData[i][1])*100;
-			tableItemData[i][1] = (int)weight + "%";
+		for (int i = 0; i < tableItemData.length; i++) {
+			double weight = Double.parseDouble(tableItemData[i][1]) * 100;
+			tableItemData[i][1] = (int) weight + "%";
 		}
 		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
 			@Override
@@ -735,14 +770,14 @@ public class MenuPanel extends JPanel implements Observer {
 
 		Boolean[] statusData = controller.getAllStudentsStatusForCourse(controller.getCurrentCourse());
 		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
-			if(statusData[i] == false) {
+			if (statusData[i] == false) {
 				System.out.println(i);
 				studentTableModel.setRowColor(i, Color.gray);
-			}else{
+			} else {
 				studentTableModel.setRowColor(i, Color.WHITE);
 			}
 		}
 		tableStudent.setModel(studentTableModel);
-
 	}
+
 }

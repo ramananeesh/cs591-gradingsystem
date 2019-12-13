@@ -48,7 +48,7 @@ public class Master extends Observable {
 	}
 
 	public void addNewCourse(String courseNumber, String courseName, String term, ArrayList<Category> categories,
-			ArrayList<CourseStudent> students) {
+	                         ArrayList<CourseStudent> students) {
 		Course newCourse = new Course(generateCourseId(), courseNumber, courseName, term, categories, students);
 		this.courses.add(newCourse);
 
@@ -102,7 +102,7 @@ public class Master extends Observable {
 	}
 
 	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, int courseId,
-			ArrayList<Item> items) {
+	                                    ArrayList<Item> items) {
 		Category category = new Category(id, fieldName, weight, courseId, items);
 		course.addCategory(category);
 
@@ -113,7 +113,7 @@ public class Master extends Observable {
 	}
 
 	public void addItemForCourseCategory(Course course, int categoryIndex, String fieldName, double weight,
-			double maxPoints) {
+	                                     double maxPoints) {
 
 		Category category = course.getCategories().get(categoryIndex);
 		Item item = new Item(generateItemId(category), fieldName, category.getId(), weight, maxPoints,
@@ -294,7 +294,7 @@ public class Master extends Observable {
 	}
 
 	public void editGradesForCategoryItemInCourse(Course course, int categoryId, int itemId,
-			ArrayList<HashMap<String, String>> maps) {
+	                                              ArrayList<HashMap<String, String>> maps) {
 		Category category = course.getCategoryById(categoryId);
 		Item item = category.getItemById(itemId);
 
@@ -749,7 +749,8 @@ public class Master extends Observable {
 
 		for (Item i : items) {
 			GradeEntry entry = getEntryByItem(i, categoryEntries);
-			total += (i.getWeight() * entry.getPercentage());
+			if (entry != null)
+				total += (i.getWeight() * entry.getPercentage());
 		}
 
 		double totalIncludingCategoryWeight = total * category.getWeight();
@@ -851,8 +852,8 @@ public class Master extends Observable {
 		// lock all features and editing
 		/**
 		 * to do
-		
-		/**
+
+		 /**
 		 * to do - DB update
 		 */
 

@@ -7,6 +7,7 @@ import helper.SizeManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
 import controller.Master;
@@ -16,6 +17,8 @@ import model.CourseStudent;
 import model.GradeEntry;
 import model.Item;
 
+import java.awt.Dimension;
+import java.awt.color.CMMException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -51,7 +54,7 @@ public class GradePanel extends JPanel implements Observer {
 		this.controller = controller;
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setBounds(SizeManager.contentPaneBounds);
 		setOpaque(false);
 		this.editable = editable;
 
@@ -65,7 +68,7 @@ public class GradePanel extends JPanel implements Observer {
 
 		Course currCourse = controller.getCurrentCourse();
 		ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
-		gradeTableColumnNames = new String[] { "Student Name", "BUID", "Score", "Comments" };
+		gradeTableColumnNames = new String[]{"Student Name", "BUID", "Score", "Comments"};
 
 		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 
@@ -96,16 +99,28 @@ public class GradePanel extends JPanel implements Observer {
 		gradeTable = new JTable(gradeTableModel);
 		gradeTable.setRowHeight(SizeManager.tableRowHeight);
 		gradeTable.setFont(FontManager.fontTable);
+		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
+		gradeTable.setRowSorter(gradeTableRowSorter);
 		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
 		gradeTableRender.setHorizontalAlignment(SwingConstants.CENTER);
 		gradeTableRender.setVerticalAlignment(SwingConstants.CENTER);
 		gradeTable.setDefaultRenderer(Object.class, gradeTableRender);
-		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
-		gradeTable.setRowSorter(gradeTableRowSorter);
-		gradeTable.getTableHeader().setFont(gradeTable.getFont());
+		JTableHeader gradeTableHeader = gradeTable.getTableHeader();
+		gradeTableHeader.setFont(gradeTable.getFont());
+		gradeTableHeader.setEnabled(false);
+		gradeTableHeader.setPreferredSize(new Dimension(gradeTable.getWidth(), gradeTable.getRowHeight()));
+		gradeTableHeader.setBackground(ColorManager.primaryColor);
+		gradeTableHeader.setForeground(ColorManager.lightColor);
 		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
-		add(gradeTableScrollPane);
+//		add(gradeTableScrollPane);
+
+		JLabel hintLabel = new JLabel("Please select a category and an item that you want to grade.");
+		hintLabel.setFont(FontManager.fontLabel);
+		hintLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		hintLabel.setVerticalAlignment(SwingConstants.CENTER);
+		hintLabel.setBounds(SizeManager.tableCourseBounds);
+		add(hintLabel);
 
 		// category combo box
 		ArrayList<String> categoryComboNames = new ArrayList<>();
@@ -122,7 +137,7 @@ public class GradePanel extends JPanel implements Observer {
 
 		// item combo box
 		ArrayList<String> itemComboNames = new ArrayList<>();
-		String[] itemComboItems = { "None" };
+		String[] itemComboItems = {"None"};
 		itemsModel = new DefaultComboBoxModel<String>(itemComboItems);
 		itemComboBox = new JComboBox<>(itemComboItems);
 		itemComboBox.setBounds(SizeManager.itemBounds);
@@ -131,7 +146,7 @@ public class GradePanel extends JPanel implements Observer {
 		add(itemComboBox);
 
 		// grade options combo
-		String[] gradeOptionsItems = { "Points Lost", "Percentage" };
+		String[] gradeOptionsItems = {"Points Lost", "Percentage"};
 		gradeOptionsComboBox = new JComboBox<>(gradeOptionsItems);
 		// gradeOptionsComboBox.setBounds(SizeManager.filterCourseBounds);
 		gradeOptionsComboBox.setBounds(SizeManager.comboBounds);
@@ -160,6 +175,19 @@ public class GradePanel extends JPanel implements Observer {
 
 					itemComboBox.setModel(newComboModel);
 					updateGradesTable(categories);
+					add(gradeTableScrollPane);
+				}
+				if (categoryComboBox.getSelectedIndex() == 0) {
+					remove(gradeTableScrollPane);
+					add(hintLabel);
+					revalidate();
+					repaint();
+				}
+				if (categoryComboBox.getSelectedIndex() != 0) {
+					remove(hintLabel);
+					add(gradeTableScrollPane);
+					revalidate();
+					repaint();
 				}
 			}
 		});
@@ -172,6 +200,13 @@ public class GradePanel extends JPanel implements Observer {
 				if (categoryComboBox.getSelectedIndex() != 0) {
 					updateGradesTable(categories);
 				}
+				// TODO when itemComboBox.getSelectedIndex() == 0, item is not "None"
+//				if (categoryComboBox.getSelectedIndex() == 0 || itemComboBox.getSelectedIndex() == 0) {
+//					remove(gradeTableScrollPane);
+//				}
+//				if (categoryComboBox.getSelectedIndex() != 0 && itemComboBox.getSelectedIndex() != 0) {
+//					add(gradeTableScrollPane);
+//				}
 
 			}
 		});
@@ -328,8 +363,6 @@ public class GradePanel extends JPanel implements Observer {
 		gradeOptionsLabel.setVerticalAlignment(SwingConstants.CENTER);
 		gradeOptionsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(gradeOptionsLabel);
-
-//		generateRandomTestData(gradeTable);
 
 		setVisible(true);
 	}

@@ -1,29 +1,47 @@
 package view;
 
-import helper.ColorManager;
-import helper.FontManager;
-import helper.SizeManager;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Random;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
 import controller.Master;
+import helper.ColorManager;
+import helper.FontManager;
+import helper.SizeManager;
 import helper.Statistics;
-import model.*;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.*;
-import java.text.DecimalFormat;
-import java.util.List;
+import model.Category;
+import model.Course;
+import model.CourseStudent;
+import model.GradeEntry;
+import model.Item;
 
 /**
  * The {@code GradePanel} class represents the panel for viewing or modifying
@@ -32,8 +50,8 @@ import java.util.List;
 public class ViewGradePanel extends JPanel implements Observer {
 	/** The title for the window when GradePanel displays */
 	private static final String TITLE = "Grading System - Grade";
+	DecimalFormat df = new DecimalFormat("##.##");
 	private Master controller;
-
 	/** The frame which contains this panel. */
 	private MainFrame frame;
 	private MyTableModel gradeTableModel;
@@ -47,8 +65,6 @@ public class ViewGradePanel extends JPanel implements Observer {
 	private boolean hasComment;
 	private List<Double> statisticsGrades;
 
-	DecimalFormat df = new DecimalFormat("##.##");
-
 	/**
 	 * Initializes a newly created {@code GradePanel} object
 	 */
@@ -57,7 +73,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 		this.controller = controller;
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setBounds(SizeManager.contentPaneBounds);
 		setOpaque(false);
 		this.editable = editable;
 
@@ -140,19 +156,26 @@ public class ViewGradePanel extends JPanel implements Observer {
 		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
 		DefaultTableCellRenderer gradeRender = new DefaultTableCellRenderer() {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
+			                                               boolean hasFocus, int row, int column) {
 				MyTableModel model = (MyTableModel) table.getModel();
 				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				c.setBackground(model.getRowColor(row));
 				return c;
 			}
 		};
-		gradeTableRender.setHorizontalAlignment(SwingConstants.CENTER);
-		gradeTableRender.setVerticalAlignment(SwingConstants.CENTER);
+		gradeRender.setHorizontalAlignment(SwingConstants.CENTER);
+		gradeRender.setVerticalAlignment(SwingConstants.CENTER);
 		gradeTable.setDefaultRenderer(Object.class, gradeRender);
 		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
 		gradeTable.setRowSorter(gradeTableRowSorter);
-		gradeTable.getTableHeader().setFont(gradeTable.getFont());
+
+		JTableHeader gradeTableHeader = gradeTable.getTableHeader();
+		gradeTableHeader.setFont(gradeTable.getFont());
+		gradeTableHeader.setEnabled(false);
+		gradeTableHeader.setPreferredSize(new Dimension(gradeTable.getWidth(), gradeTable.getRowHeight()));
+		gradeTableHeader.setBackground(ColorManager.primaryColor);
+		gradeTableHeader.setForeground(ColorManager.lightColor);
+
 		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
 		add(gradeTableScrollPane);
@@ -163,7 +186,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 		categoryComboNames.addAll(categoryNames);
 		Object[] categoryComboBoxItems = categoryComboNames.toArray(); // TODO
 		categoryComboBox = new JComboBox<>(convertObjectArrayToString(categoryComboBoxItems));
-		categoryComboBox.setBounds(SizeManager.categoryBounds);
+		categoryComboBox.setBounds(SizeManager.viewGradeComboBounds[1]);
 		categoryComboBox.setFont(FontManager.fontFilter);
 		DefaultListCellRenderer categoryComboBoxRenderer = new DefaultListCellRenderer();
 		categoryComboBoxRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -172,10 +195,10 @@ public class ViewGradePanel extends JPanel implements Observer {
 
 		// item combo box
 		ArrayList<String> itemComboNames = new ArrayList<>();
-		String[] itemComboItems = { "All", "None" };
+		String[] itemComboItems = {"All", "None"};
 		itemsModel = new DefaultComboBoxModel<String>(itemComboItems);
 		itemComboBox = new JComboBox<>(itemComboItems);
-		itemComboBox.setBounds(SizeManager.itemBounds);
+		itemComboBox.setBounds(SizeManager.viewGradeComboBounds[3]);
 		itemComboBox.setFont(FontManager.fontSearch);
 		itemComboBox.setRenderer(categoryComboBoxRenderer);
 		add(itemComboBox);
@@ -532,7 +555,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					if (!comments.equals("")) {
 						JTextArea text = new JTextArea(comments);
 						text.setEditable(false);
-						Object[] fields = { "Comments", text };
+						Object[] fields = {"Comments", text};
 						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -659,9 +682,34 @@ public class ViewGradePanel extends JPanel implements Observer {
 		});
 		add(saveButton);
 
+		// TODO data for test
+		Course course = controller.getCurrentCourse();
+		double[] grades = new double[100];
+		Random random = new Random();
+		for (int i = 0; i < grades.length; ++i) {
+			grades[i] = 80 + (random.nextDouble() - 0.5) * 40;
+		}
+		statistics = new Statistics(grades);
+
+		// title label
+		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
+		titleLabel.setBounds(SizeManager.viewGradeTitleBounds);
+		titleLabel.setFont(FontManager.fontLabel);
+		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		titleLabel.setVerticalAlignment(SwingConstants.CENTER);
+		add(titleLabel);
+
+		// statistics label
+		JLabel statisticsLabel = new JLabel(statistics.toString());
+		statisticsLabel.setBounds(SizeManager.viewGradeStatBounds);
+		statisticsLabel.setFont(FontManager.fontLabel);
+		statisticsLabel.setVerticalAlignment(SwingConstants.TOP);
+		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		add(statisticsLabel);
+
 		// category label
 		JLabel categoryLabel = new JLabel("Category : ");
-		categoryLabel.setBounds(SizeManager.labelCategoryBounds);
+		categoryLabel.setBounds(SizeManager.viewGradeComboBounds[0]);
 		categoryLabel.setFont(FontManager.fontLabel);
 		categoryLabel.setVerticalAlignment(SwingConstants.CENTER);
 		categoryLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -669,7 +717,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 
 		// item label
 		JLabel itemLabel = new JLabel("Item : ");
-		itemLabel.setBounds(SizeManager.labelItemBounds);
+		itemLabel.setBounds(SizeManager.viewGradeComboBounds[2]);
 		itemLabel.setFont(FontManager.fontLabel);
 		itemLabel.setVerticalAlignment(SwingConstants.CENTER);
 		itemLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -786,7 +834,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					if (!comments.equals("")) {
 						JTextArea text = new JTextArea(comments);
 						text.setEditable(false);
-						Object[] fields = { "Comments", text };
+						Object[] fields = {"Comments", text};
 						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -819,27 +867,6 @@ public class ViewGradePanel extends JPanel implements Observer {
 			rank.sort(Integer::compareTo);
 			tableGrade.setValueAt(String.valueOf(rank.get(rank.size() / 2)), 1, i);
 			tableGrade.setValueAt(String.format("%.2f", sum / rank.size()), 0, i);
-		}
-	}
-
-	static class MyTableModel extends DefaultTableModel {
-		List<Color> rowColor;
-
-		public MyTableModel(String[][] gradeTableRowData, Object[] gradeTableColumnNames) {
-			super(gradeTableRowData, gradeTableColumnNames);
-			rowColor = new ArrayList<Color>();
-			for (int i = 0; i < gradeTableRowData.length; i++) {
-				rowColor.add(Color.white);
-			}
-		}
-
-		public void setRowColor(int row, Color c) {
-			rowColor.set(row, c);
-			fireTableRowsUpdated(row, row);
-		}
-
-		public Color getRowColor(int row) {
-			return rowColor.get(row);
 		}
 	}
 
@@ -899,7 +926,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					if (!comments.equals("")) {
 						JTextArea text = new JTextArea(comments);
 						text.setEditable(false);
-						Object[] fields = { "Comments", text };
+						Object[] fields = {"Comments", text};
 						JOptionPane.showMessageDialog(null, comments, "Comments For Studnet",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -907,5 +934,26 @@ public class ViewGradePanel extends JPanel implements Observer {
 			}
 		});
 
+	}
+
+	static class MyTableModel extends DefaultTableModel {
+		List<Color> rowColor;
+
+		public MyTableModel(String[][] gradeTableRowData, Object[] gradeTableColumnNames) {
+			super(gradeTableRowData, gradeTableColumnNames);
+			rowColor = new ArrayList<Color>();
+			for (int i = 0; i < gradeTableRowData.length; i++) {
+				rowColor.add(Color.white);
+			}
+		}
+
+		public void setRowColor(int row, Color c) {
+			rowColor.set(row, c);
+			fireTableRowsUpdated(row, row);
+		}
+
+		public Color getRowColor(int row) {
+			return rowColor.get(row);
+		}
 	}
 }

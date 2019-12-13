@@ -116,13 +116,13 @@ public class Statistics {
 	 */
 	@Override
 	public String toString() {
-		return String.format("Statistics [ Mean = %f, Median = %f, Standard Deviation = %f ]", getMean(), getMedian(), getStandardDeviation());
+		return String.format("Statistics : Mean = %.2f, Median = %.2f, Standard Deviation = %.2f", getMean(), getMedian(), getStandardDeviation());
 	}
-	
+
 	public static String getLetterGrade(Double total) {
 		String grade = "";
-		
-		
+
+
 		if(total>97) {
 			grade = "A+";
 		}
@@ -156,9 +156,9 @@ public class Statistics {
 		else {
 			grade = "F";
 		}
-		
-		return grade; 
-		
+
+		return grade;
+
 	}
 
 }
