@@ -877,10 +877,7 @@ public class Master extends Observable {
 	}
 	
 	public boolean canBeFinalized(Course course) {
-		/**
-		 * to do 
-		 */
-		return false;
+		return course.canBeFinalized();
 	}
 	
 	public void deleteItemFromCourse(Course course, Item item) {

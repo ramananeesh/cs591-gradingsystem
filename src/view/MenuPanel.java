@@ -456,7 +456,7 @@ public class MenuPanel extends JPanel implements Observer {
 								}
 
 							} else {
-								if(reply==1) {
+								if (reply == 1) {
 									Item item = allItems.get(editItemTable.getSelectedRow());
 									controller.deleteItemFromCourse(controller.getCurrentCourse(), item);
 								}
@@ -499,6 +499,16 @@ public class MenuPanel extends JPanel implements Observer {
 				}, viewGrades -> { // View Grades
 					frame.changePanel(this, new ViewGradePanel(frame, courseData, false, this.controller));
 				}, finalize -> {
+
+					if (!controller.getCurrentCourse().isFinalized()) {
+						if (!controller.canBeFinalized(controller.getCurrentCourse())) {
+							JOptionPane.showMessageDialog(this,
+									"Please make sure that all category weights and item weights within categories sum to 100%",
+									"Error", JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+					}
+
 					controller.initiateCourseFinalization(controller.getCurrentCourse());
 					frame.changePanel(this, new FinializePanel(frame, controller));
 				} } };
@@ -677,9 +687,6 @@ public class MenuPanel extends JPanel implements Observer {
 
 		setVisible(true);
 
-		if (controller.getCurrentCourse().isFinalized()) {
-			lock();
-		}
 	}
 
 	static class MyTableModel extends DefaultTableModel {

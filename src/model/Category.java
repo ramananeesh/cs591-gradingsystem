@@ -128,5 +128,14 @@ public class Category extends GenericCategory {
 
 		return -1;
 	}
+	
+	public boolean itemWeightsSumToOne() {
+		double sum = 0;
+		for(Item i: this.items) {
+			sum+=i.getWeight();
+		}
+		
+		return sum==1.0;
+	}
 
 }
