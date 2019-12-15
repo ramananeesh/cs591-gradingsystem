@@ -212,28 +212,27 @@ public class Course extends GenericCourse {
 			i++;
 		}
 	}
-	
+
 	public double[] getFinalGradesForStats() {
 		ArrayList<Double> grades = new ArrayList<Double>();
-		
-		int i=0;
-		for(FinalGrade g: this.finalGrades) {
-			if(g.getStudent().isActive()) {
-				if(this.curveApplied==true) {
+
+		int i = 0;
+		for (FinalGrade g : this.finalGrades) {
+			if (g.getStudent().isActive()) {
+				if (this.curveApplied == true) {
 					grades.add(g.getCurvedPercentage());
-				}
-				else {
+				} else {
 					grades.add(g.getActualPercentage());
 				}
 			}
 		}
-		
+
 		double d[] = new double[grades.size()];
-		for(Double g: grades) {
+		for (Double g : grades) {
 			d[i++] = g;
 		}
-		
-		return d; 
+
+		return d;
 	}
 
 	public FinalGrade getFinalGrade(int index) {
@@ -254,9 +253,40 @@ public class Course extends GenericCourse {
 	}
 
 	public boolean isFinilizationInitialized() {
-		if (this.finalGrades.size()==0)
+		if (this.finalGrades.size() == 0)
 			return true;
 		else
 			return false;
+	}
+
+	public int getCategoryIndexById(int categoryId) {
+		int i = 0;
+		for (Category c : categories) {
+			if (c.getId() == categoryId) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	public boolean categoryWeightsSumToOne() {
+		double sum = 0;
+		for (Category c : categories) {
+			sum += c.getWeight();
+		}
+
+		return sum == 1.0;
+	}
+
+	public boolean canBeFinalized() {
+		boolean flag = true;
+		for (Category c : categories) {
+			flag = c.itemWeightsSumToOne();
+			if (!flag)
+				return false;
+		}
+
+		return flag && categoryWeightsSumToOne();
 	}
 }

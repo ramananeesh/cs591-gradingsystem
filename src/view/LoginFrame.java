@@ -7,7 +7,8 @@ import helper.SizeManager;
 import javax.swing.*;
 
 /**
- * The {@code LoginFrame} class represents the frame for logging in the grading system.
+ * The {@code LoginFrame} class represents the frame for logging in the grading
+ * system.
  */
 public class LoginFrame extends JFrame {
 	/** The title for the window when LoginFrame displays */
@@ -44,11 +45,41 @@ public class LoginFrame extends JFrame {
 		loginButton.setFont(FontManager.fontLogin);
 		loginButton.setFocusPainted(false);
 		loginButton.addActionListener(e -> {
-			new MainFrame();
-			dispose();
+
+			String reply = JOptionPane.showInputDialog(this, "Enter Password: ");
+
+			if (reply != null && !checkPassword(reply)) {
+				while (true) {
+					String repl = JOptionPane.showInputDialog(this, "Enter Correct Password: ");
+					if (repl == null)
+						break;
+					if (checkPassword(repl)) {
+						new MainFrame();
+						dispose();
+						break;
+					}
+
+				}
+			} else {
+				if (reply != null) {
+					new MainFrame();
+					dispose();
+				}
+			}
+
 		});
 		add(loginButton);
 
 		setVisible(true);
+	}
+
+	public boolean checkPassword(String password) {
+		if (password == null) {
+			return false;
+		}
+		if (password.equals("cs591"))
+			return true;
+
+		return false;
 	}
 }

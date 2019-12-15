@@ -48,35 +48,69 @@ public class Master extends Observable {
 	}
 
 	public void addNewCourse(String courseNumber, String courseName, String term, ArrayList<Category> categories,
-			ArrayList<CourseStudent> students) {
-		Course newCourse = new Course(generateCourseId(), courseNumber, courseName, term, categories, students);
+			ArrayList<CourseStudent> students, boolean flag) {
+
+		int id = generateCourseId();
+
+		if (flag) {
+			// replace all category and items with course ID
+			for (int i = 0; i < categories.size(); i++) {
+				categories.get(i).setCourseId(id);
+				categories.get(i).replaceAllCourseIdsInItems(id);
+			}
+		}
+		Course newCourse = new Course(id, courseNumber, courseName, term, categories, students);
 		this.courses.add(newCourse);
 
 		// write to db
 		Create.insertNewCourse(newCourse);
 
 		// write categories to db
+		for (Category c : newCourse.getCategories()) {
+			Create.insertNewCategory(c);
 
-		// write items to db
+			for (Item i : c.getItems()) {
+				Create.insertNewItem(i);
+			}
+		}
 
-		// write students to db
+		for (CourseStudent student : newCourse.getStudents()) {
+			Create.insertNewStudent(student);
+		}
 
 		setChanged();
 		notifyObservers();
 	}
 
-	public void addNewCourse(String courseId, String courseName, String term, ArrayList<Category> categories) {
-		Course newCourse = new Course(generateCourseId(), courseId, courseName, term, categories);
+	public void addNewCourse(String courseId, String courseName, String term, ArrayList<Category> categories,
+			boolean flag) {
+		int id = generateCourseId();
+
+		if (flag) {
+			// replace all category and items with course ID
+			for (int i = 0; i < categories.size(); i++) {
+				categories.get(i).setCourseId(id);
+				categories.get(i).replaceAllCourseIdsInItems(id);
+			}
+		}
+		Course newCourse = new Course(id, courseId, courseName, term, categories);
 		this.courses.add(newCourse);
 
 		// write to db
 		Create.insertNewCourse(newCourse);
 
 		// write categories to db
+		for (Category c : newCourse.getCategories()) {
+			Create.insertNewCategory(c);
 
-		// write items to db
+			for (Item i : c.getItems()) {
+				Create.insertNewItem(i);
+			}
+		}
 
-		// write students to db
+		for (CourseStudent student : newCourse.getStudents()) {
+			Create.insertNewStudent(student);
+		}
 		setChanged();
 		notifyObservers();
 	}
@@ -860,11 +894,35 @@ public class Master extends Observable {
 		 * 
 		 * /** to do - DB update
 		 */
-		
+
 		fireUpdate();
 	}
-	
 
+	public void deleteCategoryForCourse(Course course, int categoryIndex) {
+		Category category = course.getCategory(categoryIndex);
+		for (int i = 0; i < category.getItems().size(); i++) {
+			Item item = category.getItem(i);
+			deleteItemFromCourse(course, item);
+		}
+		Category cat = course.removeCategory(categoryIndex);
+		Delete.removeCategoryFromCourse(cat.getId(), course.getCourseId());
+		fireUpdate();
+	}
+
+	public boolean canBeFinalized(Course course) {
+		return course.canBeFinalized();
+	}
+
+	public void deleteItemFromCourse(Course course, Item item) {
+		Category cat = course.getCategoryById(item.getCategoryId());
+
+		Item r = cat.removeItemById(item.getId());
+
+		course.setCategory(course.getCategoryIndexById(cat.getId()), cat);
+
+		Delete.removeItemFromCategoryInCourse(r.getId(), cat.getId(), course.getCourseId());
+		fireUpdate();
+	}
 
 	public void fireUpdate() {
 		setChanged();

@@ -46,7 +46,7 @@ public class FinializePanel extends JPanel implements Observer {
 
 		// TODO data for test
 		Course course = controller.getCurrentCourse();
-
+		
 		Statistics statistics = new Statistics(course.getFinalGradesForStats());
 
 		// title label
@@ -67,7 +67,7 @@ public class FinializePanel extends JPanel implements Observer {
 		add(statisticsLabel);
 
 		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
-		Object[] gradeTableColumnNames = {"Name", "ID", "Actual Percentage", "Curved Percentage", "Grade"};
+		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
 		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -97,7 +97,7 @@ public class FinializePanel extends JPanel implements Observer {
 		backButton.setBackground(ColorManager.primaryColor);
 		backButton.addActionListener(e -> {
 			frame.changePanel(this, new MenuPanel(frame,
-					new String[]{course.getCourseNumber(), course.getCourseName(), course.getTerm()}, controller));
+					new String[] { course.getCourseNumber(), course.getCourseName(), course.getTerm() }, controller));
 		});
 		add(backButton);
 
@@ -109,7 +109,7 @@ public class FinializePanel extends JPanel implements Observer {
 		curveButton.addActionListener(e -> {
 			// TODO curve
 			JTextField percentageTextField = new JTextField();
-			Object[] fields = {"Percentage: ", percentageTextField};
+			Object[] fields = { "Percentage: ", percentageTextField };
 			UIManager.put("OptionPane.minimumSize",
 					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
@@ -147,7 +147,7 @@ public class FinializePanel extends JPanel implements Observer {
 			JLabel label = new JLabel("Saved");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
-			Object[] fields = {label};
+			Object[] fields = { label };
 			UIManager.put("OptionPane.minimumSize",
 					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
@@ -172,7 +172,7 @@ public class FinializePanel extends JPanel implements Observer {
 			JLabel label = new JLabel("Finalized");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
-			Object[] fields = {label};
+			Object[] fields = { label };
 			UIManager.put("OptionPane.minimumSize",
 					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
@@ -199,7 +199,7 @@ public class FinializePanel extends JPanel implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
-		Object[] gradeTableColumnNames = {"Name", "ID", "Actual Percentage", "Curved Percentage", "Grade"};
+		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
 		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
