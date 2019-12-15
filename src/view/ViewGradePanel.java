@@ -114,9 +114,9 @@ public class ViewGradePanel extends JPanel implements Observer {
 						controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2), allItemIDs.get(j - 2));
 				gradeTableRowData[i][j] = temp.split(" ")[0];
 				statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
-				double weight = Double.parseDouble(gradeTableRowData[i][j])*100;
-				gradeTableRowData[i][j] = (int)weight + "%";
-				if (temp.split(" ")[1] == "1") {
+				double weight = Double.parseDouble(gradeTableRowData[i][j]) * 100;
+				gradeTableRowData[i][j] = (int) weight + "%";
+				if (temp.split(" ")[1].equals("1")) {
 					gradeTableRowComment[i] = true;
 				} else {
 					gradeTableRowComment[i] = false;

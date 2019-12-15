@@ -32,28 +32,6 @@ public class Read {
 		return categories;
 	}
 
-	// same concern with courseName -> courseID. categoryName could also be
-	// categoryID to avoid overlaps
-	// public static ArrayList<Item> getItemByCourse(int courseID) {
-	// ArrayList<Item> items = new ArrayList<>();
-	// String query = "select id, fieldName, categoryName, weight, templateID, "
-	// + "dateAssigned, dateDue from Item where courseID='" + courseID + "'";
-	// ResultSet rs = SQLHelper.performRead(query);
-	//
-	// try {
-	// while (rs.next()) {
-	//
-	// Item item = new Item(rs.getInt("ID"), rs.getString("fieldName"),
-	// rs.getInt("categoryID"),
-	// rs.getDouble("weight"), courseID);
-	// items.add(item);
-	// }
-	// } catch (SQLException e) {
-	// e.printStackTrace();
-	// }
-	// return items;
-	// } commented out, outdated code
-
 	public static ArrayList<Item> getItemsByCategory(int categoryID, int courseID) {
 		ArrayList<Item> items = new ArrayList<>();
 		String query = "select id, courseID, fieldName, weight, categoryId, maxPoints from Item where categoryID = '"
@@ -100,15 +78,53 @@ public class Read {
 			while (rs.next()) {
 				ArrayList<Category> categories = getCategoriesByCourse(rs.getInt("ID"));
 				ArrayList<CourseStudent> students = getCourseStudentsByCourse(rs.getInt("ID"));
+				ArrayList<FinalGrade> finalGrades = getAllFinalGradesByCourse(rs.getInt("ID"), students);
+				if (finalGrades.size() == 0) {
+					Course course = new Course(rs.getInt("ID"), rs.getString("courseNumber"),
+							rs.getString("courseName"), rs.getString("term"), categories, students);
+					courses.add(course);
+				} else {
+					boolean curveApplied = rs.getBoolean("curveApplied");
+					Double curve = rs.getDouble("curve");
+					if (curveApplied == false)
+						curve = null;
+					Course course = new Course(rs.getInt("ID"), rs.getString("courseNumber"),
+							rs.getString("courseName"), rs.getString("term"), categories, students, finalGrades,
+							curveApplied, curve, rs.getBoolean("finalized"));
+					courses.add(course);
+				}
 
-				Course course = new Course(rs.getInt("ID"), rs.getString("courseNumber"), rs.getString("courseName"),
-						rs.getString("term"), categories, students);
-				courses.add(course);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return courses;
+	}
+
+	public static CourseStudent getStudentByBuid(ArrayList<CourseStudent> students, String buid) {
+		for (CourseStudent student : students) {
+			if (student.getBuid().equals(buid))
+				return student;
+		}
+		return null;
+	}
+
+	public static ArrayList<FinalGrade> getAllFinalGradesByCourse(int courseId, ArrayList<CourseStudent> students) {
+		ArrayList<FinalGrade> finalGrades = new ArrayList<FinalGrade>();
+		String query = "Select * from FinalGrade where courseID='" + courseId + "'";
+		ResultSet rs = SQLHelper.performRead(query);
+		try {
+			while (rs.next()) {
+				CourseStudent student = getStudentByBuid(students, rs.getString("buid"));
+				FinalGrade f = new FinalGrade(student, rs.getDouble("actualPercentage"),
+						rs.getDouble("curvedPercentage"), rs.getString("letterGrade"));
+				finalGrades.add(f);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return finalGrades;
+
 	}
 
 	public static ArrayList<GradeEntry> getGradeEntriesByCourse(int courseID) {
@@ -151,10 +167,12 @@ public class Read {
 		// String query = "Select A.* from Student A where A.BUID in (select B.BUID from
 		// CourseStudent B where B.courseID ='"
 		// + courseID + "')";
-		//String query = "Select Student.BUID, Student.fName, Student.lName, Student.type, Student.email, CourseStudent.courseID,"
-		//		+ "CourseStudent.active from Student, CourseStudent JOIN CourseStudent ON Student.BUID = CourseStudent.BUID";
+		// String query = "Select Student.BUID, Student.fName, Student.lName,
+		// Student.type, Student.email, CourseStudent.courseID,"
+		// + "CourseStudent.active from Student, CourseStudent JOIN CourseStudent ON
+		// Student.BUID = CourseStudent.BUID";
 		String query = "Select s.buid, s.fname, s.lname, s.type, s.email, cs.courseId, cs.active from student s, coursestudent cs where "
-				+ "s.buid=cs.buid and courseId=" +courseID;
+				+ "s.buid=cs.buid and courseId=" + courseID;
 		ResultSet rs = SQLHelper.performRead(query);
 		try {
 			while (rs.next()) {

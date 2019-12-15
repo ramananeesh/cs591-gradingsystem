@@ -3,9 +3,9 @@ package view;
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,6 +32,9 @@ public class FinializePanel extends JPanel implements Observer {
 	private DefaultTableModel gradeTableModel;
 	private JTable gradeTable;
 	private Master controller;
+	private final JButton curveButton;
+	private final JButton saveButton;
+	private final JButton finalizeButton;
 
 	public FinializePanel(MainFrame frame, Master controller) {
 		this.controller = controller;
@@ -43,15 +46,12 @@ public class FinializePanel extends JPanel implements Observer {
 
 		// TODO data for test
 		Course course = controller.getCurrentCourse();
-		double[] grades = new double[100];
-		Random random = new Random();
-		for (int i = 0; i < grades.length; ++i) {
-			grades[i] = 80 + (random.nextDouble() - 0.5) * 40;
-		}
-		Statistics statistics = new Statistics(grades);
+
+		Statistics statistics = new Statistics(course.getFinalGradesForStats());
 
 		// title label
-		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
+		JLabel titleLabel = new JLabel(
+				String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
 		titleLabel.setBounds(SizeManager.finalizeTitleLabelBounds);
 		titleLabel.setFont(FontManager.fontLabel);
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -101,7 +101,7 @@ public class FinializePanel extends JPanel implements Observer {
 		});
 		add(backButton);
 
-		JButton curveButton = new JButton("Curve");
+		curveButton = new JButton("Curve");
 		curveButton.setFont(FontManager.fontButton);
 		curveButton.setBounds(SizeManager.finalizeButtonCurveBounds);
 		curveButton.setForeground(ColorManager.lightColor);
@@ -110,13 +110,19 @@ public class FinializePanel extends JPanel implements Observer {
 			// TODO curve
 			JTextField percentageTextField = new JTextField();
 			Object[] fields = {"Percentage: ", percentageTextField};
-			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+			UIManager.put("OptionPane.minimumSize",
+					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.QUESTION_MESSAGE);
 				if (reply == JOptionPane.OK_OPTION) {
 					try {
 						double percentage = Double.parseDouble(percentageTextField.getText().trim());
+						if (percentage <= 0 || percentage > 100) {
+							JOptionPane.showMessageDialog(this, "Please Enter valid weight percentage", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							continue;
+						}
 						controller.setCurveForCourse(controller.getCurrentCourse(), percentage, true);
 					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(this, "Please Enter valid weight percentage", "Error",
@@ -131,7 +137,7 @@ public class FinializePanel extends JPanel implements Observer {
 		});
 		add(curveButton);
 
-		JButton saveButton = new JButton("Save");
+		saveButton = new JButton("Save");
 		saveButton.setFont(FontManager.fontButton);
 		saveButton.setBounds(SizeManager.finalizeButtonSaveBounds);
 		saveButton.setForeground(ColorManager.lightColor);
@@ -142,7 +148,8 @@ public class FinializePanel extends JPanel implements Observer {
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
 			Object[] fields = {label};
-			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+			UIManager.put("OptionPane.minimumSize",
+					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
@@ -155,7 +162,7 @@ public class FinializePanel extends JPanel implements Observer {
 		});
 		add(saveButton);
 
-		JButton finalizeButton = new JButton("Finalize");
+		finalizeButton = new JButton("Finalize");
 		finalizeButton.setFont(FontManager.fontButton);
 		finalizeButton.setBounds(SizeManager.finalizeButtonFinalizeBounds);
 		finalizeButton.setForeground(ColorManager.lightColor);
@@ -166,11 +173,13 @@ public class FinializePanel extends JPanel implements Observer {
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
 			Object[] fields = {label};
-			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+			UIManager.put("OptionPane.minimumSize",
+					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				if (reply == JOptionPane.OK_OPTION) {
+					controller.finalizeCourse(course);
 					break;
 				} else {
 					return;
@@ -178,6 +187,10 @@ public class FinializePanel extends JPanel implements Observer {
 			}
 		});
 		add(finalizeButton);
+
+		if (controller.getCurrentCourse().isFinalized()) {
+			lock();
+		}
 
 		setVisible(true);
 	}
@@ -196,4 +209,9 @@ public class FinializePanel extends JPanel implements Observer {
 		gradeTable.setModel(gradeTableModel);
 	}
 
+	private void lock() {
+		for (JComponent component : new JComponent[]{gradeTable, saveButton, finalizeButton, curveButton}) {
+			component.setEnabled(false);
+		}
+	}
 }

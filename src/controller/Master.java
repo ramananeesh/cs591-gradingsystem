@@ -48,7 +48,7 @@ public class Master extends Observable {
 	}
 
 	public void addNewCourse(String courseNumber, String courseName, String term, ArrayList<Category> categories,
-	                         ArrayList<CourseStudent> students) {
+			ArrayList<CourseStudent> students) {
 		Course newCourse = new Course(generateCourseId(), courseNumber, courseName, term, categories, students);
 		this.courses.add(newCourse);
 
@@ -102,7 +102,7 @@ public class Master extends Observable {
 	}
 
 	public void addNewCategoryForCourse(Course course, int id, String fieldName, double weight, int courseId,
-	                                    ArrayList<Item> items) {
+			ArrayList<Item> items) {
 		Category category = new Category(id, fieldName, weight, courseId, items);
 		course.addCategory(category);
 
@@ -113,7 +113,7 @@ public class Master extends Observable {
 	}
 
 	public void addItemForCourseCategory(Course course, int categoryIndex, String fieldName, double weight,
-	                                     double maxPoints) {
+			double maxPoints) {
 
 		Category category = course.getCategories().get(categoryIndex);
 		Item item = new Item(generateItemId(category), fieldName, category.getId(), weight, maxPoints,
@@ -294,7 +294,7 @@ public class Master extends Observable {
 	}
 
 	public void editGradesForCategoryItemInCourse(Course course, int categoryId, int itemId,
-	                                              ArrayList<HashMap<String, String>> maps) {
+			ArrayList<HashMap<String, String>> maps) {
 		Category category = course.getCategoryById(categoryId);
 		Item item = category.getItemById(itemId);
 
@@ -334,7 +334,7 @@ public class Master extends Observable {
 	public String[][] getAllItemDetailsForCourse(Course course, boolean includeMaxPoints) {
 		String[][] details = new String[getAllItemsForCourse(course).size()][];
 		int i = 0;
-		for(Item item : getAllItemsForCourse(course)){
+		for (Item item : getAllItemsForCourse(course)) {
 			if (!includeMaxPoints)
 				details[i++] = item.getDetailsWithCategory(course);
 			else
@@ -358,7 +358,7 @@ public class Master extends Observable {
 		return ans;
 	}
 
-	public Boolean[] getAllStudentsStatusForCourse(Course course){
+	public Boolean[] getAllStudentsStatusForCourse(Course course) {
 		ArrayList<Boolean> status = new ArrayList<>();
 		for (CourseStudent student : course.getStudents()) {
 			status.add(student.isActive());
@@ -528,10 +528,10 @@ public class Master extends Observable {
 
 	public void modifyItemsForCourse(Course course, HashMap<String, ArrayList<Double>> map) {
 		ArrayList<Category> categories = getAllCategoriesForCourse(course);
-		for(int i = 0; i < categories.size(); i++){
+		for (int i = 0; i < categories.size(); i++) {
 			Category cat = categories.get(i);
 			ArrayList<Item> items = getAllItemsForCourseCategory(course, i);
-			for(int j = 0; j < items.size(); j++){
+			for (int j = 0; j < items.size(); j++) {
 				Item item = items.get(j);
 				boolean flag = false;
 				ArrayList<Double> l = map.get(item.getFieldName());
@@ -681,7 +681,7 @@ public class Master extends Observable {
 			if (itemIndex == -1) {
 				// specific category all items
 				for (GradeEntry entry : student.getGrades()) {
-					if (entry.getCategoryId() == categoryIndex+1)		// categoryId starts with 1
+					if (entry.getCategoryId() == categoryIndex + 1) // categoryId starts with 1
 						if (!entry.getComments().trim().equals("")) {
 							Category cat = course.getCategoryById(entry.getCategoryId());
 							Item item = cat.getItemById(entry.getItemId());
@@ -693,7 +693,7 @@ public class Master extends Observable {
 				// specific category specific item
 				for (GradeEntry entry : student.getGrades()) {
 					List<Item> items = null;
-					if (entry.getCategoryId() == categoryIndex+1) {
+					if (entry.getCategoryId() == categoryIndex + 1) {
 						items = getAllItemsForCourseCategory(course, categoryIndex);
 						if (entry.getItemId() == items.get(itemIndex).getId()) {
 							if (!entry.getComments().trim().equals("")) {
@@ -822,14 +822,18 @@ public class Master extends Observable {
 		ArrayList<FinalGrade> finalGrades = course.getFinalGrades();
 
 		for (FinalGrade grade : finalGrades) {
-			if (course.isCurveApplied()) {
-				// if curve is already applied, modify from applied curve
-				grade.setCurvedPercentage(grade.getCurvedPercentage() + course.getCurve());
-				grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
-			} else {
-				grade.setCurvedPercentage(grade.getActualPercentage() + course.getCurve());
-				grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
-			}
+			/*
+			 * if (course.isCurveApplied()) { // if curve is already applied, modify from
+			 * applied curve grade.setCurvedPercentage(grade.getCurvedPercentage() +
+			 * course.getCurve());
+			 * grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.
+			 * getCurvedPercentage())); } else {
+			 * grade.setCurvedPercentage(grade.getActualPercentage() + course.getCurve());
+			 * grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.
+			 * getCurvedPercentage())); }
+			 */
+			grade.setCurvedPercentage(grade.getActualPercentage() + course.getCurve());
+			grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
 		}
 
 		course.setFinalGrades(finalGrades);
@@ -846,19 +850,21 @@ public class Master extends Observable {
 		}
 		// write to db
 		for (FinalGrade grade : course.getFinalGrades()) {
-			Create.insertNewFinalGrade(grade);
+			Create.insertNewFinalGrade(grade, course.getCourseId());
 		}
-
+		course.setFinalized(true);
+		Update.updateCourseFinalized(course);
 		// lock all features and editing
 		/**
 		 * to do
-
-		 /**
-		 * to do - DB update
+		 * 
+		 * /** to do - DB update
 		 */
-
+		
 		fireUpdate();
 	}
+	
+
 
 	public void fireUpdate() {
 		setChanged();

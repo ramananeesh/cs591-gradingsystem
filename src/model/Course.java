@@ -212,6 +212,29 @@ public class Course extends GenericCourse {
 			i++;
 		}
 	}
+	
+	public double[] getFinalGradesForStats() {
+		ArrayList<Double> grades = new ArrayList<Double>();
+		
+		int i=0;
+		for(FinalGrade g: this.finalGrades) {
+			if(g.getStudent().isActive()) {
+				if(this.curveApplied==true) {
+					grades.add(g.getCurvedPercentage());
+				}
+				else {
+					grades.add(g.getActualPercentage());
+				}
+			}
+		}
+		
+		double d[] = new double[grades.size()];
+		for(Double g: grades) {
+			d[i++] = g;
+		}
+		
+		return d; 
+	}
 
 	public FinalGrade getFinalGrade(int index) {
 		return this.finalGrades.get(index);
