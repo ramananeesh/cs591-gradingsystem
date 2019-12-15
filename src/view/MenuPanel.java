@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -83,6 +85,13 @@ public class MenuPanel extends JPanel implements Observer {
 
 	private JTable editItemTable;
 	private final JButton[] buttons = new JButton[4];
+	private final JMenuBar menuBar = new JMenuBar();
+	private final String[] menuName = new String[]{"  File  ", "  Edit  ", "  Grade  "};
+	private final String[][] menuItemName = new String[][]{
+			{"Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit"},
+			{"Edit Student", "Edit Category", "Edit Item"},
+			{"Edit All Grades", "Edit by Student", "View Grade", "Finalize Grade"}};
+	private final ActionListener[][] menuActionListener;
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
@@ -121,12 +130,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2] + "\n\n";
 
-		String[] menuName = {"  File  ", "  Edit  ", "  Grade  "};
-		String[][] menuItemName = {
-				{"Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit"},
-				{"Edit Student", "Edit Category", "Edit Item"},
-				{"Edit All Grades", "Edit by Student", "View Grade", "Finalize Grade"}};
-		ActionListener[][] menuActionListener = { // TODO complete menu action
+		menuActionListener = new ActionListener[][]{ // TODO complete menu action
 				{ // File
 						addStudent -> { // Add Student
 							try {
@@ -481,7 +485,6 @@ public class MenuPanel extends JPanel implements Observer {
 			frame.changePanel(this, new FinializePanel(frame, controller));
 		}}};
 
-		JMenuBar menuBar = new JMenuBar();
 		menuBar.setLayout(new GridBagLayout());
 		for (int i = 0; i < menuName.length; ++i) {
 			JMenu menu = new JMenu(menuName[i]);
@@ -643,6 +646,11 @@ public class MenuPanel extends JPanel implements Observer {
 			add(buttons[i]);
 		}
 
+//		JButton testLock = new JButton("Test Lock"); // Only for test lock function
+//		testLock.setBounds(SizeManager.testLockButtonBounds);
+//		testLock.setFont(FontManager.fontButton);
+//		testLock.addActionListener(e -> lock());
+//		add(testLock);
 
 		setVisible(true);
 	}
@@ -778,6 +786,29 @@ public class MenuPanel extends JPanel implements Observer {
 			}
 		}
 		tableStudent.setModel(studentTableModel);
+	}
+
+	private void lock() {
+		menuBar.removeAll();
+		for (int i : new int[]{0, 1, 3}) {
+			remove(buttons[i]);
+		}
+		buttons[2].setBounds(SizeManager.viewGradeLockedButtonBounds);
+		for (int i = 0; i < 1; ++i) {
+			JMenu menu = new JMenu(menuName[i]);
+			for (int j = 5; j <= 6; ++j) {
+				if (menuItemName[i][j] == null) {
+					menu.addSeparator();
+				} else {
+					JMenuItem menuItem = new JMenuItem(menuItemName[i][j]);
+					menuItem.addActionListener(menuActionListener[i][j]);
+					menu.add(menuItem);
+				}
+			}
+			menuBar.add(menu);
+		}
+		revalidate();
+		repaint();
 	}
 
 }

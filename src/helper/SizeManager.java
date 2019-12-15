@@ -92,6 +92,8 @@ public class SizeManager {
 	public static Rectangle viewGradeStatBounds;
 	public static Rectangle viewGradeTitleBounds;
 	public static Rectangle[] viewGradeComboBounds;
+	public static Rectangle viewGradeLockedButtonBounds;
+	public static Rectangle testLockButtonBounds;
 
 	public static void update(JFrame frame) {
 
@@ -185,7 +187,8 @@ public class SizeManager {
 				new Rectangle(contentPaneWidth / 2 - menuButtonMid - menuButtonsWidth, menuButtonCenterY + menuButtonMid, menuButtonsWidth, buttonHeight),
 				new Rectangle(contentPaneWidth / 2 + menuButtonMid, menuButtonCenterY + menuButtonMid, menuButtonsWidth, buttonHeight),
 		};
-
+		viewGradeLockedButtonBounds = new Rectangle(contentPaneWidth / 2 - menuButtonsWidth / 2, menuButtonCenterY - buttonHeight / 2, menuButtonsWidth, buttonHeight);
+		testLockButtonBounds = new Rectangle(contentPaneWidth / 2 - menuButtonsWidth / 2, contentPaneHeight - buttonHeight, menuButtonsWidth, buttonHeight);
 
 		finalizeTitleLabelBounds = new Rectangle(0, 0, contentPaneWidth, contentPaneHeight / 20);
 		labelGradeStatisticsBounds = new Rectangle(0, contentPaneHeight / 20, contentPaneWidth, contentPaneHeight / 20);
@@ -211,7 +214,6 @@ public class SizeManager {
 				new Rectangle(tableCourseX + tableCourseWidth * 3 / 4 - comboWidth * 2, contentPaneHeight / 8 / 3 * 2, comboWidth, contentPaneHeight / 8 / 3),
 				new Rectangle(tableCourseX + tableCourseWidth * 3 / 4 - comboWidth, contentPaneHeight / 8 / 3 * 2, comboWidth, contentPaneHeight / 8 / 3),
 		};
-
 		FontManager.update();
 	}
 
