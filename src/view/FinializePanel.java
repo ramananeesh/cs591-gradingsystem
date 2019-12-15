@@ -83,11 +83,12 @@ public class FinializePanel extends JPanel implements Observer {
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
 		add(gradeTableScrollPane);
 
-		List<Double> statisticsGrades = new ArrayList<Double>();
-		for (int i = 0; i < gradeTableRowData.length; i++) {
-            statisticsGrades.add(Double.parseDouble((String) gradeTableRowData[i][2]) / 100);
-		}
-		Statistics statistics = new Statistics(statisticsGrades);
+//		List<Double> statisticsGrades = new ArrayList<Double>();
+//		for (int i = 0; i < gradeTableRowData.length; i++) {
+//            statisticsGrades.add(Double.parseDouble((String) gradeTableRowData[i][2]) / 100);
+//		}
+		
+		Statistics statistics = new Statistics(controller.getCurrentCourse().getFinalGradesForStats());
 		// statistics label
 		JLabel statisticsLabel = new JLabel(statistics.toString());
 		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
