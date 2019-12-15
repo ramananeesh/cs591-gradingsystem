@@ -66,10 +66,17 @@ public class Master extends Observable {
 		Create.insertNewCourse(newCourse);
 
 		// write categories to db
+		for (Category c : newCourse.getCategories()) {
+			Create.insertNewCategory(c);
 
-		// write items to db
+			for (Item i : c.getItems()) {
+				Create.insertNewItem(i);
+			}
+		}
 
-		// write students to db
+		for (CourseStudent student : newCourse.getStudents()) {
+			Create.insertNewStudent(student);
+		}
 
 		setChanged();
 		notifyObservers();
@@ -93,10 +100,17 @@ public class Master extends Observable {
 		Create.insertNewCourse(newCourse);
 
 		// write categories to db
+		for (Category c : newCourse.getCategories()) {
+			Create.insertNewCategory(c);
 
-		// write items to db
+			for (Item i : c.getItems()) {
+				Create.insertNewItem(i);
+			}
+		}
 
-		// write students to db
+		for (CourseStudent student : newCourse.getStudents()) {
+			Create.insertNewStudent(student);
+		}
 		setChanged();
 		notifyObservers();
 	}
