@@ -5,8 +5,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -653,11 +651,11 @@ public class MenuPanel extends JPanel implements Observer {
 //		testLock.addActionListener(e -> lock());
 //		add(testLock);
 
-		setVisible(true);
-		
-		if(controller.getCurrentCourse().isFinalized()) {
+		if (controller.getCurrentCourse().isFinalized()) {
 			lock();
 		}
+
+		setVisible(true);
 	}
 
 	static class MyTableModel extends DefaultTableModel {

@@ -1,12 +1,18 @@
 package view;
 
-import helper.SizeManager;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import controller.Master;
-
-import java.awt.*;
+import helper.SizeManager;
 
 /**
  * The {@code LoginFrame} class represents the main frame which contains many kinds of panels
@@ -32,15 +38,20 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
-		setContentPane(new JLabel(new ImageIcon(BACKGROUND_PICTURE_FILE_NAME)));
-		setBounds(GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds());
+		Rectangle maximumWindowBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		setBounds(maximumWindowBounds);
 		setResizable(false);
 		try {
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			Image image = Toolkit.getDefaultToolkit().getImage(BACKGROUND_PICTURE_FILE_NAME).getScaledInstance((int) maximumWindowBounds.getWidth(), (int) maximumWindowBounds.getHeight(), Image.SCALE_SMOOTH);
+			ImageIcon imageIcon = new ImageIcon(image);
+			JLabel background = new JLabel(imageIcon);
+			setContentPane(background);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		setVisible(true);
+
 		SizeManager.update(this);
 		add(new CoursePanel(this, new Master()));
 	}
