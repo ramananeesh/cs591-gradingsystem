@@ -15,24 +15,15 @@ public class Delete {
         return SQLHelper.performQuery(sql);
     }
 
-    public static boolean removeCategoryFromCourse(String fieldName, int courseID){
-        String sql = "Delete from Category where fieldName ='" + fieldName + "'" +
+    public static boolean removeCategoryFromCourse(int catId, int courseID){
+        String sql = "Delete from Category where id ='" + catId + "'" +
                 " and courseID = '" + courseID + "'";
         return SQLHelper.performQuery(sql);
     }
 
-    public static boolean removeItemFromCategoryInCourse(String itemName, String categoryName, int courseID){
-        String query = "select id from Category where courseId ='" + courseID + "' and fieldName = '" + categoryName + "'";
-        ResultSet rs = SQLHelper.performRead(query);
-        int categoryId = -1;
-        try {
-            while (rs.next()) {
-                categoryId = rs.getInt("ID");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        String sql = "Delete from Item where fieldName ='" + itemName + "' and courseID = '" + courseID + "'" +
+    public static boolean removeItemFromCategoryInCourse(int itemId, int categoryId, int courseID){
+        
+        String sql = "Delete from Item where id ='" + itemId + "' and courseID = '" + courseID + "'" +
                 " and categoryID = '" + categoryId + "'";
         return SQLHelper.performQuery(sql);
 

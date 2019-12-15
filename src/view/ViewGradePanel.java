@@ -37,6 +37,11 @@ import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
 import helper.Statistics;
+import model.Category;
+import model.Course;
+import model.CourseStudent;
+import model.GradeEntry;
+import model.Item;
 import model.*;
 
 /**
@@ -128,9 +133,9 @@ public class ViewGradePanel extends JPanel implements Observer {
 				gradeTableRowData[i][j] = temp.split(" ")[0];
 				categoryGrade += Double.parseDouble(gradeTableRowData[i][j]) * allItemWeights.get(j - 2) * allCategoryWeights.get(j - 2);
 //				statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j])*allItemWeights.get(j-2)*allCategoryWeights.get(j-2));
-				double weight = Double.parseDouble(gradeTableRowData[i][j])*100;
-				gradeTableRowData[i][j] = (int)weight + "%";
-				if (temp.split(" ")[1] == "1") {
+				double weight = Double.parseDouble(gradeTableRowData[i][j]) * 100;
+				gradeTableRowData[i][j] = (int) weight + "%";
+				if (temp.split(" ")[1].equals("1")) {
 					gradeTableRowComment[i] = true;
 				} else {
 					gradeTableRowComment[i] = false;

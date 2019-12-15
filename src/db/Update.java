@@ -82,4 +82,13 @@ public class Update {
 		return SQLHelper.performQuery(sql);
 	}
 
+	public static boolean updateCourseFinalized(Course course) {
+		String sql = "Update Course set finalized="+course.isFinalized();
+		if(course.isCurveApplied()) {
+			sql+=", curve="+course.getCurve()+", curveApplied="+course.isCurveApplied()+" ";
+		}
+		sql += " where ID="+course.getCourseId();
+		
+		return SQLHelper.performQuery(sql);
+	}
 }

@@ -48,10 +48,10 @@ public class Create {
 		return SQLHelper.performQuery(sql);
 	}
 
-	public static boolean insertNewFinalGrade(FinalGrade grade) {
-		String sql = "insert into gradeEntry values('" + grade.getStudent().getBuid() + "',"
-				+ grade.getActualPercentage() + "," + grade.getCurvedPercentage() + ",'" + grade.getLetterGrade()
-				+ "')";
+	public static boolean insertNewFinalGrade(FinalGrade grade, int courseId) {
+		String sql = "insert into finalGrade (buid, actualPercentage, curvedPercentage, letterGrade, courseId) values('" + grade.getStudent().getBuid() + "','"
+				+ grade.getActualPercentage() + "','" + grade.getCurvedPercentage() + "','" + grade.getLetterGrade() + "','"
+				+ courseId + "')";
 		return SQLHelper.performQuery(sql);
 	}
 }
