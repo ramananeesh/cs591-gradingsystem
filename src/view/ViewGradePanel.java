@@ -37,11 +37,7 @@ import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
 import helper.Statistics;
-import model.Category;
-import model.Course;
-import model.CourseStudent;
-import model.GradeEntry;
-import model.Item;
+import model.*;
 
 /**
  * The {@code GradePanel} class represents the panel for viewing or modifying
@@ -64,6 +60,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 	private boolean editable;
 	private boolean hasComment;
 	private List<Double> statisticsGrades;
+	int activeStudentSize = 0;
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
@@ -105,6 +102,11 @@ public class ViewGradePanel extends JPanel implements Observer {
 		gradeTableColumnNames = gradeTableColumnNamesList.toArray();
 
 		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
+		for (CourseStudent s : students) {
+			if (s.isActive()) {
+				activeStudentSize += 1;
+			}
+		}
 
 		String[][] gradeTableRowData = new String[students.size()][];
 		Boolean[] gradeTableRowComment = new Boolean[students.size()];

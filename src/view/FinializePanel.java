@@ -41,11 +41,6 @@ public class FinializePanel extends JPanel implements Observer {
 
 		// TODO data for test
 		Course course = controller.getCurrentCourse();
-		double[] grades = new double[100];
-		Random random = new Random();
-		for (int i = 0; i < grades.length; ++i) {
-			grades[i] = 80 + (random.nextDouble() - 0.5) * 40;
-		}
 
 		// title label
 		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
@@ -81,7 +76,7 @@ public class FinializePanel extends JPanel implements Observer {
 
 		List<Double> statisticsGrades = new ArrayList<Double>();
 		for (int i = 0; i < gradeTableRowData.length; i++) {
-			statisticsGrades.add(Double.parseDouble((String) gradeTableRowData[i][2]));
+            statisticsGrades.add(Double.parseDouble((String) gradeTableRowData[i][2]) / 100);
 		}
 		Statistics statistics = new Statistics(statisticsGrades);
 		// statistics label
