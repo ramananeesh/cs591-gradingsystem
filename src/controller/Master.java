@@ -876,6 +876,13 @@ public class Master extends Observable {
 		fireUpdate();
 	}
 	
+	public boolean canBeFinalized(Course course) {
+		/**
+		 * to do 
+		 */
+		return false;
+	}
+	
 	public void deleteItemFromCourse(Course course, Item item) {
 		Category cat = course.getCategoryById(item.getCategoryId());
 		
