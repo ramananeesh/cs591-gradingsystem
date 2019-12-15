@@ -5,13 +5,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
@@ -672,6 +671,10 @@ public class MenuPanel extends JPanel implements Observer {
 //		testLock.addActionListener(e -> lock());
 //		add(testLock);
 
+		if (controller.getCurrentCourse().isFinalized()) {
+			lock();
+		}
+
 		setVisible(true);
 
 		if (controller.getCurrentCourse().isFinalized()) {
@@ -817,24 +820,38 @@ public class MenuPanel extends JPanel implements Observer {
 	}
 
 	private void lock() {
-		menuBar.removeAll();
-		for (int i : new int[] { 0, 1, 3 }) {
-			remove(buttons[i]);
-		}
-		buttons[2].setBounds(SizeManager.viewGradeLockedButtonBounds);
-		for (int i = 0; i < 1; ++i) {
-			JMenu menu = new JMenu(menuName[i]);
-			for (int j = 5; j <= 6; ++j) {
-				if (menuItemName[i][j] == null) {
-					menu.addSeparator();
-				} else {
-					JMenuItem menuItem = new JMenuItem(menuItemName[i][j]);
-					menuItem.addActionListener(menuActionListener[i][j]);
-					menu.add(menuItem);
+//		menuBar.removeAll();
+//		for (int i : new int[]{0, 1, 3}) {
+//			remove(buttons[i]);
+//		}
+//		buttons[2].setBounds(SizeManager.viewGradeLockedButtonBounds);
+//		menuBar.setLayout(new GridBagLayout());
+//		for (int i = 0; i < menuName.length; ++i) {
+//			JMenu menu = new JMenu(menuName[i]);
+//			for (int j = 0; j < menuItemName[i].length; ++j) {
+//				if (menuItemName[i][j] == null) {
+//					menu.addSeparator();
+//				} else {
+//					JMenuItem menuItem = new JMenuItem(menuItemName[i][j]);
+//					menuItem.addActionListener(menuActionListener[i][j]);
+//					menuItem.setEnabled(false);
+//					menu.add(menuItem);
+//				}
+//			}
+//			menuBar.add(menu);
+//		}
+		List<String> ableFunction = Arrays.asList("Back", "Exit", "View Grade", "Finalize Grade");
+		for (int i = 0; i < menuBar.getMenuCount(); ++i) {
+			JMenu menu = menuBar.getMenu(i);
+			for (int j = 0; j < menu.getItemCount(); ++j) {
+				JMenuItem menuItem = menu.getItem(j);
+				if (menuItem != null && !ableFunction.contains(menuItem.getText())) {
+					menuItem.setEnabled(false);
 				}
 			}
-			menuBar.add(menu);
 		}
+		buttons[0].setEnabled(false);
+		buttons[1].setEnabled(false);
 		revalidate();
 		repaint();
 	}

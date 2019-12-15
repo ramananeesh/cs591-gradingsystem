@@ -27,13 +27,13 @@ public class Statistics {
 		int length = data.length;
 		if (length != 0) {
 			// compute mean
-			this.mean = Arrays.stream(data).parallel().average().orElse(Double.NaN);
+			this.mean = Arrays.stream(data).average().orElse(Double.NaN);
 			// compute median
 			double[] sortedArray = data.clone();
-			Arrays.parallelSort(sortedArray);
+			Arrays.sort(sortedArray);
 			this.median = (sortedArray[length / 2] + sortedArray[(length - 1) / 2]) / 2;
 			// compute standard deviation
-			double sumSquare = Arrays.stream(data).parallel().map((x) -> x * x).reduce(Double::sum).orElse(Double.NaN);
+			double sumSquare = Arrays.stream(data).map((x) -> x * x).reduce(Double::sum).orElse(Double.NaN);
 			this.standardDeviation = Math.sqrt(sumSquare / length - mean * mean);
 		} else {
 			this.mean = this.median = this.standardDeviation = Double.NaN;
@@ -50,13 +50,13 @@ public class Statistics {
 		int length = data.length;
 		if (length != 0) {
 			// compute mean
-			this.mean = Arrays.stream(data).parallel().mapToDouble(Number::doubleValue).average().orElse(Double.NaN);
+			this.mean = Arrays.stream(data).mapToDouble(Number::doubleValue).average().orElse(Double.NaN);
 			// compute median
 			T[] sortedArray = data.clone();
 			Arrays.sort(sortedArray);
 			this.median = (sortedArray[length / 2].doubleValue() + sortedArray[(length - 1) / 2].doubleValue()) / 2;
 			// compute standard deviation
-			double sumSquare = Arrays.stream(data).parallel().mapToDouble(Number::doubleValue).map((x) -> x * x)
+			double sumSquare = Arrays.stream(data).mapToDouble(Number::doubleValue).map((x) -> x * x)
 					.reduce(Double::sum).orElse(Double.NaN);
 			this.standardDeviation = Math.sqrt(sumSquare / length - mean * mean);
 		} else {
@@ -74,12 +74,12 @@ public class Statistics {
 		int length = data.size();
 		if (length != 0) {
 			// compute mean
-			this.mean = data.parallelStream().mapToDouble(Number::doubleValue).average().orElse(Double.NaN);
+			this.mean = data.stream().mapToDouble(Number::doubleValue).average().orElse(Double.NaN);
 			// compute median
 			data.sort(T::compareTo);
 			this.median = (data.get(length / 2).doubleValue() + data.get((length - 1) / 2).doubleValue()) / 2;
 			// compute standard deviation
-			double sumSquare = data.parallelStream().mapToDouble(Number::doubleValue).map((x) -> x * x)
+			double sumSquare = data.stream().mapToDouble(Number::doubleValue).map((x) -> x * x)
 					.reduce(Double::sum).orElse(Double.NaN);
 			this.standardDeviation = Math.sqrt(sumSquare / length - mean * mean);
 		} else {
@@ -121,8 +121,8 @@ public class Statistics {
 	 */
 	@Override
 	public String toString() {
-		return String.format("Statistics : Mean = %.2f, Median = %.2f, Standard Deviation = %.2f", getMean(),
-				getMedian(), getStandardDeviation());
+		return String.format("Statistics : Mean = %.2f, Median = %.2f, Standard Deviation = %.2f",
+				getMean(), getMedian(), getStandardDeviation());
 	}
 
 	public static String getLetterGrade(Double total) {

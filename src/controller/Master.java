@@ -893,6 +893,8 @@ public class Master extends Observable {
 		Delete.removeItemFromCategoryInCourse(r.getId(), cat.getId(), course.getCourseId());
 		fireUpdate();
 	}
+	
+
 
 	public void fireUpdate() {
 		setChanged();
