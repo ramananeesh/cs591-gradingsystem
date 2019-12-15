@@ -863,6 +863,8 @@ public class Master extends Observable {
 		
 		fireUpdate();
 	}
+	
+
 
 	public void fireUpdate() {
 		setChanged();
