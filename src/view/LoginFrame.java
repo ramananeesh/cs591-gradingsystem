@@ -47,8 +47,8 @@ public class LoginFrame extends JFrame {
 		loginButton.addActionListener(e -> {
 
 			String reply = JOptionPane.showInputDialog(this, "Enter Password: ");
-			
-			if (reply!=null && !checkPassword(reply)) {
+
+			if (reply != null && !checkPassword(reply)) {
 				while (true) {
 					String repl = JOptionPane.showInputDialog(this, "Enter Correct Password: ");
 					if (repl == null)
@@ -60,9 +60,13 @@ public class LoginFrame extends JFrame {
 					}
 
 				}
+			} else {
+				if (reply != null) {
+					new MainFrame();
+					dispose();
+				}
 			}
 
-			
 		});
 		add(loginButton);
 
