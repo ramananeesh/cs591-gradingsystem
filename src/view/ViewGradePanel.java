@@ -65,6 +65,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 	private boolean editable;
 	private boolean hasComment;
 	private List<Double> statisticsGrades;
+	private Double[] arr_StatisticsGrades;
 	int activeStudentSize = 0;
 
 	/**
@@ -144,7 +145,8 @@ public class ViewGradePanel extends JPanel implements Observer {
 			statisticsGrades.add(categoryGrade);
 			curr++;
 		}
-		Statistics statistics = new Statistics(statisticsGrades);
+		arr_StatisticsGrades = new Double[statisticsGrades.size()];
+		Statistics statistics = new Statistics(statisticsGrades.toArray(arr_StatisticsGrades));
 		// statistics label
 		JLabel statisticsLabel = new JLabel(statistics.toString());
 		statisticsLabel.setBounds(SizeManager.viewGradeStatBounds);
@@ -332,7 +334,8 @@ public class ViewGradePanel extends JPanel implements Observer {
 					statisticsGrades.add(categoryGrade);
 					curr++;
 				}
-				Statistics statistics = new Statistics(statisticsGrades);
+				arr_StatisticsGrades = new Double[statisticsGrades.size()];
+				Statistics statistics = new Statistics(statisticsGrades.toArray(arr_StatisticsGrades));
 				statisticsLabel.setText(statistics.toString());
 				statisticsLabel.repaint();
 
@@ -548,7 +551,8 @@ public class ViewGradePanel extends JPanel implements Observer {
 					}
 					curr++;
 				}
-				Statistics statistics = new Statistics(statisticsGrades);
+				arr_StatisticsGrades = new Double[statisticsGrades.size()];
+				Statistics statistics = new Statistics(statisticsGrades.toArray(arr_StatisticsGrades));
 				statisticsLabel.setText(statistics.toString());
 				statisticsLabel.repaint();
 
