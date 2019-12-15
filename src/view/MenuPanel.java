@@ -100,6 +100,7 @@ public class MenuPanel extends JPanel implements Observer {
 		this.frame = frame;
 		this.controller = controller;
 		this.controller.addObserver(this);
+		
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.contentPaneBounds);
@@ -653,6 +654,10 @@ public class MenuPanel extends JPanel implements Observer {
 //		add(testLock);
 
 		setVisible(true);
+		
+		if(controller.getCurrentCourse().isFinalized()) {
+			lock();
+		}
 	}
 
 	static class MyTableModel extends DefaultTableModel {
@@ -738,6 +743,10 @@ public class MenuPanel extends JPanel implements Observer {
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
 
+		if(controller.getCurrentCourse().isFinalized()) {
+			lock();
+			return;
+		}
 		this.controller = controller;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();

@@ -51,7 +51,8 @@ public class FinializePanel extends JPanel implements Observer {
 		Statistics statistics = new Statistics(grades);
 
 		// title label
-		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
+		JLabel titleLabel = new JLabel(
+				String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
 		titleLabel.setBounds(SizeManager.finalizeTitleLabelBounds);
 		titleLabel.setFont(FontManager.fontLabel);
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -67,7 +68,7 @@ public class FinializePanel extends JPanel implements Observer {
 		add(statisticsLabel);
 
 		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
-		Object[] gradeTableColumnNames = {"Name", "ID", "Actual Percentage", "Curved Percentage", "Grade"};
+		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
 		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -97,7 +98,7 @@ public class FinializePanel extends JPanel implements Observer {
 		backButton.setBackground(ColorManager.primaryColor);
 		backButton.addActionListener(e -> {
 			frame.changePanel(this, new MenuPanel(frame,
-					new String[]{course.getCourseNumber(), course.getCourseName(), course.getTerm()}, controller));
+					new String[] { course.getCourseNumber(), course.getCourseName(), course.getTerm() }, controller));
 		});
 		add(backButton);
 
@@ -109,14 +110,20 @@ public class FinializePanel extends JPanel implements Observer {
 		curveButton.addActionListener(e -> {
 			// TODO curve
 			JTextField percentageTextField = new JTextField();
-			Object[] fields = {"Percentage: ", percentageTextField};
-			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+			Object[] fields = { "Percentage: ", percentageTextField };
+			UIManager.put("OptionPane.minimumSize",
+					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.QUESTION_MESSAGE);
 				if (reply == JOptionPane.OK_OPTION) {
 					try {
 						double percentage = Double.parseDouble(percentageTextField.getText().trim());
+						if (percentage <= 0 || percentage > 100) {
+							JOptionPane.showMessageDialog(this, "Please Enter valid weight percentage", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							continue;
+						}
 						controller.setCurveForCourse(controller.getCurrentCourse(), percentage, true);
 					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(this, "Please Enter valid weight percentage", "Error",
@@ -141,8 +148,9 @@ public class FinializePanel extends JPanel implements Observer {
 			JLabel label = new JLabel("Saved");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
-			Object[] fields = {label};
-			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+			Object[] fields = { label };
+			UIManager.put("OptionPane.minimumSize",
+					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
@@ -165,12 +173,14 @@ public class FinializePanel extends JPanel implements Observer {
 			JLabel label = new JLabel("Finalized");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
-			Object[] fields = {label};
-			UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+			Object[] fields = { label };
+			UIManager.put("OptionPane.minimumSize",
+					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
 				int reply = JOptionPane.showConfirmDialog(this, fields, "Curve", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.INFORMATION_MESSAGE);
 				if (reply == JOptionPane.OK_OPTION) {
+					controller.finalizeCourse(course);
 					break;
 				} else {
 					return;
@@ -186,7 +196,7 @@ public class FinializePanel extends JPanel implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
-		Object[] gradeTableColumnNames = {"Name", "ID", "Actual Percentage", "Curved Percentage", "Grade"};
+		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
 		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {

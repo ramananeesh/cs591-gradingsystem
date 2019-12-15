@@ -850,16 +850,17 @@ public class Master extends Observable {
 		}
 		// write to db
 		for (FinalGrade grade : course.getFinalGrades()) {
-			Create.insertNewFinalGrade(grade);
+			Create.insertNewFinalGrade(grade, course.getCourseId());
 		}
-
+		course.setFinalized(true);
+		Update.updateCourseFinalized(course);
 		// lock all features and editing
 		/**
 		 * to do
 		 * 
 		 * /** to do - DB update
 		 */
-
+		
 		fireUpdate();
 	}
 
