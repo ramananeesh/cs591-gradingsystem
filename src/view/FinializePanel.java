@@ -1,9 +1,7 @@
 package view;
 
 import java.awt.Dimension;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Random;
+import java.util.*;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -48,7 +46,6 @@ public class FinializePanel extends JPanel implements Observer {
 		for (int i = 0; i < grades.length; ++i) {
 			grades[i] = 80 + (random.nextDouble() - 0.5) * 40;
 		}
-		Statistics statistics = new Statistics(grades);
 
 		// title label
 		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
@@ -57,14 +54,6 @@ public class FinializePanel extends JPanel implements Observer {
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		titleLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 		add(titleLabel);
-
-		// statistics label
-		JLabel statisticsLabel = new JLabel(statistics.toString());
-		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
-		statisticsLabel.setFont(FontManager.fontLabel);
-		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
-		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		add(statisticsLabel);
 
 		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
 		Object[] gradeTableColumnNames = {"Name", "ID", "Actual Percentage", "Curved Percentage", "Grade"};
@@ -89,6 +78,19 @@ public class FinializePanel extends JPanel implements Observer {
 		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
 		add(gradeTableScrollPane);
+
+		List<Double> statisticsGrades = new ArrayList<Double>();
+		for (int i = 0; i < gradeTableRowData.length; i++) {
+			statisticsGrades.add(Double.parseDouble((String) gradeTableRowData[i][2]));
+		}
+		Statistics statistics = new Statistics(statisticsGrades);
+		// statistics label
+		JLabel statisticsLabel = new JLabel(statistics.toString());
+		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
+		statisticsLabel.setFont(FontManager.fontLabel);
+		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		add(statisticsLabel);
 
 		JButton backButton = new JButton("Back");
 		backButton.setFont(FontManager.fontButton);

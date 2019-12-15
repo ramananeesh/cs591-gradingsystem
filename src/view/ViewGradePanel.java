@@ -89,10 +89,14 @@ public class ViewGradePanel extends JPanel implements Observer {
 		List<String> allItemNames = new ArrayList<>();
 		List<Integer> allCategoryIDs = new ArrayList<>();
 		List<Integer> allItemIDs = new ArrayList<>();
+		List<Double> allItemWeights = new ArrayList<>();
+		List<Double> allCategoryWeights = new ArrayList<>();
 		for (Item item : allItems) {
 			allItemNames.add(item.getFieldName());
 			allCategoryIDs.add(item.getCategoryId());
 			allItemIDs.add(item.getId());
+			allItemWeights.add(item.getWeight());
+			allCategoryWeights.add(controller.getCurrentCourse().getCategoryById(item.getCategoryId()).getWeight());
 		}
 //        ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
 		gradeTableColumnNamesList.add("Student Name");
@@ -109,11 +113,13 @@ public class ViewGradePanel extends JPanel implements Observer {
 			gradeTableRowData[i] = new String[gradeTableColumnNames.length];
 			gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
 			gradeTableRowData[i][1] = students.get(i).getBuid();
+			double categoryGrade = 0;
 			for (int j = 2; j < gradeTableColumnNames.length; j++) {
 				String temp = controller.getStudentScoreByID(students.get(i),
 						controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2), allItemIDs.get(j - 2));
 				gradeTableRowData[i][j] = temp.split(" ")[0];
-				statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
+				categoryGrade += Double.parseDouble(gradeTableRowData[i][j]) * allItemWeights.get(j - 2) * allCategoryWeights.get(j - 2);
+//				statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j])*allItemWeights.get(j-2)*allCategoryWeights.get(j-2));
 				double weight = Double.parseDouble(gradeTableRowData[i][j])*100;
 				gradeTableRowData[i][j] = (int)weight + "%";
 				if (temp.split(" ")[1] == "1") {
@@ -122,8 +128,16 @@ public class ViewGradePanel extends JPanel implements Observer {
 					gradeTableRowComment[i] = false;
 				}
 			}
+			statisticsGrades.add(categoryGrade);
 		}
-		Statistics statistics = new Statistics(statisticsGrades);	// TODO: add the statistics to table
+		Statistics statistics = new Statistics(statisticsGrades);
+		// statistics label
+		JLabel statisticsLabel = new JLabel(statistics.toString());
+		statisticsLabel.setBounds(SizeManager.viewGradeStatBounds);
+		statisticsLabel.setFont(FontManager.fontLabel);
+		statisticsLabel.setVerticalAlignment(SwingConstants.TOP);
+		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		add(statisticsLabel);
 
 
 		if (editable) {
@@ -213,19 +227,26 @@ public class ViewGradePanel extends JPanel implements Observer {
 				ArrayList<String> gradeTableColumnNamesList = new ArrayList<>();
 				List<Integer> categoryIDs = new ArrayList<>();
 				List<Integer> itemIDs = new ArrayList<>();
+				List<Double> allItemWeights = new ArrayList<>();
+				List<Double> allCategoryWeights = new ArrayList<>();
 
 				gradeTableColumnNamesList.add("Student Name");
 				gradeTableColumnNamesList.add("BUID");
-				if (index == 0) {
+				if (index == 0) {    //All
 					ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
+					ArrayList<Item> allItems = controller.getAllItemsForCourse(controller.getCurrentCourse());
 					gradeTableColumnNamesList.addAll(allItemNames);
 
 					String[] itemComboNames = new String[2];
 					itemComboNames[0] = "All";
 					itemComboNames[1] = "None";
 					DefaultComboBoxModel<String> newComboModel = new DefaultComboBoxModel<String>(itemComboNames);
-
 					itemComboBox.setModel(newComboModel);
+
+					for (Item item : allItems) {
+						allItemWeights.add(item.getWeight());
+						allCategoryWeights.add(controller.getCurrentCourse().getCategoryById(item.getCategoryId()).getWeight());
+					}
 				} else {
 					// index-1 here because index=0 is "All"
 					ArrayList<Item> items = controller.getAllItemsForCourseCategory(controller.getCurrentCourse(),
@@ -240,11 +261,12 @@ public class ViewGradePanel extends JPanel implements Observer {
 						gradeTableColumnNamesList.add(itemComboNames[k]);
 						categoryIDs.add(item.getCategoryId());
 						itemIDs.add(item.getId());
+						allItemWeights.add(item.getWeight());
+						allCategoryWeights.add(controller.getCurrentCourse().getCategoryById(item.getCategoryId()).getWeight());
 						k++;
 					}
 
 					DefaultComboBoxModel<String> newComboModel = new DefaultComboBoxModel<String>(itemComboNames);
-
 					itemComboBox.setModel(newComboModel);
 
 				}
@@ -259,6 +281,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					gradeTableRowData[i] = new String[gradeTableColumnNames.length];
 					gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
 					gradeTableRowData[i][1] = students.get(i).getBuid();
+					double categoryGrade = 0;
 					for (int j = 2; j < gradeTableColumnNames.length; j++) {
 						String temp;
 						if (index == 0) {
@@ -272,7 +295,12 @@ public class ViewGradePanel extends JPanel implements Observer {
 									itemIDs.get(j - 2));
 						}
 						gradeTableRowData[i][j] = temp.split(" ")[0];
-						statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
+//						statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
+						if (index == 0) {
+							categoryGrade += Double.parseDouble(gradeTableRowData[i][j]) * allItemWeights.get(j - 2) * allCategoryWeights.get(j - 2);
+						} else {
+							categoryGrade += Double.parseDouble(gradeTableRowData[i][j]) * allItemWeights.get(j - 2);
+						}
 						double weight = Double.parseDouble(gradeTableRowData[i][j])*100;
 						gradeTableRowData[i][j] = (int)weight + "%";
 						if (temp.split(" ")[1] == "1") {
@@ -281,8 +309,11 @@ public class ViewGradePanel extends JPanel implements Observer {
 							gradeTableRowComment[i] = false;
 						}
 					}
+					statisticsGrades.add(categoryGrade);
 				}
-				Statistics statistics = new Statistics(statisticsGrades);	// TODO: add the statistics to table
+				Statistics statistics = new Statistics(statisticsGrades);
+				statisticsLabel.setText(statistics.toString());
+				statisticsLabel.repaint();
 
 				if (editable) {
 					gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
@@ -406,6 +437,8 @@ public class ViewGradePanel extends JPanel implements Observer {
 				List<String> allItemNames = new ArrayList<>();
 				List<Integer> allCategoryIDs = new ArrayList<>();
 				List<Integer> allItemIDs = new ArrayList<>();
+				List<Double> allItemWeights = new ArrayList<>();
+				List<Double> allCategoryWeights = new ArrayList<>();
 				if (itemIndex == 0) {
 					if (categoryIndex == 0) {
 						List<Item> allItems = controller.getAllItemsForCourse(controller.getCurrentCourse());
@@ -413,6 +446,8 @@ public class ViewGradePanel extends JPanel implements Observer {
 							allItemNames.add(item.getFieldName());
 							allCategoryIDs.add(item.getCategoryId());
 							allItemIDs.add(item.getId());
+							allItemWeights.add(item.getWeight());
+							allCategoryWeights.add(controller.getCurrentCourse().getCategoryById(item.getCategoryId()).getWeight());
 						}
 					} else {
 						ArrayList<Item> allItems = controller
@@ -421,12 +456,15 @@ public class ViewGradePanel extends JPanel implements Observer {
 							allItemNames.add(item.getFieldName());
 							allCategoryIDs.add(item.getCategoryId());
 							allItemIDs.add(item.getId());
+							allItemWeights.add(item.getWeight());
+							allCategoryWeights.add(controller.getCurrentCourse().getCategoryById(item.getCategoryId()).getWeight());
 						}
 					}
 				} else if (categoryIndex == 0 && itemIndex == 1) {
 					for (Category c : allCategories) {
 						allItemNames.add(c.getFieldName());
 						allCategoryIDs.add(c.getId());
+						allCategoryWeights.add(c.getWeight());
 					}
 				} else {
 					Item item = controller
@@ -447,6 +485,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					gradeTableRowData[i] = new String[gradeTableColumnNames.length];
 					gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
 					gradeTableRowData[i][1] = students.get(i).getBuid();
+					double categoryGrade = 0;
 					for (int j = 2; j < gradeTableColumnNames.length; j++) {
 						String temp;
 						if (allItemIDs.size() > 0) {
@@ -458,15 +497,32 @@ public class ViewGradePanel extends JPanel implements Observer {
 									controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2));
 						}
 						gradeTableRowData[i][j] = temp.split(" ")[0];
-						statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
+						if (categoryIndex == 0) {
+							if (itemIndex == 0) {
+								categoryGrade += Double.parseDouble(gradeTableRowData[i][j]) * allItemWeights.get(j - 2) * allCategoryWeights.get(j - 2);
+							} else {
+								categoryGrade += Double.parseDouble(gradeTableRowData[i][j]) * allCategoryWeights.get(j - 2);
+							}
+						} else {
+							if (itemIndex == 0) {
+								categoryGrade += Double.parseDouble(gradeTableRowData[i][j]) * allItemWeights.get(j - 2);
+							} else {
+								statisticsGrades.add(Double.parseDouble(gradeTableRowData[i][j]));
+							}
+						}
 						double weight = Double.parseDouble(gradeTableRowData[i][j])*100;
 						gradeTableRowData[i][j] = (int)weight + "%";
 						if (temp.split(" ")[1] == "1") {
 							hasComment = true;
 						}
 					}
+					if (categoryGrade != 0) {
+						statisticsGrades.add(categoryGrade);
+					}
 				}
-				Statistics statistics = new Statistics(statisticsGrades);	// TODO: add the statistics to table
+				Statistics statistics = new Statistics(statisticsGrades);
+				statisticsLabel.setText(statistics.toString());
+				statisticsLabel.repaint();
 
 				if (editable) {
 					gradeTableModel = new MyTableModel(gradeTableRowData, gradeTableColumnNames) {
@@ -684,12 +740,6 @@ public class ViewGradePanel extends JPanel implements Observer {
 
 		// TODO data for test
 		Course course = controller.getCurrentCourse();
-		double[] grades = new double[100];
-		Random random = new Random();
-		for (int i = 0; i < grades.length; ++i) {
-			grades[i] = 80 + (random.nextDouble() - 0.5) * 40;
-		}
-		statistics = new Statistics(grades);
 
 		// title label
 		JLabel titleLabel = new JLabel(String.format("%s - %s - %s", course.getCourseNumber(), course.getCourseName(), course.getTerm()));
@@ -698,14 +748,6 @@ public class ViewGradePanel extends JPanel implements Observer {
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		titleLabel.setVerticalAlignment(SwingConstants.CENTER);
 		add(titleLabel);
-
-		// statistics label
-		JLabel statisticsLabel = new JLabel(statistics.toString());
-		statisticsLabel.setBounds(SizeManager.viewGradeStatBounds);
-		statisticsLabel.setFont(FontManager.fontLabel);
-		statisticsLabel.setVerticalAlignment(SwingConstants.TOP);
-		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		add(statisticsLabel);
 
 		// category label
 		JLabel categoryLabel = new JLabel("Category : ");
