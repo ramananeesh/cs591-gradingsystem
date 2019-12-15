@@ -865,6 +865,27 @@ public class Master extends Observable {
 	}
 	
 
+	public void deleteCategoryForCourse(Course course, int categoryIndex) {
+		Category category = course.getCategory(categoryIndex);
+		for(int i=0; i<category.getItems().size();i++) {
+			Item item = category.getItem(i);
+			deleteItemFromCourse(course, item);
+		}
+		Category cat = course.removeCategory(categoryIndex);
+		Delete.removeCategoryFromCourse(cat.getId(), course.getCourseId());
+		fireUpdate();
+	}
+	
+	public void deleteItemFromCourse(Course course, Item item) {
+		Category cat = course.getCategoryById(item.getCategoryId());
+		
+		Item r = cat.removeItemById(item.getId());
+		
+		course.setCategory(course.getCategoryIndexById(cat.getId()), cat);
+		
+		Delete.removeItemFromCategoryInCourse(r.getId(), cat.getId(), course.getCourseId());
+		fireUpdate();
+	}
 
 	public void fireUpdate() {
 		setChanged();

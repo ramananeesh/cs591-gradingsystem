@@ -46,6 +46,15 @@ public class Category extends GenericCategory {
 		return removedItem;
 	}
 
+	public Item removeItemById(int itemId) {
+		int index = getItemIndexById(itemId);
+
+		if (index != -1) {
+			return removeItem(index);
+		}
+		return null;
+	}
+
 	/*
 	 * accessors and mutators
 	 */
@@ -70,43 +79,54 @@ public class Category extends GenericCategory {
 		// this will shift any item at that index
 		this.items.add(itemIndex, newItem);
 	}
-	
-	public String[][] getItemsForList(){
-		String [][]str = new String[this.items.size()][];
-		
-		int i=0;
-		for(Item item: this.items) {
-			str[i++]=item.getDetails();
+
+	public String[][] getItemsForList() {
+		String[][] str = new String[this.items.size()][];
+
+		int i = 0;
+		for (Item item : this.items) {
+			str[i++] = item.getDetails();
 		}
-		
+
 		return str;
 	}
-	
-	public String[][] getItemsForListWithMaxPoints(){
-		String [][]str = new String[this.items.size()][];
-		
-		int i=0;
-		for(Item item: this.items) {
-			str[i++]=item.getDetailsWithMaxPoints();
+
+	public String[][] getItemsForListWithMaxPoints() {
+		String[][] str = new String[this.items.size()][];
+
+		int i = 0;
+		for (Item item : this.items) {
+			str[i++] = item.getDetailsWithMaxPoints();
 		}
-		
+
 		return str;
 	}
-	
+
 	public Item getItemById(int itemId) {
-		for(Item i: this.items) {
-			if(i.getId()==itemId)
+		for (Item i : this.items) {
+			if (i.getId() == itemId)
 				return i;
 		}
 		return null;
 	}
-	
+
 	public Item getItemByItemName(String itemName) {
-		for(Item i: this.items) {
-			if(i.getFieldName().equals(itemName))
+		for (Item i : this.items) {
+			if (i.getFieldName().equals(itemName))
 				return i;
 		}
 		return null;
+	}
+
+	public int getItemIndexById(int id) {
+		int i = 0;
+		for (Item itt : this.items) {
+			if (itt.getId() == id)
+				return i;
+			i++;
+		}
+
+		return -1;
 	}
 
 }

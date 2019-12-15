@@ -259,4 +259,15 @@ public class Course extends GenericCourse {
 		else
 			return false;
 	}
+	
+	public int getCategoryIndexById(int categoryId) {
+		int i=0;
+		for(Category c: categories) {
+			if(c.getId()==categoryId) {
+				return i;
+			}
+			i++;
+		}
+		return -1; 
+	}
 }
