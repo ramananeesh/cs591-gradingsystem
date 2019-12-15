@@ -108,16 +108,22 @@ public class ViewGradePanel extends JPanel implements Observer {
 			}
 		}
 
-		String[][] gradeTableRowData = new String[students.size()][];
-		Boolean[] gradeTableRowComment = new Boolean[students.size()];
+		String[][] gradeTableRowData = new String[activeStudentSize][];
+		Boolean[] gradeTableRowComment = new Boolean[activeStudentSize];
 		statisticsGrades = new ArrayList<Double>();
+		int curr = 0;
 		for (int i = 0; i < gradeTableRowData.length; i++) {
+			if (!students.get(curr).isActive()) {
+				i--;
+				curr++;
+				continue;
+			}
 			gradeTableRowData[i] = new String[gradeTableColumnNames.length];
-			gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
-			gradeTableRowData[i][1] = students.get(i).getBuid();
+			gradeTableRowData[i][0] = students.get(curr).getFname() + " " + students.get(curr).getLname();
+			gradeTableRowData[i][1] = students.get(curr).getBuid();
 			double categoryGrade = 0;
 			for (int j = 2; j < gradeTableColumnNames.length; j++) {
-				String temp = controller.getStudentScoreByID(students.get(i),
+				String temp = controller.getStudentScoreByID(students.get(curr),
 						controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2), allItemIDs.get(j - 2));
 				gradeTableRowData[i][j] = temp.split(" ")[0];
 				categoryGrade += Double.parseDouble(gradeTableRowData[i][j]) * allItemWeights.get(j - 2) * allCategoryWeights.get(j - 2);
@@ -131,6 +137,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 				}
 			}
 			statisticsGrades.add(categoryGrade);
+			curr++;
 		}
 		Statistics statistics = new Statistics(statisticsGrades);
 		// statistics label
@@ -274,25 +281,31 @@ public class ViewGradePanel extends JPanel implements Observer {
 				}
 				gradeTableColumnNames = gradeTableColumnNamesList.toArray();
 				ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
-				String[][] gradeTableRowData = new String[students.size()][];
-				Boolean[] gradeTableRowComment = new Boolean[students.size()];
+				String[][] gradeTableRowData = new String[activeStudentSize][];
+				Boolean[] gradeTableRowComment = new Boolean[activeStudentSize];
 
 				statisticsGrades = new ArrayList<Double>();
+				int curr = 0;
 				for (int i = 0; i < gradeTableRowData.length; i++) {
+					if (!students.get(curr).isActive()) {
+						i--;
+						curr++;
+						continue;
+					}
 					hasComment = false;
 					gradeTableRowData[i] = new String[gradeTableColumnNames.length];
-					gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
-					gradeTableRowData[i][1] = students.get(i).getBuid();
+					gradeTableRowData[i][0] = students.get(curr).getFname() + " " + students.get(curr).getLname();
+					gradeTableRowData[i][1] = students.get(curr).getBuid();
 					double categoryGrade = 0;
 					for (int j = 2; j < gradeTableColumnNames.length; j++) {
 						String temp;
 						if (index == 0) {
-							temp = controller.getStudentScoreByID(students.get(i),
+							temp = controller.getStudentScoreByID(students.get(curr),
 									controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2),
 									allItemIDs.get(j - 2));
 
 						} else {
-							temp = controller.getStudentScoreByID(students.get(i),
+							temp = controller.getStudentScoreByID(students.get(curr),
 									controller.getCurrentCourse().getCourseId(), categoryIDs.get(j - 2),
 									itemIDs.get(j - 2));
 						}
@@ -312,6 +325,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 						}
 					}
 					statisticsGrades.add(categoryGrade);
+					curr++;
 				}
 				Statistics statistics = new Statistics(statisticsGrades);
 				statisticsLabel.setText(statistics.toString());
@@ -480,22 +494,28 @@ public class ViewGradePanel extends JPanel implements Observer {
 				gradeTableColumnNamesList.addAll(allItemNames);
 				gradeTableColumnNames = gradeTableColumnNamesList.toArray();
 				ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
-				String[][] gradeTableRowData = new String[students.size()][];
+				String[][] gradeTableRowData = new String[activeStudentSize][];
 				statisticsGrades = new ArrayList<Double>();
+				int curr = 0;
 				for (int i = 0; i < gradeTableRowData.length; i++) {
+					if (!students.get(curr).isActive()) {
+						i--;
+						curr++;
+						continue;
+					}
 					hasComment = false;
 					gradeTableRowData[i] = new String[gradeTableColumnNames.length];
-					gradeTableRowData[i][0] = students.get(i).getFname() + " " + students.get(i).getLname();
-					gradeTableRowData[i][1] = students.get(i).getBuid();
+					gradeTableRowData[i][0] = students.get(curr).getFname() + " " + students.get(curr).getLname();
+					gradeTableRowData[i][1] = students.get(curr).getBuid();
 					double categoryGrade = 0;
 					for (int j = 2; j < gradeTableColumnNames.length; j++) {
 						String temp;
 						if (allItemIDs.size() > 0) {
-							temp = controller.getStudentScoreByID(students.get(i),
+							temp = controller.getStudentScoreByID(students.get(curr),
 									controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2),
 									allItemIDs.get(j - 2));
 						} else {
-							temp = controller.getStudentScoreByID(students.get(i),
+							temp = controller.getStudentScoreByID(students.get(curr),
 									controller.getCurrentCourse().getCourseId(), allCategoryIDs.get(j - 2));
 						}
 						gradeTableRowData[i][j] = temp.split(" ")[0];
@@ -521,6 +541,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					if (categoryGrade != 0) {
 						statisticsGrades.add(categoryGrade);
 					}
+					curr++;
 				}
 				Statistics statistics = new Statistics(statisticsGrades);
 				statisticsLabel.setText(statistics.toString());

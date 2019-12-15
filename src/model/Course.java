@@ -208,8 +208,10 @@ public class Course extends GenericCourse {
 	public void initiateFinalize(Double[] percentages, String[] letterGrades) {
 		int i = 0;
 		for (CourseStudent s : this.students) {
-			finalGrades.add(new FinalGrade(s, percentages[i], letterGrades[i]));
-			i++;
+            if (s.isActive()) {
+                finalGrades.add(new FinalGrade(s, percentages[i], letterGrades[i]));
+                i++;
+            }
 		}
 	}
 
