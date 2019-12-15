@@ -138,4 +138,9 @@ public class Category extends GenericCategory {
 		return sum==1.0;
 	}
 
+	public void replaceAllCourseIdsInItems(int courseId) {
+		for(int i=0; i<this.items.size();i++) {
+			this.items.get(i).setCourseId(courseId);
+		}
+	}
 }

@@ -45,7 +45,7 @@ public class CoursePanel extends JPanel implements Observer {
 		frame.setTitle(TITLE);
 		setLayout(null);
 		setBounds(SizeManager.contentPaneBounds);
-		setLocation(0,0);
+		setLocation(0, 0);
 		setOpaque(false);
 
 		UIManager.put("TextField.font", FontManager.fontSearch);
@@ -85,7 +85,7 @@ public class CoursePanel extends JPanel implements Observer {
 		tableHeader.setForeground(ColorManager.lightColor);
 		tableHeader.setFont(tableCourse.getFont());
 		tableHeader.setEnabled(false);
-		tableHeader.setPreferredSize(new Dimension(tableCourse.getWidth(),tableCourse.getRowHeight()));
+		tableHeader.setPreferredSize(new Dimension(tableCourse.getWidth(), tableCourse.getRowHeight()));
 		JScrollPane tableCourseScrollPane = new JScrollPane(tableCourse);
 		tableCourseScrollPane.setBounds(tableCourse.getBounds());
 		tableCourse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -172,7 +172,7 @@ public class CoursePanel extends JPanel implements Observer {
 									.getTemplateCategoriesForCourse(templateCourse);
 
 							controller.addNewCourse(courseId, courseName, courseTerm, templateCategories,
-									new ArrayList<CourseStudent>());
+									new ArrayList<CourseStudent>(), true);
 
 						} else {
 							controller.addNewCourse(courseId, courseName, courseTerm);
