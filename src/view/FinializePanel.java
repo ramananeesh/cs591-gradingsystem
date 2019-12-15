@@ -3,9 +3,9 @@ package view;
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,6 +32,9 @@ public class FinializePanel extends JPanel implements Observer {
 	private DefaultTableModel gradeTableModel;
 	private JTable gradeTable;
 	private Master controller;
+	private final JButton curveButton;
+	private final JButton saveButton;
+	private final JButton finalizeButton;
 
 	public FinializePanel(MainFrame frame, Master controller) {
 		this.controller = controller;
@@ -43,7 +46,7 @@ public class FinializePanel extends JPanel implements Observer {
 
 		// TODO data for test
 		Course course = controller.getCurrentCourse();
-		
+
 		Statistics statistics = new Statistics(course.getFinalGradesForStats());
 
 		// title label
@@ -64,7 +67,7 @@ public class FinializePanel extends JPanel implements Observer {
 		add(statisticsLabel);
 
 		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
-		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
+		Object[] gradeTableColumnNames = {"Name", "ID", "Actual Percentage", "Curved Percentage", "Grade"};
 		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -94,11 +97,11 @@ public class FinializePanel extends JPanel implements Observer {
 		backButton.setBackground(ColorManager.primaryColor);
 		backButton.addActionListener(e -> {
 			frame.changePanel(this, new MenuPanel(frame,
-					new String[] { course.getCourseNumber(), course.getCourseName(), course.getTerm() }, controller));
+					new String[]{course.getCourseNumber(), course.getCourseName(), course.getTerm()}, controller));
 		});
 		add(backButton);
 
-		JButton curveButton = new JButton("Curve");
+		curveButton = new JButton("Curve");
 		curveButton.setFont(FontManager.fontButton);
 		curveButton.setBounds(SizeManager.finalizeButtonCurveBounds);
 		curveButton.setForeground(ColorManager.lightColor);
@@ -106,7 +109,7 @@ public class FinializePanel extends JPanel implements Observer {
 		curveButton.addActionListener(e -> {
 			// TODO curve
 			JTextField percentageTextField = new JTextField();
-			Object[] fields = { "Percentage: ", percentageTextField };
+			Object[] fields = {"Percentage: ", percentageTextField};
 			UIManager.put("OptionPane.minimumSize",
 					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
@@ -134,7 +137,7 @@ public class FinializePanel extends JPanel implements Observer {
 		});
 		add(curveButton);
 
-		JButton saveButton = new JButton("Save");
+		saveButton = new JButton("Save");
 		saveButton.setFont(FontManager.fontButton);
 		saveButton.setBounds(SizeManager.finalizeButtonSaveBounds);
 		saveButton.setForeground(ColorManager.lightColor);
@@ -144,7 +147,7 @@ public class FinializePanel extends JPanel implements Observer {
 			JLabel label = new JLabel("Saved");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
-			Object[] fields = { label };
+			Object[] fields = {label};
 			UIManager.put("OptionPane.minimumSize",
 					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
@@ -159,7 +162,7 @@ public class FinializePanel extends JPanel implements Observer {
 		});
 		add(saveButton);
 
-		JButton finalizeButton = new JButton("Finalize");
+		finalizeButton = new JButton("Finalize");
 		finalizeButton.setFont(FontManager.fontButton);
 		finalizeButton.setBounds(SizeManager.finalizeButtonFinalizeBounds);
 		finalizeButton.setForeground(ColorManager.lightColor);
@@ -169,7 +172,7 @@ public class FinializePanel extends JPanel implements Observer {
 			JLabel label = new JLabel("Finalized");
 			label.setHorizontalAlignment(SwingConstants.CENTER);
 			label.setFont(FontManager.fontTitle);
-			Object[] fields = { label };
+			Object[] fields = {label};
 			UIManager.put("OptionPane.minimumSize",
 					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 			while (true) {
@@ -185,6 +188,10 @@ public class FinializePanel extends JPanel implements Observer {
 		});
 		add(finalizeButton);
 
+		if (controller.getCurrentCourse().isFinalized()) {
+			lock();
+		}
+
 		setVisible(true);
 	}
 
@@ -192,7 +199,7 @@ public class FinializePanel extends JPanel implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
-		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
+		Object[] gradeTableColumnNames = {"Name", "ID", "Actual Percentage", "Curved Percentage", "Grade"};
 		gradeTableModel = new DefaultTableModel(gradeTableRowData, gradeTableColumnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -202,4 +209,9 @@ public class FinializePanel extends JPanel implements Observer {
 		gradeTable.setModel(gradeTableModel);
 	}
 
+	private void lock() {
+		for (JComponent component : new JComponent[]{gradeTable, saveButton, finalizeButton, curveButton}) {
+			component.setEnabled(false);
+		}
+	}
 }
