@@ -706,7 +706,7 @@ public class Master extends Observable {
 					if (!entry.getComments().trim().equals("")) {
 						Category cat = course.getCategoryById(entry.getCategoryId());
 						Item item = cat.getItemById(entry.getItemId());
-						str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName() + "\nComment: "
+						str += "Category: " + cat.getFieldName() + "\nItem: " + item.getFieldName() + "\nComment: "
 								+ entry.getComments() + "\n";
 					}
 				}

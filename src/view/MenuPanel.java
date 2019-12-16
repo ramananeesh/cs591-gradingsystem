@@ -511,6 +511,11 @@ public class MenuPanel extends JPanel implements Observer {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}, viewGrades -> { // View Grades
+					if (!controller.canBeFinalized(controller.getCurrentCourse())) {
+						JOptionPane.showMessageDialog(this,
+								"The weights are not added up to 100%, which will affect the result",
+								"Error", JOptionPane.ERROR_MESSAGE);
+					}
 					frame.changePanel(this, new ViewGradePanel(frame, courseData, false, this.controller));
 				}, finalize -> {
 
