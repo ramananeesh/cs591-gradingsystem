@@ -1,11 +1,22 @@
 package controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Observable;
+import java.util.Random;
 
-import com.sun.jmx.snmp.agent.SnmpUserDataFactory;
-import db.*;
-import model.*;
-import helper.*;
+import db.Create;
+import db.Delete;
+import db.Read;
+import db.Update;
+import model.Category;
+import model.Course;
+import model.CourseStudent;
+import model.FinalGrade;
+import model.GradeEntry;
+import model.Item;
+import model.Student;
 
 public class Master extends Observable {
 
@@ -706,7 +717,7 @@ public class Master extends Observable {
 					if (!entry.getComments().trim().equals("")) {
 						Category cat = course.getCategoryById(entry.getCategoryId());
 						Item item = cat.getItemById(entry.getItemId());
-						str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName() + "\nComment: "
+						str += "Category: " + cat.getFieldName() + "\nItem: " + item.getFieldName() + "\nComment: "
 								+ entry.getComments() + "\n";
 					}
 				}
