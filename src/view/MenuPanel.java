@@ -536,7 +536,6 @@ public class MenuPanel extends JPanel implements Observer {
 						double pointsEarned = Double.parseDouble(gradeTextField.getText());
 						if (gradeEntry != null) {
 							gradeEntry.setPointsEarned(pointsEarned);
-							gradeEntry.setPointsEarned(pointsEarned / item.getMaxPoints() * 100);
 							Update.updateCourseStudentGradeEntry(student, course.getCourseId(), category.getId(), item.getId());
 						} else {
 							gradeEntry = new GradeEntry(
