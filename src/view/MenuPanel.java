@@ -520,8 +520,9 @@ public class MenuPanel extends JPanel implements Observer {
 					itemComboBox.setModel(new DefaultComboBoxModel<>(itemComboBoxItems));
 				});
 				JTextField gradeTextField = new JTextField();
+				JTextField commentTextField = new JTextField();
 				Object[] fields = {"Student: ", studentComboBox, "Category: ", categoryComboBox, "Item: ",
-						itemComboBox, "Points Earned: ", gradeTextField,};
+						itemComboBox, "Points Earned: ", gradeTextField, "Comment: ", commentTextField};
 				UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
 						SizeManager.optionPaneRowHeight * fields.length));
 
@@ -536,12 +537,14 @@ public class MenuPanel extends JPanel implements Observer {
 						double pointsEarned = Double.parseDouble(gradeTextField.getText());
 						if (gradeEntry != null) {
 							gradeEntry.setPointsEarned(pointsEarned);
+							gradeEntry.setPercentage(pointsEarned / item.getMaxPoints() * 100);
+							gradeEntry.setComments(commentTextField.getText());
 							Update.updateCourseStudentGradeEntry(student, course.getCourseId(), category.getId(), item.getId());
 						} else {
 							gradeEntry = new GradeEntry(
 									item.getFieldName(), item.getId(), category.getId(),
 									item.getMaxPoints(), pointsEarned, pointsEarned / item.getMaxPoints() * 100,
-									course.getCourseId(), "");
+									course.getCourseId(), commentTextField.getText());
 							student.addGradeEntry(gradeEntry);
 							Create.insertNewGradeEntry(gradeEntry, student.getBuid());
 						}
