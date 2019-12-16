@@ -515,9 +515,9 @@ public class MenuPanel extends JPanel implements Observer {
 					List<Item> newItemList = categoryList.get(categoryIndex).getItems();
 					String[] newItemComboBoxItems = new String[newItemList.size()];
 					for (int i = 0; i < newItemList.size(); ++i) {
-						itemComboBoxItems[i] = newItemList.get(i).getFieldName();
+						newItemComboBoxItems[i] = newItemList.get(i).getFieldName();
 					}
-					itemComboBox.setModel(new DefaultComboBoxModel<>(itemComboBoxItems));
+					itemComboBox.setModel(new DefaultComboBoxModel<>(newItemComboBoxItems));
 				});
 				JTextField gradeTextField = new JTextField();
 				JTextField commentTextField = new JTextField();
