@@ -41,6 +41,8 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import controller.Master;
+import db.Create;
+import db.Update;
 import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
@@ -486,17 +488,40 @@ public class MenuPanel extends JPanel implements Observer {
 			frame.changePanel(this, new GradePanel(frame, courseData, true, this.controller));
 		}, editByStudent -> { // Edit by Student
 			try {
-				String[] studentComboBoxItems = {"Student 1", "Student 2", "Student 3"}; // TODO test data,
+				Course course = controller.getCurrentCourse();
+				List<CourseStudent> studentList = course.getStudents();
+				List<Category> categoryList = course.getCategories();
+				List<Item> itemList = categoryList.get(0).getItems();
+				String[] studentComboBoxItems = new String[studentList.size()];
+				for (int i = 0; i < studentList.size(); ++i) {
+					studentComboBoxItems[i] = studentList.get(i).getName();
+				}
+				String[] categoryComboBoxItems = new String[categoryList.size()];
+				for (int i = 0; i < categoryList.size(); ++i) {
+					categoryComboBoxItems[i] = categoryList.get(i).getFieldName();
+				}
+				String[] itemComboBoxItems = new String[itemList.size()];
+				for (int i = 0; i < itemList.size(); ++i) {
+					itemComboBoxItems[i] = itemList.get(i).getFieldName();
+				}
 				// need to be
 				// replaced when
 				// database exists
 				JComboBox<String> studentComboBox = new JComboBox<>(studentComboBoxItems);
-				JComboBox<String> categoryComboBox = new JComboBox<>(new String[]{"Homework", "Exam"});
-				JComboBox<String> itemComboBox = new JComboBox<>(
-						new String[]{"Homework 1", "Homework 2", "Midterm", "Exam"});
+				JComboBox<String> categoryComboBox = new JComboBox<>(categoryComboBoxItems);
+				JComboBox<String> itemComboBox = new JComboBox<>(itemComboBoxItems);
+				categoryComboBox.addActionListener(e -> {
+					int categoryIndex = categoryComboBox.getSelectedIndex();
+					List<Item> newItemList = categoryList.get(categoryIndex).getItems();
+					String[] newItemComboBoxItems = new String[newItemList.size()];
+					for (int i = 0; i < newItemList.size(); ++i) {
+						itemComboBoxItems[i] = newItemList.get(i).getFieldName();
+					}
+					itemComboBox.setModel(new DefaultComboBoxModel<>(itemComboBoxItems));
+				});
 				JTextField gradeTextField = new JTextField();
 				Object[] fields = {"Student: ", studentComboBox, "Category: ", categoryComboBox, "Item: ",
-						itemComboBox, "Grade: ", gradeTextField,};
+						itemComboBox, "Points Earned: ", gradeTextField,};
 				UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
 						SizeManager.optionPaneRowHeight * fields.length));
 
@@ -504,12 +529,31 @@ public class MenuPanel extends JPanel implements Observer {
 					int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student",
 							JOptionPane.OK_CANCEL_OPTION);
 					if (reply == JOptionPane.OK_OPTION) {
+						CourseStudent student = controller.getCurrentCourse().getStudent(studentComboBox.getSelectedIndex());
+						Category category = categoryList.get(categoryComboBox.getSelectedIndex());
+						Item item = itemList.get(itemComboBox.getSelectedIndex());
+						GradeEntry gradeEntry = student.getGradeEntryForItemInCategory(course.getCourseId(), category.getId(), item.getId());
+						double pointsEarned = Double.parseDouble(gradeTextField.getText());
+						if (gradeEntry != null) {
+							gradeEntry.setPointsEarned(pointsEarned);
+							gradeEntry.setPointsEarned(pointsEarned / item.getMaxPoints() * 100);
+							Update.updateCourseStudentGradeEntry(student, course.getCourseId(), category.getId(), item.getId());
+						} else {
+							gradeEntry = new GradeEntry(
+									item.getFieldName(), item.getId(), category.getId(),
+									item.getMaxPoints(), pointsEarned, pointsEarned / item.getMaxPoints() * 100,
+									course.getCourseId(), "");
+							student.addGradeEntry(gradeEntry);
+							Create.insertNewGradeEntry(gradeEntry, student.getBuid());
+						}
+						controller.fireUpdate();
 						break;
 					} else {
 						return;
 					}
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}, viewGrades -> { // View Grades
@@ -530,7 +574,9 @@ public class MenuPanel extends JPanel implements Observer {
 		}}};
 
 		menuBar.setLayout(new GridBagLayout());
-		for (int i = 0; i < menuName.length; ++i) {
+		for (
+				int i = 0;
+				i < menuName.length; ++i) {
 			JMenu menu = new JMenu(menuName[i]);
 			for (int j = 0; j < menuItemName[i].length; ++j) {
 				if (menuItemName[i][j] == null) {
@@ -549,27 +595,41 @@ public class MenuPanel extends JPanel implements Observer {
 
 		JTextPane informationTextPane = new JTextPane();
 		informationTextPane.setBounds(SizeManager.textInfoBounds);
-		informationTextPane.setText(courseString + "\n" + getStatisticsForCourse());
+		informationTextPane.setText(courseString + "\n" +
+
+				getStatisticsForCourse());
 		informationTextPane.setFont(FontManager.fontText);
 		informationTextPane.setEditable(false);
 		StyledDocument doc = informationTextPane.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
+
 		add(informationTextPane);
 
-		tableStudentColumns = new String[]{"Student Name", "Student ID"};
+		tableStudentColumns = new String[]
+
+				{
+						"Student Name", "Student ID"
+				}
+
+		;
 		String[][] tableStudentData; // TODO load student from database
 		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
 		Boolean[] statusData = controller.getAllStudentsStatusForCourse(controller.getCurrentCourse());
-		studentTableModel = new MyTableModel(tableStudentData, tableStudentColumns) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+		studentTableModel = new
 
-		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
+				MyTableModel(tableStudentData, tableStudentColumns) {
+					@Override
+					public boolean isCellEditable(int row, int column) {
+						return false;
+					}
+				}
+
+		;
+
+		for (
+				int i = 0; i < studentTableModel.getRowCount(); i++) {
 			if (statusData[i] == false) {
 				studentTableModel.setRowColor(i, Color.gray);
 			} else {
@@ -577,61 +637,115 @@ public class MenuPanel extends JPanel implements Observer {
 			}
 		}
 
-		tableStudent = new JTable(studentTableModel);
+		tableStudent = new
+
+				JTable(studentTableModel);
 		tableStudent.setRowHeight(SizeManager.menuTableRowHeight);
 		JScrollPane tableStudentScrollPane = new JScrollPane(tableStudent);
 		tableStudentScrollPane.setBounds(SizeManager.tableStudentBounds);
+
 		add(tableStudentScrollPane);
 
-		tableCategoryColumns = new String[]{"Category Name", "Weight"};
+		tableCategoryColumns = new String[]
+
+				{
+						"Category Name", "Weight"
+				}
+
+		;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
-		for (int i = 0; i < tableCategoryData.length; i++) {
+		for (
+				int i = 0;
+				i < tableCategoryData.length; i++) {
 			double weight = Double.parseDouble(tableCategoryData[i][1]) * 100;
 			tableCategoryData[i][1] = (int) weight + "%";
 		}
-		categoryTableModel = new DefaultTableModel(tableCategoryData, tableCategoryColumns) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
-		tableCategory = new JTable(categoryTableModel);
+
+		categoryTableModel = new
+
+				DefaultTableModel(tableCategoryData, tableCategoryColumns) {
+					@Override
+					public boolean isCellEditable(int row, int column) {
+						return false;
+					}
+				}
+
+		;
+		tableCategory = new
+
+				JTable(categoryTableModel);
+
 		JScrollPane tableCategoryScrollPane = new JScrollPane(tableCategory);
 		tableCategoryScrollPane.setBounds(SizeManager.tableCategoryBounds);
+
 		add(tableCategoryScrollPane);
 
-		tableItemColumns = new String[]{"Item Name", "Weight"};
+		tableItemColumns = new String[]
+
+				{
+						"Item Name", "Weight"
+				}
+
+		;
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
-		for (int i = 0; i < tableItemData.length; i++) {
+		for (
+				int i = 0;
+				i < tableItemData.length; i++) {
 			double weight = Double.parseDouble(tableItemData[i][1]) * 100;
 			tableItemData[i][1] = (int) weight + "%";
 		}
-		itemTableModel = new DefaultTableModel(tableItemData, tableItemColumns) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
-		tableItem = new JTable(itemTableModel);
+
+		itemTableModel = new
+
+				DefaultTableModel(tableItemData, tableItemColumns) {
+					@Override
+					public boolean isCellEditable(int row, int column) {
+						return false;
+					}
+				}
+
+		;
+		tableItem = new
+
+				JTable(itemTableModel);
+
 		JScrollPane tableItemScrollPane = new JScrollPane(tableItem);
 		tableItemScrollPane.setBounds(SizeManager.tableItemBounds);
+
 		add(tableItemScrollPane);
 
-		for (int i = 0; i < 2; ++i) {
+		for (
+				int i = 0;
+				i < 2; ++i) {
 			tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
 			tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
 		}
-		for (JScrollPane scrollPane : new JScrollPane[]{tableStudentScrollPane, tableCategoryScrollPane,
-				tableItemScrollPane}) {
+		for (
+				JScrollPane scrollPane : new JScrollPane[]
+
+				{
+						tableStudentScrollPane, tableCategoryScrollPane,
+						tableItemScrollPane
+				}) {
 			scrollPane.setOpaque(false);
 			scrollPane.getViewport().setOpaque(false);
 		}
 		tableStudent.setDefaultRenderer(Object.class, studentRender);
-		for (JTable table : new JTable[]{tableCategory, tableItem}) {
+		for (
+				JTable table : new JTable[]
+
+				{
+						tableCategory, tableItem
+				}) {
 			table.setDefaultRenderer(Object.class, tableRender);
 		}
-		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
+		for (
+				JTable table : new JTable[]
+
+				{
+						tableStudent, tableCategory, tableItem
+				}) {
 			table.setRowHeight(SizeManager.menuTableRowHeight);
 			table.setRowSelectionAllowed(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -703,7 +817,9 @@ public class MenuPanel extends JPanel implements Observer {
 			tableHeader.setEnabled(false);
 		}
 
-		for (int i = 0; i < 4; ++i) {
+		for (
+				int i = 0;
+				i < 4; ++i) {
 			buttons[i] = new JButton(menuItemName[2][i]);
 			buttons[i].setForeground(ColorManager.lightColor);
 			buttons[i].setBackground(ColorManager.primaryColor);
@@ -713,7 +829,9 @@ public class MenuPanel extends JPanel implements Observer {
 			add(buttons[i]);
 		}
 
-		if (controller.getCurrentCourse().isFinalized()) {
+		if (controller.getCurrentCourse().
+
+				isFinalized()) {
 			lock();
 		}
 
@@ -740,6 +858,7 @@ public class MenuPanel extends JPanel implements Observer {
 		public Color getRowColor(int row) {
 			return rowColor.get(row);
 		}
+
 	}
 
 	/*
