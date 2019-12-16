@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -130,7 +132,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2] + "\n\n";
 
-		menuActionListener = new ActionListener[][] { // TODO complete menu action
+		menuActionListener = new ActionListener[][]{ // TODO complete menu action
 				{ // File
 						addStudent -> { // Add Student
 							try {
@@ -188,7 +190,7 @@ public class MenuPanel extends JPanel implements Observer {
 							try {
 								JTextField categoryField = new JTextField();
 								JTextField percentageField = new JTextField();
-								Object[] fields = { "Category: ", categoryField, "Percentage: ", percentageField, };
+								Object[] fields = { "Category: ", categoryField, "Percentage (%): ", percentageField, };
 								UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
 										SizeManager.optionPaneRowHeight * fields.length));
 
@@ -201,7 +203,7 @@ public class MenuPanel extends JPanel implements Observer {
 												JOptionPane.WARNING_MESSAGE);
 										String fieldName = categoryField.getText();
 										try {
-											double weight = Double.parseDouble(percentageField.getText());
+											double weight = Double.parseDouble(percentageField.getText()) / 100;
 											controller.addNewCategoryForCourse(controller.getCurrentCourse(), fieldName,
 													weight, controller.getCurrentCourse().getCourseId());
 										} catch (Exception ex) {
@@ -229,7 +231,7 @@ public class MenuPanel extends JPanel implements Observer {
 								JTextField itemField = new JTextField();
 								JTextField percentageField = new JTextField();
 								JTextField maxPointsField = new JTextField();
-								Object[] fields = { "Category: ", categoryCombo, "Item: ", itemField, "Percentage: ",
+								Object[] fields = { "Category: ", categoryCombo, "Item: ", itemField, "Percentage (%): ",
 										percentageField, "Max Points: ", maxPointsField, };
 								UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
 										SizeManager.optionPaneRowHeight * fields.length));
@@ -250,7 +252,7 @@ public class MenuPanel extends JPanel implements Observer {
 										}
 										String fieldName = itemField.getText();
 										try {
-											double itemWeight = Double.parseDouble(percentageField.getText());
+											double itemWeight = Double.parseDouble(percentageField.getText()) / 100;
 											double maxPoints = Double.parseDouble(maxPointsField.getText());
 											controller.addItemForCourseCategory(controller.getCurrentCourse(),
 													categoryIndex, fieldName, itemWeight, maxPoints);
@@ -324,6 +326,9 @@ public class MenuPanel extends JPanel implements Observer {
 						String[][] categoryData;
 
 						categoryData = controller.getCurrentCourse().getCategoryDataForList();
+						for (int i = 0; i < categoryData.length; i++) {
+							categoryData[i][1] = String.valueOf(Double.parseDouble(categoryData[i][1]) * 100);
+						}
 
 						String[] categoryColumn = { "Category", "Percentage" };
 						DefaultTableModel tableModel = new DefaultTableModel(categoryData, categoryColumn);
@@ -351,7 +356,7 @@ public class MenuPanel extends JPanel implements Observer {
 									key = key.trim();
 									if (!key.equals("")) {
 										try {
-											double value = Double.parseDouble((String) tableModel.getValueAt(i, 1));
+											double value = Double.parseDouble((String) tableModel.getValueAt(i, 1)) / 100;
 											m.put(key, value);
 											modifiedData.add(m);
 										} catch (Exception e) {
@@ -400,8 +405,11 @@ public class MenuPanel extends JPanel implements Observer {
 //						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
 //								categoryEditItemCombo.getSelectedIndex(), true);
 						itemData = controller.getAllItemDetailsForCourse(controller.getCurrentCourse(), true);
-						ArrayList<Item> allItems = controller.getAllItemsForCourse(controller.getCurrentCourse());
-						String[] itemColumn = { "Category", "Item", "Percentage", "Max Points" };
+                        ArrayList<Item> allItems = controller.getAllItemsForCourse(controller.getCurrentCourse());
+						for (int i = 0; i < itemData.length; i++) {
+							itemData[i][2] = String.valueOf(Double.parseDouble(itemData[i][2]) * 100);
+						}
+						String[] itemColumn = {"Category", "Item", "Percentage", "Max Points"};
 						DefaultTableModel tableEditItemModel = new DefaultTableModel(itemData, itemColumn);
 
 						editItemTable = new JTable(tableEditItemModel) {
@@ -434,8 +442,14 @@ public class MenuPanel extends JPanel implements Observer {
 											break;
 										}
 										try {
-											double value = Double
-													.parseDouble((String) tableEditItemModel.getValueAt(i, j));
+											double value;
+											if (j == 2) {
+												value = Double
+														.parseDouble((String) tableEditItemModel.getValueAt(i, j)) / 100;
+											} else {
+												value = Double
+														.parseDouble((String) tableEditItemModel.getValueAt(i, j));
+											}
 											l.add(value);
 										} catch (Exception e) {
 											JOptionPane.showMessageDialog(this, "Please Enter correct Values", "Error",
@@ -497,6 +511,11 @@ public class MenuPanel extends JPanel implements Observer {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}, viewGrades -> { // View Grades
+					if (!controller.canBeFinalized(controller.getCurrentCourse())) {
+						JOptionPane.showMessageDialog(this,
+								"The weights are not added up to 100%, which will affect the result",
+								"Error", JOptionPane.ERROR_MESSAGE);
+					}
 					frame.changePanel(this, new ViewGradePanel(frame, courseData, false, this.controller));
 				}, finalize -> {
 

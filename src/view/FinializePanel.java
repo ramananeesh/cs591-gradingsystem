@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Dimension;
+import java.util.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -46,8 +47,8 @@ public class FinializePanel extends JPanel implements Observer {
 
 		// TODO data for test
 		Course course = controller.getCurrentCourse();
-		
-		Statistics statistics = new Statistics(course.getFinalGradesForStats());
+
+//		Statistics statistics = new Statistics(course.getFinalGradesForStats());
 
 		// title label
 		JLabel titleLabel = new JLabel(
@@ -57,14 +58,6 @@ public class FinializePanel extends JPanel implements Observer {
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		titleLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 		add(titleLabel);
-
-		// statistics label
-		JLabel statisticsLabel = new JLabel(statistics.toString());
-		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
-		statisticsLabel.setFont(FontManager.fontLabel);
-		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
-		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		add(statisticsLabel);
 
 		Object[][] gradeTableRowData = controller.getFinalGradesData(controller.getCurrentCourse());
 		Object[] gradeTableColumnNames = { "Name", "ID", "Actual Percentage", "Curved Percentage", "Grade" };
@@ -89,6 +82,22 @@ public class FinializePanel extends JPanel implements Observer {
 		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
 		add(gradeTableScrollPane);
+
+		List<Double> statisticsGrades = new ArrayList<Double>();
+		for (int i = 0; i < gradeTableRowData.length; i++) {
+            statisticsGrades.add(Double.parseDouble((String) gradeTableRowData[i][2]) / 100);
+		}
+		
+//		Statistics statistics = new Statistics(controller.getCurrentCourse().getFinalGradesForStats());
+		Double[] arr_StatisticsGrades = new Double[statisticsGrades.size()];
+		Statistics statistics = new Statistics(statisticsGrades.toArray(arr_StatisticsGrades));
+		// statistics label
+		JLabel statisticsLabel = new JLabel(statistics.toString());
+		statisticsLabel.setBounds(SizeManager.labelGradeStatisticsBounds);
+		statisticsLabel.setFont(FontManager.fontLabel);
+		statisticsLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+		statisticsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		add(statisticsLabel);
 
 		JButton backButton = new JButton("Back");
 		backButton.setFont(FontManager.fontButton);
