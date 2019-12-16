@@ -887,7 +887,7 @@ public class MenuPanel extends JPanel implements Observer {
 				for (Item item : category.getItems()) {
 					GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), category.getId(), item.getId());
 					if (gradeEntry != null) {
-						statisticsGrade[i] += gradeEntry.getPercentage() * category.getWeight() * item.getWeight() / 100;
+						statisticsGrade[i] += gradeEntry.getPercentage() * category.getWeight() * item.getWeight();
 					}
 				}
 			}
@@ -921,7 +921,7 @@ public class MenuPanel extends JPanel implements Observer {
 			for (Item item : category.getItems()) {
 				GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), category.getId(), item.getId());
 				if (gradeEntry != null) {
-					statisticsGrade[i] += gradeEntry.getPercentage() * item.getWeight() / 100;
+					statisticsGrade[i] += gradeEntry.getPercentage() * item.getWeight();
 				}
 			}
 		}
@@ -939,7 +939,7 @@ public class MenuPanel extends JPanel implements Observer {
 			CourseStudent courseStudent = studentList.get(i);
 			GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), item.getCategoryId(), item.getId());
 			if (gradeEntry != null) {
-				statisticsGrade[i] += gradeEntry.getPercentage() / 100;
+				statisticsGrade[i] += gradeEntry.getPercentage();
 			}
 		}
 		Statistics statistics = new Statistics(statisticsGrade);

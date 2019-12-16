@@ -42,7 +42,6 @@ import model.Course;
 import model.CourseStudent;
 import model.GradeEntry;
 import model.Item;
-import model.*;
 
 /**
  * The {@code GradePanel} class represents the panel for viewing or modifying
@@ -142,7 +141,7 @@ public class ViewGradePanel extends JPanel implements Observer {
 					gradeTableRowComment[i] = false;
 				}
 			}
-			statisticsGrades.add(categoryGrade);
+			statisticsGrades.add(categoryGrade * 100);
 			curr++;
 		}
 		arr_StatisticsGrades = new Double[statisticsGrades.size()];
