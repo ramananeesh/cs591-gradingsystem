@@ -4,6 +4,9 @@ import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
 
+import java.awt.Dimension;
+import java.awt.Font;
+
 import javax.swing.*;
 
 /**
@@ -44,27 +47,47 @@ public class LoginFrame extends JFrame {
 		loginButton.setForeground(ColorManager.primaryColor);
 		loginButton.setFont(FontManager.fontLogin);
 		loginButton.setFocusPainted(false);
+
+//		UIManager.put("Table.font", FontManager.fontMenuTable);
+//		UIManager.put("TableHeader.font", FontManager.fontMenuTable);
+//		UIManager.put("Menu.font", FontManager.fontMenu);
+//		UIManager.put("MenuItem.font", FontManager.fontMenu);
+//		UIManager.put("TextField.font", FontManager.fontLabel);
+//		UIManager.put("ComboBox.font", FontManager.fontLabel);
+		
+		UIManager.put("PasswordField.font", new Font("Cascadia", Font.BOLD,35 ));
+		UIManager.put("Label.font", new Font("Cascadia", Font.BOLD,35 ));
+		UIManager.put("Button.font",new Font("Cascadia", Font.BOLD,35  ));
+
 		loginButton.addActionListener(e -> {
+			JPasswordField passwordField = new JPasswordField();
+			Object[] fields = { "Password: ", passwordField };
+			UIManager.put("OptionPane.minimumSize",
+					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
 
-			String reply = JOptionPane.showInputDialog(this, "Enter Password: ");
+			int r = JOptionPane.showConfirmDialog(null, fields, "Enter Password: ", JOptionPane.OK_CANCEL_OPTION);
 
-			if (reply != null && !checkPassword(reply)) {
-				while (true) {
-					String repl = JOptionPane.showInputDialog(this, "Enter Correct Password: ");
-					if (repl == null)
-						break;
-					if (checkPassword(repl)) {
+			if (r == JOptionPane.OK_OPTION) {
+				String reply = passwordField.getText();
+				if (reply != null && !checkPassword(reply)) {
+					while (true) {
+						String repl = JOptionPane.showInputDialog(this, "Enter Correct Password: ");
+						if (repl == null)
+							break;
+						if (checkPassword(repl)) {
+							new MainFrame();
+							dispose();
+							break;
+						}
+
+					}
+				} else {
+					if (reply != null) {
 						new MainFrame();
 						dispose();
-						break;
 					}
+				}
 
-				}
-			} else {
-				if (reply != null) {
-					new MainFrame();
-					dispose();
-				}
 			}
 
 		});
