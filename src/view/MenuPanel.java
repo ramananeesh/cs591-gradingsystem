@@ -3,6 +3,7 @@ package view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -175,7 +176,9 @@ public class MenuPanel extends JPanel implements Observer {
 
 					// create an object of JFileChooser class
 					JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-
+					UIManager.put("FileChooser.listFont",new Font("Cascadia", Font.BOLD,35 ));
+					j.setPreferredSize(new Dimension(SizeManager.optionPaneWidth,
+							SizeManager.optionPaneRowHeight * 6));
 					// invoke the showsOpenDialog function to show the save dialog
 					int r = j.showOpenDialog(null);
 
