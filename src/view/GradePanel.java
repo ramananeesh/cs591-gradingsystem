@@ -1,25 +1,41 @@
 package view;
 
-import helper.ColorManager;
-import helper.FontManager;
-import helper.SizeManager;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Random;
 
-import javax.swing.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
 import controller.Master;
+import helper.ColorManager;
+import helper.FontManager;
+import helper.SizeManager;
 import model.Category;
 import model.Course;
 import model.CourseStudent;
 import model.GradeEntry;
 import model.Item;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
-import java.text.DecimalFormat;
 
 /**
  * The {@code GradePanel} class represents the panel for viewing or modifying
@@ -42,6 +58,7 @@ public class GradePanel extends JPanel implements Observer {
 	private boolean editable;
 
 	DecimalFormat df = new DecimalFormat("##.##");
+	private final JButton saveButton;
 
 	/**
 	 * Initializes a newly created {@code GradePanel} object
@@ -51,7 +68,7 @@ public class GradePanel extends JPanel implements Observer {
 		this.controller = controller;
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.panelBounds);
+		setBounds(SizeManager.contentPaneBounds);
 		setOpaque(false);
 		this.editable = editable;
 
@@ -65,7 +82,7 @@ public class GradePanel extends JPanel implements Observer {
 
 		Course currCourse = controller.getCurrentCourse();
 		ArrayList<String> allItemNames = controller.getAllItemNames(controller.getCurrentCourse());
-		gradeTableColumnNames = new String[] { "Student Name", "BUID", "Score", "Comments" };
+		gradeTableColumnNames = new String[]{"Student Name", "BUID", "Score", "Comments"};
 
 		ArrayList<CourseStudent> students = controller.getCurrentCourse().getStudents();
 
@@ -96,16 +113,28 @@ public class GradePanel extends JPanel implements Observer {
 		gradeTable = new JTable(gradeTableModel);
 		gradeTable.setRowHeight(SizeManager.tableRowHeight);
 		gradeTable.setFont(FontManager.fontTable);
+		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
+		gradeTable.setRowSorter(gradeTableRowSorter);
 		DefaultTableCellRenderer gradeTableRender = new DefaultTableCellRenderer();
 		gradeTableRender.setHorizontalAlignment(SwingConstants.CENTER);
 		gradeTableRender.setVerticalAlignment(SwingConstants.CENTER);
 		gradeTable.setDefaultRenderer(Object.class, gradeTableRender);
-		TableRowSorter<DefaultTableModel> gradeTableRowSorter = new TableRowSorter<>(gradeTableModel);
-		gradeTable.setRowSorter(gradeTableRowSorter);
-		gradeTable.getTableHeader().setFont(gradeTable.getFont());
+		JTableHeader gradeTableHeader = gradeTable.getTableHeader();
+		gradeTableHeader.setFont(gradeTable.getFont());
+		gradeTableHeader.setEnabled(false);
+		gradeTableHeader.setPreferredSize(new Dimension(gradeTable.getWidth(), gradeTable.getRowHeight()));
+		gradeTableHeader.setBackground(ColorManager.primaryColor);
+		gradeTableHeader.setForeground(ColorManager.lightColor);
 		JScrollPane gradeTableScrollPane = new JScrollPane(gradeTable);
 		gradeTableScrollPane.setBounds(SizeManager.tableCourseBounds);
-		add(gradeTableScrollPane);
+//		add(gradeTableScrollPane);
+
+		JLabel hintLabel = new JLabel("Please select a category and an item that you want to grade.");
+		hintLabel.setFont(FontManager.fontLabel);
+		hintLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		hintLabel.setVerticalAlignment(SwingConstants.CENTER);
+		hintLabel.setBounds(SizeManager.tableCourseBounds);
+		add(hintLabel);
 
 		// category combo box
 		ArrayList<String> categoryComboNames = new ArrayList<>();
@@ -122,7 +151,7 @@ public class GradePanel extends JPanel implements Observer {
 
 		// item combo box
 		ArrayList<String> itemComboNames = new ArrayList<>();
-		String[] itemComboItems = { "None" };
+		String[] itemComboItems = {"None"};
 		itemsModel = new DefaultComboBoxModel<String>(itemComboItems);
 		itemComboBox = new JComboBox<>(itemComboItems);
 		itemComboBox.setBounds(SizeManager.itemBounds);
@@ -131,7 +160,7 @@ public class GradePanel extends JPanel implements Observer {
 		add(itemComboBox);
 
 		// grade options combo
-		String[] gradeOptionsItems = { "Points Lost", "Percentage" };
+		String[] gradeOptionsItems = {"Points Lost", "Percentage"};
 		gradeOptionsComboBox = new JComboBox<>(gradeOptionsItems);
 		// gradeOptionsComboBox.setBounds(SizeManager.filterCourseBounds);
 		gradeOptionsComboBox.setBounds(SizeManager.comboBounds);
@@ -160,6 +189,19 @@ public class GradePanel extends JPanel implements Observer {
 
 					itemComboBox.setModel(newComboModel);
 					updateGradesTable(categories);
+					add(gradeTableScrollPane);
+				}
+				if (categoryComboBox.getSelectedIndex() == 0) {
+					remove(gradeTableScrollPane);
+					add(hintLabel);
+					revalidate();
+					repaint();
+				}
+				if (categoryComboBox.getSelectedIndex() != 0) {
+					remove(hintLabel);
+					add(gradeTableScrollPane);
+					revalidate();
+					repaint();
 				}
 			}
 		});
@@ -172,6 +214,13 @@ public class GradePanel extends JPanel implements Observer {
 				if (categoryComboBox.getSelectedIndex() != 0) {
 					updateGradesTable(categories);
 				}
+				// TODO when itemComboBox.getSelectedIndex() == 0, item is not "None"
+//				if (categoryComboBox.getSelectedIndex() == 0 || itemComboBox.getSelectedIndex() == 0) {
+//					remove(gradeTableScrollPane);
+//				}
+//				if (categoryComboBox.getSelectedIndex() != 0 && itemComboBox.getSelectedIndex() != 0) {
+//					add(gradeTableScrollPane);
+//				}
 
 			}
 		});
@@ -199,7 +248,7 @@ public class GradePanel extends JPanel implements Observer {
 		// save button
 		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);
 		UIManager.put("OptionPane.buttonFont", FontManager.fontLabel);
-		JButton saveButton = new JButton("Save");
+		saveButton = new JButton("Save");
 		saveButton.setFont(FontManager.fontButton);
 		saveButton.setBounds(SizeManager.buttonViewBounds);
 		saveButton.setForeground(ColorManager.lightColor);
@@ -329,7 +378,9 @@ public class GradePanel extends JPanel implements Observer {
 		gradeOptionsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(gradeOptionsLabel);
 
-//		generateRandomTestData(gradeTable);
+		if (controller.getCurrentCourse().isFinalized()) {
+			lock();
+		}
 
 		setVisible(true);
 	}
@@ -423,5 +474,10 @@ public class GradePanel extends JPanel implements Observer {
 		// TODO Auto-generated method stub
 		ArrayList<Category> categories = controller.getAllCategoriesForCourse(controller.getCurrentCourse());
 		updateGradesTable(categories);
+	}
+
+	private void lock() {
+		gradeTable.setEnabled(false);
+		saveButton.setEnabled(false);
 	}
 }

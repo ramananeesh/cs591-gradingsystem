@@ -1,9 +1,22 @@
 package controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Observable;
+import java.util.Random;
 
-import db.*;
-import model.*;
+import db.Create;
+import db.Delete;
+import db.Read;
+import db.Update;
+import model.Category;
+import model.Course;
+import model.CourseStudent;
+import model.FinalGrade;
+import model.GradeEntry;
+import model.Item;
+import model.Student;
 
 public class Master extends Observable {
 
@@ -46,24 +59,69 @@ public class Master extends Observable {
 	}
 
 	public void addNewCourse(String courseNumber, String courseName, String term, ArrayList<Category> categories,
-			ArrayList<CourseStudent> students) {
-		Course newCourse = new Course(generateCourseId(), courseNumber, courseName, term, categories, students);
+			ArrayList<CourseStudent> students, boolean flag) {
+
+		int id = generateCourseId();
+
+		if (flag) {
+			// replace all category and items with course ID
+			for (int i = 0; i < categories.size(); i++) {
+				categories.get(i).setCourseId(id);
+				categories.get(i).replaceAllCourseIdsInItems(id);
+			}
+		}
+		Course newCourse = new Course(id, courseNumber, courseName, term, categories, students);
 		this.courses.add(newCourse);
 
 		// write to db
 		Create.insertNewCourse(newCourse);
+
+		// write categories to db
+		for (Category c : newCourse.getCategories()) {
+			Create.insertNewCategory(c);
+
+			for (Item i : c.getItems()) {
+				Create.insertNewItem(i);
+			}
+		}
+
+		for (CourseStudent student : newCourse.getStudents()) {
+			Create.insertNewStudent(student);
+		}
 
 		setChanged();
 		notifyObservers();
 	}
 
-	public void addNewCourse(String courseId, String courseName, String term, ArrayList<Category> categories) {
-		Course newCourse = new Course(generateCourseId(), courseId, courseName, term, categories);
+	public void addNewCourse(String courseId, String courseName, String term, ArrayList<Category> categories,
+			boolean flag) {
+		int id = generateCourseId();
+
+		if (flag) {
+			// replace all category and items with course ID
+			for (int i = 0; i < categories.size(); i++) {
+				categories.get(i).setCourseId(id);
+				categories.get(i).replaceAllCourseIdsInItems(id);
+			}
+		}
+		Course newCourse = new Course(id, courseId, courseName, term, categories);
 		this.courses.add(newCourse);
 
 		// write to db
 		Create.insertNewCourse(newCourse);
 
+		// write categories to db
+		for (Category c : newCourse.getCategories()) {
+			Create.insertNewCategory(c);
+
+			for (Item i : c.getItems()) {
+				Create.insertNewItem(i);
+			}
+		}
+
+		for (CourseStudent student : newCourse.getStudents()) {
+			Create.insertNewStudent(student);
+		}
 		setChanged();
 		notifyObservers();
 	}
@@ -124,6 +182,19 @@ public class Master extends Observable {
 			Create.insertNewStudent(st);
 			Create.insertNewCourseStudent(cs);
 		}
+
+		setChanged();
+		notifyObservers();
+	}
+
+	public void addStudentForCourse(Course course, String[] student) {
+		CourseStudent cs = new CourseStudent(student[0], student[1], student[2], student[3], student[4],
+				course.getCourseId(), true);
+		course.addStudent(cs);
+		Student st = new Student(cs.getFname(), cs.getLname(), cs.getBuid(), cs.getEmail(), cs.getType());
+
+		Create.insertNewStudent(st);
+		Create.insertNewCourseStudent(cs);
 
 		setChanged();
 		notifyObservers();
@@ -257,8 +328,11 @@ public class Master extends Observable {
 		// if index returns as -1, add new gradeEntry
 		if (gradeEntryIndex == -1) {
 			student.addGradeEntry(gradeEntry);
+			Create.insertNewGradeEntry(gradeEntry, student.getBuid());
 		} else {
 			student.setGradeEntry(gradeEntryIndex, gradeEntry);
+			Update.updateCourseStudentGradeEntry(student, course.getCourseId(), gradeEntry.getCategoryId(),
+					gradeEntry.getItemId());
 		}
 
 		return student;
@@ -302,6 +376,18 @@ public class Master extends Observable {
 			return course.getCategories().get(categoryIndex).getItemsForListWithMaxPoints();
 	}
 
+	public String[][] getAllItemDetailsForCourse(Course course, boolean includeMaxPoints) {
+		String[][] details = new String[getAllItemsForCourse(course).size()][];
+		int i = 0;
+		for (Item item : getAllItemsForCourse(course)) {
+			if (!includeMaxPoints)
+				details[i++] = item.getDetailsWithCategory(course);
+			else
+				details[i++] = item.getDetailsWithMaxPointsWithCategory(course);
+		}
+		return details;
+	}
+
 	public String[][] getAllStudentsForCourse(Course course) {
 		ArrayList<String[]> str = new ArrayList<String[]>();
 
@@ -315,6 +401,15 @@ public class Master extends Observable {
 		}
 
 		return ans;
+	}
+
+	public Boolean[] getAllStudentsStatusForCourse(Course course) {
+		ArrayList<Boolean> status = new ArrayList<>();
+		for (CourseStudent student : course.getStudents()) {
+			status.add(student.isActive());
+		}
+		Boolean[] ans = new Boolean[status.size()];
+		return status.toArray(ans);
 	}
 
 	public boolean isIdUnique(int id) {
@@ -364,6 +459,44 @@ public class Master extends Observable {
 		this.courses.add(index, newCourse);
 	}
 
+	public ArrayList<Item> getAllItemsForCourse(Course course) {
+		ArrayList<Item> allItem = new ArrayList<>();
+
+		for (Category category : course.getCategories()) {
+			for (Item i : category.getItems()) {
+				allItem.add(i);
+			}
+		}
+		return allItem;
+	}
+
+	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID, int itemID) {
+		GradeEntry entry = student.getGradeEntryForItemInCategory(courseID, categoryID, itemID);
+		if (entry != null) {
+			String grade = Double.toString(entry.getPointsEarned() / entry.getMaxPoints());
+			if (!entry.getComments().equals("")) { // has comment
+				return grade + " 1";
+			} else {
+				return grade + " 0";
+			}
+		}
+		return "0.0 0";
+	}
+
+	public String getStudentScoreByID(CourseStudent student, int courseID, int categoryID) {
+		Course currCourse = null;
+		for (Course c : courses) {
+			if (c.getCourseId() == courseID) {
+				currCourse = c;
+				break;
+			}
+		}
+		Category category = currCourse.getCategoryById(categoryID);
+		List<Item> allItem = category.getItems();
+		String grade = Double.toString(student.getGradeEntryForCategory(courseID, categoryID, allItem));
+		return grade + " 0";
+	}
+
 	public boolean isUniqueCategoryId(Course course, int id) {
 		for (Category category : course.getCategories()) {
 			if (id == category.getId())
@@ -396,7 +529,7 @@ public class Master extends Observable {
 
 				course.setCategory(i, modified);
 				// update db for modification to category
-
+				Update.updateCategory(modified);
 			}
 		}
 
@@ -430,12 +563,43 @@ public class Master extends Observable {
 				}
 
 				// modify in db
-				/**
-				 * to do
-				 */
+				Update.updateItem(modifiedItem);
 			}
 		}
 
+		setChanged();
+		notifyObservers();
+	}
+
+	public void modifyItemsForCourse(Course course, HashMap<String, ArrayList<Double>> map) {
+		ArrayList<Category> categories = getAllCategoriesForCourse(course);
+		for (int i = 0; i < categories.size(); i++) {
+			Category cat = categories.get(i);
+			ArrayList<Item> items = getAllItemsForCourseCategory(course, i);
+			for (int j = 0; j < items.size(); j++) {
+				Item item = items.get(j);
+				boolean flag = false;
+				ArrayList<Double> l = map.get(item.getFieldName());
+				if (item.getWeight() != l.get(0))
+					flag = true;
+				else if (item.getMaxPoints() != l.get(1))
+					flag = true;
+
+				if (flag) {
+					Item modifiedItem = new Item(item.getId(), item.getFieldName(), item.getCategoryId(), l.get(0),
+							l.get(1), item.getCourseId());
+					cat.setItem(j, modifiedItem);
+					course.setCategory(i, cat);
+
+					for (CourseStudent student : course.getStudents()) {
+						student.modifyMaxPointsInGradeEntryByItem(item.getId(), l.get(1));
+					}
+
+					// modify in db
+					Update.updateItem(modifiedItem);
+				}
+			}
+		}
 		setChanged();
 		notifyObservers();
 	}
@@ -470,30 +634,19 @@ public class Master extends Observable {
 				course.setStudent(i, student);
 			}
 		}
-		
+
 		setChanged();
 		notifyObservers();
 	}
 
-	public void modifyStudentForCourse(Course course, int studentIndex, HashMap<String, String> map) {
+	public void modifyStudentForCourse(Course course, int studentIndex, HashMap<String, String> map, boolean active) {
 
 		CourseStudent student = course.getStudent(studentIndex);
 
-		String modBuid = map.get("Buid").trim();
 		String modName = map.get("Name").trim();
-		String modEmail = map.get("Email").trim();
 		String modType = map.get("Type").trim();
 
 		boolean flag = false;
-		if (!modBuid.equals("")) {
-			student.setBuid(modBuid);
-			flag = true;
-		}
-
-		if (!modEmail.equals("")) {
-			student.setEmail(modEmail);
-			flag = true;
-		}
 
 		if (!modName.equals("")) {
 			student.setName(modName);
@@ -505,6 +658,8 @@ public class Master extends Observable {
 			flag = true;
 		}
 
+		student.setActive(active);
+
 		if (flag) {
 			course.setStudent(studentIndex, student);
 			/**
@@ -513,7 +668,275 @@ public class Master extends Observable {
 			setChanged();
 			notifyObservers();
 		}
-		
+
 	}
 
+	public ArrayList<Integer> getStudentIndecesForComments(Course course, int categoryIndex, int itemIndex) {
+		ArrayList<Integer> indeces = new ArrayList<Integer>();
+		Category category = null;
+		Item item = null;
+		if (categoryIndex != -1) {
+			category = course.getCategory(categoryIndex);
+			if (itemIndex != -1) {
+				item = category.getItem(itemIndex);
+			}
+		}
+
+		int i = 0;
+		for (CourseStudent student : course.getStudents()) {
+			ArrayList<GradeEntry> entries = student.getGrades();
+			for (GradeEntry entry : entries) {
+				if (categoryIndex != -1 && itemIndex != -1) {
+					if (entry.getCategoryId() == category.getId() && entry.getItemId() == item.getId()) {
+						if (!entry.getComments().trim().equals(""))
+							indeces.add(i);
+					}
+				} else if (categoryIndex != -1) {
+					if (entry.getCategoryId() == category.getId()) {
+						if (!entry.getComments().trim().equals(""))
+							indeces.add(i);
+					}
+				} else {
+					if (!entry.getComments().trim().equals(""))
+						indeces.add(i);
+				}
+			}
+			i++;
+		}
+
+		return indeces;
+	}
+
+	public String getCommentsForRowIndex(Course course, int studentIndex, int categoryIndex, int itemIndex) {
+		String str = "";
+		CourseStudent student = course.getStudent(studentIndex);
+		if (categoryIndex == -1) {
+			if (itemIndex == -1) {
+				// all category and all items
+				for (GradeEntry entry : student.getGrades()) {
+					if (!entry.getComments().trim().equals("")) {
+						Category cat = course.getCategoryById(entry.getCategoryId());
+						Item item = cat.getItemById(entry.getItemId());
+						str += "Category: " + cat.getFieldName() + "\nItem: " + item.getFieldName() + "\nComment: "
+								+ entry.getComments() + "\n";
+					}
+				}
+			}
+		} else {
+			if (itemIndex == -1) {
+				// specific category all items
+				for (GradeEntry entry : student.getGrades()) {
+					if (entry.getCategoryId() == categoryIndex + 1) // categoryId starts with 1
+						if (!entry.getComments().trim().equals("")) {
+							Category cat = course.getCategoryById(entry.getCategoryId());
+							Item item = cat.getItemById(entry.getItemId());
+							str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName() + "\nComment: "
+									+ entry.getComments() + "\n";
+						}
+				}
+			} else {
+				// specific category specific item
+				for (GradeEntry entry : student.getGrades()) {
+					List<Item> items = null;
+					if (entry.getCategoryId() == categoryIndex + 1) {
+						items = getAllItemsForCourseCategory(course, categoryIndex);
+						if (entry.getItemId() == items.get(itemIndex).getId()) {
+							if (!entry.getComments().trim().equals("")) {
+								Category cat = course.getCategoryById(entry.getCategoryId());
+								Item item = cat.getItemById(entry.getItemId());
+								str += "Category: " + cat.getFieldName() + "\tItem: " + item.getFieldName()
+										+ "\nComment: " + entry.getComments() + "\n";
+							}
+						}
+					}
+				}
+			}
+		}
+		return str;
+	}
+
+	public double getTotalForItemIncludingWeight(Item item, GradeEntry entry) {
+		return item.getWeight() * entry.getPercentage();
+	}
+
+	public ArrayList<GradeEntry> getEntriesByCategory(Category category, ArrayList<GradeEntry> entries) {
+		ArrayList<GradeEntry> grades = new ArrayList<GradeEntry>();
+
+		for (GradeEntry entry : entries) {
+			if (entry.getCategoryId() == category.getId()) {
+				grades.add(entry);
+			}
+		}
+
+		return grades;
+	}
+
+	public GradeEntry getEntryByItem(Item item, ArrayList<GradeEntry> categoryEntries) {
+		GradeEntry entry = null;
+
+		for (GradeEntry e : categoryEntries) {
+			if (e.getItemId() == item.getId()) {
+				entry = e;
+				break;
+			}
+		}
+
+		return entry;
+	}
+
+	public double getTotalForCategoryIncludingWeight(Course course, int categoryId, ArrayList<GradeEntry> entries) {
+		double total = 0;
+
+		Category category = course.getCategoryById(categoryId);
+		ArrayList<Item> items = category.getItems();
+
+		ArrayList<GradeEntry> categoryEntries = getEntriesByCategory(category, entries);
+
+		for (Item i : items) {
+			GradeEntry entry = getEntryByItem(i, categoryEntries);
+			if (entry != null)
+				total += (i.getWeight() * entry.getPercentage());
+		}
+
+		double totalIncludingCategoryWeight = total * category.getWeight();
+
+		return totalIncludingCategoryWeight;
+	}
+
+	public Double[] getFinalPercentages(Course course) {
+		Double[] percentages = new Double[course.getStudents().size()];
+		ArrayList<CourseStudent> students = course.getStudents();
+		ArrayList<Category> categories = course.getCategories();
+
+		int i = 0;
+		for (CourseStudent student : students) {
+			double total = 0;
+			ArrayList<GradeEntry> studentEntries = student.getGrades();
+			for (Category category : categories) {
+				total += getTotalForCategoryIncludingWeight(course, category.getId(), studentEntries);
+			}
+
+			percentages[i++] = total;
+		}
+		return percentages;
+	}
+
+	public String[] getFinalLetterGrades(Course course, Double[] finalPercentages) {
+		String[] grades = new String[course.getStudents().size()];
+
+		int i = 0;
+		for (Double p : finalPercentages) {
+			grades[i++] = helper.Statistics.getLetterGrade(p);
+		}
+
+		return grades;
+	}
+
+	public void initiateCourseFinalization(Course course) {
+		if (course.isFinilizationInitialized()) {
+			Double[] finalPercentages = getFinalPercentages(course);
+			String[] letterGrades = getFinalLetterGrades(course, finalPercentages);
+
+			course.initiateFinalize(finalPercentages, letterGrades);
+		}
+	}
+
+	public String[][] getFinalGradesData(Course course) {
+		ArrayList<FinalGrade> finalGrades = course.getFinalGrades();
+		String[][] data = new String[finalGrades.size()][];
+
+		for (int i = 0; i < data.length; i++) {
+			data[i] = finalGrades.get(i).getDetailsForList();
+		}
+
+		return data;
+	}
+
+	public void setCurveForCourse(Course course, double curve, boolean flag) {
+		course.setCurve(curve);
+
+		setCurveOnCoursePercentages(course);
+		if (flag) {
+			course.setCurveApplied(true);
+		}
+		setChanged();
+		notifyObservers();
+	}
+
+	public void setCurveOnCoursePercentages(Course course) {
+		ArrayList<FinalGrade> finalGrades = course.getFinalGrades();
+
+		for (FinalGrade grade : finalGrades) {
+			/*
+			 * if (course.isCurveApplied()) { // if curve is already applied, modify from
+			 * applied curve grade.setCurvedPercentage(grade.getCurvedPercentage() +
+			 * course.getCurve());
+			 * grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.
+			 * getCurvedPercentage())); } else {
+			 * grade.setCurvedPercentage(grade.getActualPercentage() + course.getCurve());
+			 * grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.
+			 * getCurvedPercentage())); }
+			 */
+			grade.setCurvedPercentage(grade.getActualPercentage() + course.getCurve());
+			grade.setLetterGrade(helper.Statistics.getLetterGrade(grade.getCurvedPercentage()));
+		}
+
+		course.setFinalGrades(finalGrades);
+
+		fireUpdate();
+	}
+
+	public void finalizeCourse(Course course) {
+
+		// check if curve applied. if not, set curved percentage equal to actual
+		// percentage
+		if (!course.isCurveApplied()) {
+			setCurveForCourse(course, 0.0, false);
+		}
+		// write to db
+		for (FinalGrade grade : course.getFinalGrades()) {
+			Create.insertNewFinalGrade(grade, course.getCourseId());
+		}
+		course.setFinalized(true);
+		Update.updateCourseFinalized(course);
+		// lock all features and editing
+		/**
+		 * to do
+		 * 
+		 * /** to do - DB update
+		 */
+
+		fireUpdate();
+	}
+
+	public void deleteCategoryForCourse(Course course, int categoryIndex) {
+		Category category = course.getCategory(categoryIndex);
+		for (int i = 0; i < category.getItems().size(); i++) {
+			Item item = category.getItem(i);
+			deleteItemFromCourse(course, item);
+		}
+		Category cat = course.removeCategory(categoryIndex);
+		Delete.removeCategoryFromCourse(cat.getId(), course.getCourseId());
+		fireUpdate();
+	}
+
+	public boolean canBeFinalized(Course course) {
+		return course.canBeFinalized();
+	}
+
+	public void deleteItemFromCourse(Course course, Item item) {
+		Category cat = course.getCategoryById(item.getCategoryId());
+
+		Item r = cat.removeItemById(item.getId());
+
+		course.setCategory(course.getCategoryIndexById(cat.getId()), cat);
+
+		Delete.removeItemFromCategoryInCourse(r.getId(), cat.getId(), course.getCourseId());
+		fireUpdate();
+	}
+
+	public void fireUpdate() {
+		setChanged();
+		notifyObservers();
+	}
 }
