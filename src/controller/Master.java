@@ -665,6 +665,7 @@ public class Master extends Observable {
 			/**
 			 * to do db mod
 			 */
+			Update.updateCourseStudentActive(course.getCourseId(), student.getBuid(), student.isActive());
 			setChanged();
 			notifyObservers();
 		}
