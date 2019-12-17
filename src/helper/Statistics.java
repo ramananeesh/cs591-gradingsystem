@@ -93,7 +93,7 @@ public class Statistics {
 	 * @return mean of the data.
 	 */
 	public double getMean() {
-        return mean * 100;
+        return mean;
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class Statistics {
 	 * @return median of the data.
 	 */
 	public double getMedian() {
-        return median * 100;
+		return median;
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class Statistics {
 	 * @return standard deviation of the data.
 	 */
 	public double getStandardDeviation() {
-        return standardDeviation * 100;
+		return standardDeviation;
 	}
 
 	/**

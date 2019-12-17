@@ -1,7 +1,8 @@
 package view;
 
 import java.awt.Dimension;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -85,9 +86,9 @@ public class FinializePanel extends JPanel implements Observer {
 
 		List<Double> statisticsGrades = new ArrayList<Double>();
 		for (int i = 0; i < gradeTableRowData.length; i++) {
-            statisticsGrades.add(Double.parseDouble((String) gradeTableRowData[i][2]) / 100);
+			statisticsGrades.add(Double.parseDouble((String) gradeTableRowData[i][2]) / 100);
 		}
-		
+
 //		Statistics statistics = new Statistics(controller.getCurrentCourse().getFinalGradesForStats());
 		Double[] arr_StatisticsGrades = new Double[statisticsGrades.size()];
 		Statistics statistics = new Statistics(statisticsGrades.toArray(arr_StatisticsGrades));

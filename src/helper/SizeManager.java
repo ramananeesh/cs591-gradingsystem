@@ -1,6 +1,8 @@
 package helper;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -169,7 +171,7 @@ public class SizeManager {
 		int panelHeight = contentPaneHeight - menuBarHeight;
 
 		textInfoBounds = new Rectangle(panelWidth, menuBarHeight, panelWidth, panelHeight - 5 * buttonHeight);
-		fontTextSize = fontMenuSize;
+		fontTextSize = fontMenuSize * 0.8f;
 
 		tableStudentBounds = new Rectangle(0, menuBarHeight, panelWidth, panelHeight);
 		tableCategoryBounds = new Rectangle(2 * panelWidth, menuBarHeight, panelWidth, panelHeight / 2);

@@ -5,7 +5,7 @@ import model.*;
 import java.util.ArrayList;
 
 public class Update {
-	public static boolean updateCourseStudentActive(String courseID, String BUID, int active) {
+	public static boolean updateCourseStudentActive(int courseID, String BUID, boolean active) {
 		String sql = "Update CourseStudent set active = " + active + " where courseID = '" + courseID + "'"
 				+ " and BUID = '" + BUID + "'";
 		return SQLHelper.performQuery(sql);
