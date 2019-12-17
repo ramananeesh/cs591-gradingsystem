@@ -607,7 +607,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 		add(informationTextPane);
 
-		tableStudentColumns = new String[]{"Student Name", "Student ID"};
+		tableStudentColumns = new String[]{"Student Name", "Email"};
 		String[][] tableStudentData;
 		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
 		Boolean[] statusData = controller.getAllStudentsStatusForCourse(controller.getCurrentCourse());
