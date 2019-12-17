@@ -592,7 +592,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 		JTextPane informationTextPane = new JTextPane();
 		informationTextPane.setBounds(SizeManager.textInfoBounds);
-		informationTextPane.setText(courseString + "\n" + getStatisticsForCourse());
+		informationTextPane.setText(courseString + "\n" ); //+ getStatisticsForCourse()
 		informationTextPane.setFont(FontManager.fontText);
 		informationTextPane.setEditable(false);
 		StyledDocument doc = informationTextPane.getStyledDocument();
@@ -688,7 +688,7 @@ public class MenuPanel extends JPanel implements Observer {
 			table.setRowSelectionAllowed(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			table.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
-				String text = courseString + "\n" + getStatisticsForCourse() + "\n\n";
+				String text = courseString + "\n" +  "\n\n"; //getStatisticsForCourse() +
 
 				if (tableStudent.getSelectedRow() != -1) {
 					CourseStudent courseStudent = controller.getCurrentCourse().getStudent(tableStudent.getSelectedRow());
