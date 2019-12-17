@@ -6,8 +6,12 @@ import helper.SizeManager;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.HashMap;
+import java.util.UUID;
 
 import javax.swing.*;
+
+import db.Read;
 
 /**
  * The {@code LoginFrame} class represents the frame for logging in the grading
@@ -54,10 +58,10 @@ public class LoginFrame extends JFrame {
 //		UIManager.put("MenuItem.font", FontManager.fontMenu);
 //		UIManager.put("TextField.font", FontManager.fontLabel);
 //		UIManager.put("ComboBox.font", FontManager.fontLabel);
-		
-		UIManager.put("PasswordField.font", new Font("Cascadia", Font.BOLD,35 ));
-		UIManager.put("Label.font", new Font("Cascadia", Font.BOLD,35 ));
-		UIManager.put("Button.font",new Font("Cascadia", Font.BOLD,35  ));
+
+		UIManager.put("PasswordField.font", new Font("Cascadia", Font.BOLD, 35));
+		UIManager.put("Label.font", new Font("Cascadia", Font.BOLD, 35));
+		UIManager.put("Button.font", new Font("Cascadia", Font.BOLD, 35));
 
 		loginButton.addActionListener(e -> {
 			JPasswordField passwordField = new JPasswordField();
@@ -71,10 +75,11 @@ public class LoginFrame extends JFrame {
 				String reply = passwordField.getText();
 				if (reply != null && !checkPassword(reply)) {
 					while (true) {
-						String repl = JOptionPane.showInputDialog(this, "Enter Correct Password: ");
-						if (repl == null)
+						
+						int repl = JOptionPane.showConfirmDialog(null, fields, "Enter Password: ", JOptionPane.OK_CANCEL_OPTION);
+						if (repl == JOptionPane.CANCEL_OPTION)
 							break;
-						if (checkPassword(repl)) {
+						if (checkPassword(passwordField.getText())) {
 							new MainFrame();
 							dispose();
 							break;
@@ -97,12 +102,20 @@ public class LoginFrame extends JFrame {
 	}
 
 	public boolean checkPassword(String password) {
+		HashMap<String, String> allUsers = getAllUsers();
 		if (password == null) {
 			return false;
 		}
-		if (password.equals("cs591"))
+		
+		if (password.equals(allUsers.get("admin")))
 			return true;
 
 		return false;
+	}
+
+	public HashMap<String, String> getAllUsers() {
+		HashMap<String, String> map = Read.getUsersForSystem();
+
+		return map;
 	}
 }

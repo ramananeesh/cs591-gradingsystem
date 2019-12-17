@@ -161,6 +161,25 @@ public class Read {
 		return gradeEntries;
 	}
 
+	public static HashMap<String, String> getUsersForSystem() {
+		HashMap<String, String> map = new HashMap<String, String>();
+
+		String query = "Select username, password from users ";
+		ResultSet rs = SQLHelper.performRead(query);
+		
+		try {
+			while(rs.next()) {
+				String username = rs.getString("username");
+				String password = rs.getString("password");
+				map.put(username, password);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return map;
+	}
+
 	// now properly makes the coursestudent object
 	public static ArrayList<CourseStudent> getCourseStudentsByCourse(int courseID) {
 		ArrayList<CourseStudent> students = new ArrayList<>();
