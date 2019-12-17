@@ -106,6 +106,8 @@ public class MenuPanel extends JPanel implements Observer {
 		this.frame = frame;
 		this.controller = controller;
 		this.controller.addObserver(this);
+		
+		
 
 		frame.setTitle(TITLE);
 		setLayout(null);
@@ -768,9 +770,7 @@ public class MenuPanel extends JPanel implements Observer {
 			add(buttons[i]);
 		}
 
-		if (controller.getCurrentCourse().
-
-				isFinalized()) {
+		if (controller.getCurrentCourse().isFinalized()) {
 			lock();
 		}
 

@@ -5,8 +5,13 @@ import model.*;
 public class Create {
 
 	public static boolean insertNewCourse(Course course) {
-		String sql = "insert into Course values ('" + course.getCourseId() + "','" + course.getCourseName() + "','"
-				+ course.getTerm() + "','" + course.getCourseNumber() + "')";
+		double curve = 0;
+		if(course.getCurve()==null)
+			curve=-1;
+		else 
+			curve = course.getCurve();
+		String sql = "insert into Course (id, courseName, term, courseNumber, curveApplied, curve, finalized) values ('" + course.getCourseId() + "','" + course.getCourseName() + "','"
+				+ course.getTerm() + "','" + course.getCourseNumber() + "'," +course.isCurveApplied()+ ",'" +curve+ "'," +course.isFinalized()+")";
 		return SQLHelper.performQuery(sql);
 	}
 

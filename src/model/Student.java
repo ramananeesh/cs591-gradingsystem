@@ -39,7 +39,7 @@ public class Student extends Person {
 	}
 	
 	public String[] getStudentDataForTable() {
-		return new String[]{this.getFname()+" "+this.getLname(), this.getBuid()};
+		return new String[]{this.getFname()+" "+this.getLname(), this.getEmail()};
 	}
 	
 	public String getStudentDetails() {
