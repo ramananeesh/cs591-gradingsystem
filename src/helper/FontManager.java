@@ -1,35 +1,76 @@
 package helper;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
 import java.io.File;
 
+import javax.swing.JLabel;
+
+/**
+ * Font manager.
+ */
 public class FontManager {
 
-	private static  Font fontBauhaus = setFont("Bauhaus 93");
-	private static  Font fontCascadia = setFont("Cascadia");
-	private static  Font fontConsolas = setFont("Consolas");
-	private static  Font fontProductSans = setFont("Product Sans");
+	/** Font : Product Sans. */
+	private static Font fontProductSans = setFont("Product Sans");
 
-	public static  Font fontDefault = fontProductSans;
+	/** Font : Bauhaus 93. */
+	private static Font fontBauhaus = setFont("Bauhaus 93");
 
-	public static  Font fontTitle = fontDefault.deriveFont(Font.PLAIN, SizeManager.titleFontSize);
-	public static  Font fontLogin = fontDefault.deriveFont(Font.PLAIN, SizeManager.buttonLoginFontSize);
+	/** Font : Cascadia Code. */
+	private static Font fontCascadia = setFont("Cascadia");
 
-	public static  Font fontTable = fontDefault.deriveFont(SizeManager.fontTableSize);
-	public static  Font fontSearch = fontDefault.deriveFont(SizeManager.fontSearchSize);
-	public static  Font fontFilter = fontDefault.deriveFont(SizeManager.fontFilterSize);
-	public static  Font fontButton = fontDefault.deriveFont(SizeManager.fontButtonSize);
-	public static  Font fontLabel = fontDefault.deriveFont(SizeManager.fontLabelSize);
-	public static  Font fontMenu = fontDefault.deriveFont(SizeManager.fontMenuSize);
-	public static  Font fontText = fontDefault.deriveFont(SizeManager.fontTextSize);
-	public static  Font fontMenuTable = fontDefault.deriveFont(SizeManager.fontMenuTableSize);
-    public static Font fontMenuButton;
+	/** Font : Consolas. */
+	private static Font fontConsolas = setFont("Consolas");
 
-	public static Font setFont(String name) {
+	/** Default font. */
+	private static Font fontDefault = fontProductSans;
+
+	/** Font for title. */
+	private static Font fontTitle = fontDefault.deriveFont(SizeManager.getTitleFontSize());
+
+	/** Font for login button. */
+	private static Font fontLogin = fontDefault.deriveFont(SizeManager.getButtonLoginFontSize());
+
+	/** Font for table. */
+	private static Font fontTable = fontDefault.deriveFont(SizeManager.getFontTableSize());
+
+	/** Font for search bar. */
+	private static Font fontSearch = fontDefault.deriveFont(SizeManager.getFontSearchSize());
+
+	/** Font for filter. */
+	private static Font fontFilter = fontDefault.deriveFont(SizeManager.getFontFilterSize());
+
+	/** Font for button. */
+	private static Font fontButton = fontDefault.deriveFont(SizeManager.getFontButtonSize());
+
+	/** Font for label. */
+	private static Font fontLabel = fontDefault.deriveFont(SizeManager.getFontLabelSize());
+
+	/** Font for menu bar. */
+	private static Font fontMenu = fontDefault.deriveFont(SizeManager.getFontMenuSize());
+
+	/** Font for text. */
+	private static Font fontText = fontDefault.deriveFont(SizeManager.getFontTextSize());
+
+	/** Font for menu table. */
+	private static Font fontMenuTable = fontDefault.deriveFont(SizeManager.getFontMenuTableSize());
+
+	/** Font for menu button. */
+	private static Font fontMenuButton;
+
+	/** Font for password. */
+	private static Font fontPassword = fontCascadia.deriveFont(Font.BOLD, 35);
+
+	/**
+	 * Load font file.
+	 *
+	 * @param fileName Font file name.
+	 * @return Loaded font.
+	 */
+	private static Font setFont(String fileName) {
 		Font font;
 		try {
-			font = Font.createFont(Font.TRUETYPE_FONT, new File("src/resource/" + name + ".ttf"));
+			font = Font.createFont(Font.TRUETYPE_FONT, new File("src/resource/" + fileName + ".ttf"));
 		} catch (Exception e) {
 			System.out.println("load font fail. use default font.");
 			font = new JLabel().getFont();
@@ -37,18 +78,129 @@ public class FontManager {
 		return font;
 	}
 
+	/**
+	 * Update font size.
+	 */
 	public static void update() {
-		 fontTitle = fontDefault.deriveFont(Font.PLAIN, SizeManager.titleFontSize);
-		 fontLogin = fontDefault.deriveFont(Font.PLAIN, SizeManager.buttonLoginFontSize);
-
-		 fontTable = fontDefault.deriveFont(SizeManager.fontTableSize);
-		 fontSearch = fontDefault.deriveFont(SizeManager.fontSearchSize);
-		 fontFilter = fontDefault.deriveFont(SizeManager.fontFilterSize);
-		 fontButton = fontDefault.deriveFont(SizeManager.fontButtonSize);
-		 fontLabel = fontDefault.deriveFont(SizeManager.fontLabelSize);
-		 fontMenu = fontDefault.deriveFont(SizeManager.fontMenuSize);
-		 fontText = fontDefault.deriveFont(SizeManager.fontTextSize);
-		 fontMenuTable = fontDefault.deriveFont(SizeManager.fontMenuTableSize);
-        fontMenuButton = fontDefault.deriveFont(SizeManager.fontMenuButtonSize);
+		fontTitle = fontDefault.deriveFont(Font.PLAIN, SizeManager.getTitleFontSize());
+		fontLogin = fontDefault.deriveFont(Font.PLAIN, SizeManager.getButtonLoginFontSize());
+		fontTable = fontDefault.deriveFont(SizeManager.getFontTableSize());
+		fontSearch = fontDefault.deriveFont(SizeManager.getFontSearchSize());
+		fontFilter = fontDefault.deriveFont(SizeManager.getFontFilterSize());
+		fontButton = fontDefault.deriveFont(SizeManager.getFontButtonSize());
+		fontLabel = fontDefault.deriveFont(SizeManager.getFontLabelSize());
+		fontMenu = fontDefault.deriveFont(SizeManager.getFontMenuSize());
+		fontText = fontDefault.deriveFont(SizeManager.getFontTextSize());
+		fontMenuTable = fontDefault.deriveFont(SizeManager.getFontMenuTableSize());
+		fontMenuButton = fontDefault.deriveFont(SizeManager.getFontMenuButtonSize());
 	}
+
+	/**
+	 * Get font for title.
+	 *
+	 * @return Font for title.
+	 */
+	public static Font getFontTitle() {
+		return fontTitle;
+	}
+
+	/**
+	 * Get font for login button.
+	 *
+	 * @return Font for login button.
+	 */
+	public static Font getFontLogin() {
+		return fontLogin;
+	}
+
+	/**
+	 * Get font for table.
+	 *
+	 * @return Font for table.
+	 */
+	public static Font getFontTable() {
+		return fontTable;
+	}
+
+	/**
+	 * Get font for search bar.
+	 *
+	 * @return Font for search bar.
+	 */
+	public static Font getFontSearch() {
+		return fontSearch;
+	}
+
+	/**
+	 * Get Font for filter.
+	 *
+	 * @return Font for filter.
+	 */
+	public static Font getFontFilter() {
+		return fontFilter;
+	}
+
+	/**
+	 * Get font for button.
+	 *
+	 * @return Font for button.
+	 */
+	public static Font getFontButton() {
+		return fontButton;
+	}
+
+	/**
+	 * Get font for label.
+	 *
+	 * @return Font for label.
+	 */
+	public static Font getFontLabel() {
+		return fontLabel;
+	}
+
+	/**
+	 * Get font for menu bar.
+	 *
+	 * @return Font for menu bar.
+	 */
+	public static Font getFontMenu() {
+		return fontMenu;
+	}
+
+	/**
+	 * Get font for text.
+	 *
+	 * @return Font for text.
+	 */
+	public static Font getFontText() {
+		return fontText;
+	}
+
+	/**
+	 * Get font for menu table.
+	 *
+	 * @return Font for menu table.
+	 */
+	public static Font getFontMenuTable() {
+		return fontMenuTable;
+	}
+
+	/**
+	 * Get font for menu button.
+	 *
+	 * @return Font for menu button.
+	 */
+	public static Font getFontMenuButton() {
+		return fontMenuButton;
+	}
+
+	/**
+	 * Get font for password.
+	 *
+	 * @return Font for password.
+	 */
+	public static Font getFontPassword() {
+		return fontPassword;
+	}
+
 }

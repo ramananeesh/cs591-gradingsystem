@@ -1,34 +1,40 @@
 package model;
 
+/**
+ * Person.
+ */
 public class Person {
-	private String fname;
-	private String lname;
 
-	public Person(String fname, String lname) {
-		super();
-		this.fname = fname;
-		this.lname = lname;
+	/** First name. */
+	private String firstName;
+
+	/** Last name. */
+	private String lastName;
+
+	public Person(String firstName, String lastName) {
+		this.firstName = firstName;
+		this.lastName = lastName;
 	}
 
-	public String getFname() {
-		return fname;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setFname(String fname) {
-		this.fname = fname;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public String getLname() {
-		return lname;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setLname(String lname) {
-		this.lname = lname;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	@Override
 	public String toString() {
-		return this.fname + " " + this.lname;
+		return this.firstName + " " + this.lastName;
 	}
 
 }

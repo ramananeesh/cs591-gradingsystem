@@ -1,9 +1,10 @@
 import view.LoginFrame;
 
 /**
- * The main program
+ * The main program for the grading system.
  */
 public class Main {
+
 	/**
 	 * The main function
 	 *
@@ -12,4 +13,5 @@ public class Main {
 	public static void main(String[] args) {
 		new LoginFrame();
 	}
+
 }

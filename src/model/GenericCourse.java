@@ -1,10 +1,20 @@
 package model;
 
+/**
+ * Generic course.
+ */
 public class GenericCourse {
 
+	/** Course ID. */
 	private int courseId;
+
+	/** Course number. */
 	private String courseNumber;
+
+	/** Course name. */
 	private String courseName;
+
+	/** Term. */
 	private String term;
 
 	public GenericCourse(int courseId, String courseNumber, String courseName, String term) {
@@ -51,8 +61,7 @@ public class GenericCourse {
 	}
 
 	public String[] getDetails() {
-		String[] str = { this.courseNumber, this.courseName, this.term };
-
-		return str;
+		return new String[]{this.courseNumber, this.courseName, this.term};
 	}
+
 }

@@ -2,44 +2,51 @@ package model;
 
 public class GenericCategory {
 
-	private int id;
-	private String fieldName;
+	/** Category ID. */
+	private int categoryId;
+
+	/** Category name. */
+	private String categoryName;
+
+	/** weight. */
 	private double weight;
+
+	/** Course ID. */
 	private int courseId;
-	private int templateId; 
-	
-	public GenericCategory(int id, String fieldName, double weight, int courseId) {
-		super();
-		this.id = id;
-		this.fieldName = fieldName;
+
+	/** Template ID. */
+	private int templateId;
+
+	public GenericCategory(int categoryId, String categoryName, double weight, int courseId) {
+		this.categoryId = categoryId;
+		this.categoryName = categoryName;
 		this.weight = weight;
 		this.courseId = courseId;
-		this.templateId = -1; 
+		this.templateId = -1;
 	}
 
-	public GenericCategory(int id, String fieldName, double weight, int courseId, int templateId) {
-		super();
-		this.id = id;
-		this.fieldName = fieldName;
+	public GenericCategory(int categoryId, String categoryName, double weight, int courseId, int templateId) {
+		this.categoryId = categoryId;
+		this.categoryName = categoryName;
 		this.weight = weight;
 		this.courseId = courseId;
-		this.templateId = templateId; 
-	}
-	
-	public int getId() {
-		return id;
+		this.templateId = templateId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public int getCategoryId() {
+		return categoryId;
 	}
 
-	public String getFieldName() {
-		return fieldName;
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
 	}
 
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
 	}
 
 	public double getWeight() {
@@ -67,12 +74,12 @@ public class GenericCategory {
 	}
 
 	public String toString() {
-		return this.id + " - " + this.fieldName + " - " + this.weight + " - " + this.courseId + " - "
-				+ this.templateId;
+		return this.categoryId + " - " + this.categoryName + " - " + this.weight + " - "
+				+ this.courseId + " - " + this.templateId;
 	}
-	
+
 	public String[] getDataForList() {
-		return new String[] {this.fieldName, Double.toString(this.weight)};
+		return new String[]{this.categoryName, Double.toString(this.weight)};
 	}
-	
+
 }

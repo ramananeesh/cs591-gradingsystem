@@ -1,16 +1,28 @@
 package model;
 
+/**
+ * Template.
+ */
 public class Template {
 
-	private int id;
+	/** Template ID. */
+	private int templateId;
+
+	/** Template name. */
 	private String templateName;
 
-	public int getId() {
-		return id;
+	public Template(int templateId, String templateName) {
+		super();
+		this.templateId = templateId;
+		this.templateName = templateName;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public int getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(int templateId) {
+		this.templateId = templateId;
 	}
 
 	public String getTemplateName() {
@@ -21,13 +33,8 @@ public class Template {
 		this.templateName = templateName;
 	}
 
-	public Template(int id, String templateName) {
-		super();
-		this.id = id;
-		this.templateName = templateName;
+	public String toString() {
+		return this.templateId + " - " + this.templateName;
 	}
 
-	public String toString() {
-		return this.id + " - " + this.templateName;
-	}
 }

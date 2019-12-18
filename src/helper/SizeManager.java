@@ -6,97 +6,75 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
+/**
+ * Size manager. Set component size according.
+ */
 public class SizeManager {
 
+	private static Rectangle contentPaneBounds;
+	private static int tableRowHeight;
+	private static float fontTableSize;
+	private static Rectangle tableCourseBounds;
+	private static int[] courseTableColumnWidth;
+	private static Rectangle searchCourseBounds;
+	private static float fontSearchSize;
+	private static Rectangle filterCourseBounds;
+	private static float fontFilterSize;
+	private static Rectangle categoryBounds;
+	private static Rectangle itemBounds;
+	private static Rectangle comboBounds;
+	private static float fontLabelSize;
+	private static Rectangle labelFilterBounds;
+	private static Rectangle labelSearchBounds;
+	private static Rectangle labelCategoryBounds;
+	private static Rectangle labelItemBounds;
+	private static Rectangle labelComboBounds;
+	private static float fontButtonSize;
+	private static Rectangle buttonAddBounds;
+	private static Rectangle buttonViewBounds;
+	private static Rectangle menuBarBounds;
+	private static float fontMenuSize;
+	private static Rectangle[] menuButtonsBounds;
+	private static Rectangle textInfoBounds;
+	private static float fontTextSize;
+	private static Rectangle tableStudentBounds;
+	private static Rectangle tableCategoryBounds;
+	private static Rectangle tableItemBounds;
+	private static int[] tableCategoryItemColumnWidth;
+	private static int menuTableRowHeight;
+	private static float fontMenuTableSize;
+	private static float fontMenuButtonSize;
+	private static Rectangle finalizeTitleLabelBounds;
+	private static Rectangle labelGradeStatisticsBounds;
+	private static Rectangle finalizeButtonBackBounds;
+	private static Rectangle finalizeButtonCurveBounds;
+	private static Rectangle finalizeButtonSaveBounds;
+	private static Rectangle finalizeButtonFinalizeBounds;
+	private static Rectangle viewGradeStatBounds;
+	private static Rectangle viewGradeTitleBounds;
+	private static Rectangle[] viewGradeComboBounds;
 	private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-	// LoginWindow
-
+	private static int optionPaneWidth = getScaledSize(600);
+	private static int optionPaneRowHeight = getScaledSize(70);
 	private static int loginWindowWidth = getScaledSize(800);
 	private static int loginWindowHeight = getScaledSize(450);
+	private static Rectangle titleBounds = new Rectangle(0, 0, loginWindowWidth, loginWindowHeight / 4);
 	private static int loginWindowX = (int) ((screenSize.getWidth() - loginWindowWidth) / 2);
 	private static int loginWindowY = (int) ((screenSize.getHeight() - loginWindowHeight) / 2);
-	public static Rectangle loginWindowBounds = new Rectangle(loginWindowX, loginWindowY, loginWindowWidth, loginWindowHeight);
-
-	public static Rectangle titleBounds = new Rectangle(0, 0, loginWindowWidth, loginWindowHeight / 4);
-	public static float titleFontSize = (int) (titleBounds.height * 0.6f);
-
+	private static Rectangle loginWindowBounds = new Rectangle(loginWindowX, loginWindowY, loginWindowWidth, loginWindowHeight);
 	private static int buttonLoginWidth = loginWindowWidth / 3;
 	private static int buttonLoginHeight = loginWindowHeight / 6;
+	private static float buttonLoginFontSize = (int) (buttonLoginHeight * 0.6f);
 	private static int buttonLoginX = loginWindowWidth / 2 - buttonLoginWidth / 2;
 	private static int buttonLoginY = loginWindowHeight * 2 / 3 - buttonLoginHeight / 2;
-	public static Rectangle buttonLoginBounds = new Rectangle(buttonLoginX, buttonLoginY, buttonLoginWidth, buttonLoginHeight);
-	public static float buttonLoginFontSize = (int) (buttonLoginHeight * 0.6f);
-
-	// CourseWindow
-
-	public static Rectangle contentPaneBounds;
-
-	public static int tableRowHeight;
-	public static float fontTableSize;
-
-	public static Rectangle tableCourseBounds;
-	public static int[] courseTableColumnWidth;
-
-	public static Rectangle searchCourseBounds;
-	public static float fontSearchSize;
-
-	public static Rectangle filterCourseBounds;
-	public static float fontFilterSize;
-
-	public static Rectangle categoryBounds;
-
-	public static Rectangle itemBounds;
-
-	public static Rectangle comboBounds;
-
-
-	public static float fontLabelSize;
-
-	public static Rectangle labelFilterBounds;
-	public static Rectangle labelSearchBounds;
-
-	public static Rectangle labelCategoryBounds;
-	public static Rectangle labelItemBounds;
-	public static Rectangle labelComboBounds;
-
-	public static float fontButtonSize;
-
-	public static Rectangle buttonAddBounds;
-	public static Rectangle buttonViewBounds;
-
-	// MenuWindow
-
-	public static Rectangle menuBarBounds;
-	public static float fontMenuSize;
-	public static Rectangle[] menuButtonsBounds;
-
-	public static Rectangle textInfoBounds;
-	public static float fontTextSize;
-
-	public static Rectangle tableStudentBounds;
-	public static Rectangle tableCategoryBounds;
-	public static Rectangle tableItemBounds;
-	public static int[] tableCategoryItemColumnWidth;
-	public static int menuTableRowHeight;
-	public static float fontMenuTableSize;
-	public static float fontMenuButtonSize;
-
-	public static Rectangle finalizeTitleLabelBounds;
-	public static Rectangle labelGradeStatisticsBounds;
-	public static Rectangle finalizeButtonBackBounds;
-	public static Rectangle finalizeButtonCurveBounds;
-	public static Rectangle finalizeButtonSaveBounds;
-	public static Rectangle finalizeButtonFinalizeBounds;
-
-	public static int optionPaneWidth = getScaledSize(600);
-	public static int optionPaneRowHeight = getScaledSize(70);
-	public static Rectangle viewGradeStatBounds;
-	public static Rectangle viewGradeTitleBounds;
-	public static Rectangle[] viewGradeComboBounds;
-	public static Rectangle viewGradeLockedButtonBounds;
-	public static Rectangle testLockButtonBounds;
-
+	private static Rectangle buttonLoginBounds = new Rectangle(buttonLoginX, buttonLoginY, buttonLoginWidth, buttonLoginHeight);
+	private static float titleFontSize = (int) (titleBounds.height * 0.6f);
+	
+	/**
+	 * Update component size according to frame size.
+	 *
+	 * @param frame Frame.
+	 */
 	public static void update(JFrame frame) {
 
 		contentPaneBounds = frame.getContentPane().getBounds();
@@ -106,10 +84,10 @@ public class SizeManager {
 		// CourseWindow
 
 		tableRowHeight = contentPaneHeight / 20;
-		fontTableSize = (int) (tableRowHeight * 0.6f);
+		fontTableSize = (int) (getTableRowHeight() * 0.6f);
 
 		int tableCourseWidth = contentPaneWidth * 7 / 8;
-		int tableCourseHeight = tableRowHeight * 15;
+		int tableCourseHeight = getTableRowHeight() * 15;
 		int tableCourseX = contentPaneWidth / 2 - tableCourseWidth / 2;
 		int tableCourseY = contentPaneHeight / 2 - tableCourseHeight / 2;
 		tableCourseBounds = new Rectangle(tableCourseX, tableCourseY, tableCourseWidth, tableCourseHeight);
@@ -157,7 +135,7 @@ public class SizeManager {
 		int midButtonCourse = contentPaneWidth / 40;
 		int buttonAddX = contentPaneWidth / 2 - buttonWidth - midButtonCourse;
 		int buttonViewX = contentPaneWidth / 2 + midButtonCourse;
-		int buttonAddViewY = contentPaneHeight * 15 / 16 - buttonHeight / 2;// contentPaneHeight * 179 / 200;
+		int buttonAddViewY = contentPaneHeight * 15 / 16 - buttonHeight / 2;
 		buttonAddBounds = new Rectangle(buttonAddX, buttonAddViewY, buttonWidth, buttonHeight);
 		buttonViewBounds = new Rectangle(buttonViewX, buttonAddViewY, buttonWidth, buttonHeight);
 
@@ -171,15 +149,15 @@ public class SizeManager {
 		int panelHeight = contentPaneHeight - menuBarHeight;
 
 		textInfoBounds = new Rectangle(panelWidth, menuBarHeight, panelWidth, panelHeight - 5 * buttonHeight);
-		fontTextSize = fontMenuSize * 0.8f;
+		fontTextSize = getFontMenuSize() * 0.8f;
 
 		tableStudentBounds = new Rectangle(0, menuBarHeight, panelWidth, panelHeight);
 		tableCategoryBounds = new Rectangle(2 * panelWidth, menuBarHeight, panelWidth, panelHeight / 2);
 		tableItemBounds = new Rectangle(2 * panelWidth, menuBarHeight + panelHeight / 2, panelWidth, panelHeight / 2);
 		tableCategoryItemColumnWidth = new int[]{panelWidth * 3 / 4, panelWidth / 4};
 		menuTableRowHeight = panelHeight / 20;
-		fontMenuTableSize = (int) (menuTableRowHeight * 0.6f);
-		fontMenuButtonSize = (int) (menuTableRowHeight * 0.5f);
+		fontMenuTableSize = (int) (getMenuTableRowHeight() * 0.6f);
+		fontMenuButtonSize = (int) (getMenuTableRowHeight() * 0.5f);
 		int menuButtonsWidth = (panelWidth - buttonHeight * 3) / 2;//panelWidth * 4 / 10;
 		int menuButtonMid = (panelWidth - menuButtonsWidth * 2) / 6;
 		int menuButtonCenterY = menuBarHeight + (panelHeight - 5 * buttonHeight) + 5 * buttonHeight / 2;
@@ -189,8 +167,6 @@ public class SizeManager {
 				new Rectangle(contentPaneWidth / 2 - menuButtonMid - menuButtonsWidth, menuButtonCenterY + menuButtonMid, menuButtonsWidth, buttonHeight),
 				new Rectangle(contentPaneWidth / 2 + menuButtonMid, menuButtonCenterY + menuButtonMid, menuButtonsWidth, buttonHeight),
 		};
-		viewGradeLockedButtonBounds = new Rectangle(contentPaneWidth / 2 - menuButtonsWidth / 2, menuButtonCenterY - buttonHeight / 2, menuButtonsWidth, buttonHeight);
-		testLockButtonBounds = new Rectangle(contentPaneWidth / 2 - menuButtonsWidth / 2, contentPaneHeight - buttonHeight, menuButtonsWidth, buttonHeight);
 
 		finalizeTitleLabelBounds = new Rectangle(0, 0, contentPaneWidth, contentPaneHeight / 20);
 		labelGradeStatisticsBounds = new Rectangle(0, contentPaneHeight / 20, contentPaneWidth, contentPaneHeight / 20);
@@ -219,7 +195,204 @@ public class SizeManager {
 		FontManager.update();
 	}
 
-	public static int getScaledSize(double size) {
+	private static int getScaledSize(double size) {
 		return (int) (size / 2000 * Math.max(screenSize.getWidth(), screenSize.getHeight()));
 	}
+
+	public static float getTitleFontSize() {
+		return titleFontSize;
+	}
+
+	public static Rectangle getContentPaneBounds() {
+		return contentPaneBounds;
+	}
+
+	public static int getTableRowHeight() {
+		return tableRowHeight;
+	}
+
+	public static float getFontTableSize() {
+		return fontTableSize;
+	}
+
+	public static Rectangle getTableCourseBounds() {
+		return tableCourseBounds;
+	}
+
+	public static int[] getCourseTableColumnWidth() {
+		return courseTableColumnWidth;
+	}
+
+	public static Rectangle getSearchCourseBounds() {
+		return searchCourseBounds;
+	}
+
+	public static float getFontSearchSize() {
+		return fontSearchSize;
+	}
+
+	public static Rectangle getFilterCourseBounds() {
+		return filterCourseBounds;
+	}
+
+	public static float getFontFilterSize() {
+		return fontFilterSize;
+	}
+
+	public static Rectangle getCategoryBounds() {
+		return categoryBounds;
+	}
+
+	public static Rectangle getItemBounds() {
+		return itemBounds;
+	}
+
+	public static Rectangle getComboBounds() {
+		return comboBounds;
+	}
+
+	public static float getFontLabelSize() {
+		return fontLabelSize;
+	}
+
+	public static Rectangle getLabelFilterBounds() {
+		return labelFilterBounds;
+	}
+
+	public static Rectangle getLabelSearchBounds() {
+		return labelSearchBounds;
+	}
+
+	public static Rectangle getLabelCategoryBounds() {
+		return labelCategoryBounds;
+	}
+
+	public static Rectangle getLabelItemBounds() {
+		return labelItemBounds;
+	}
+
+	public static Rectangle getLabelComboBounds() {
+		return labelComboBounds;
+	}
+
+	public static float getFontButtonSize() {
+		return fontButtonSize;
+	}
+
+	public static Rectangle getButtonAddBounds() {
+		return buttonAddBounds;
+	}
+
+	public static Rectangle getButtonViewBounds() {
+		return buttonViewBounds;
+	}
+
+	public static Rectangle getMenuBarBounds() {
+		return menuBarBounds;
+	}
+
+	public static float getFontMenuSize() {
+		return fontMenuSize;
+	}
+
+	public static Rectangle[] getMenuButtonsBounds() {
+		return menuButtonsBounds;
+	}
+
+	public static Rectangle getTextInfoBounds() {
+		return textInfoBounds;
+	}
+
+	public static float getFontTextSize() {
+		return fontTextSize;
+	}
+
+	public static Rectangle getTableStudentBounds() {
+		return tableStudentBounds;
+	}
+
+	public static Rectangle getTableCategoryBounds() {
+		return tableCategoryBounds;
+	}
+
+	public static Rectangle getTableItemBounds() {
+		return tableItemBounds;
+	}
+
+	public static int[] getTableCategoryItemColumnWidth() {
+		return tableCategoryItemColumnWidth;
+	}
+
+	public static int getMenuTableRowHeight() {
+		return menuTableRowHeight;
+	}
+
+	public static float getFontMenuTableSize() {
+		return fontMenuTableSize;
+	}
+
+	public static float getFontMenuButtonSize() {
+		return fontMenuButtonSize;
+	}
+
+	public static Rectangle getFinalizeTitleLabelBounds() {
+		return finalizeTitleLabelBounds;
+	}
+
+	public static Rectangle getLabelGradeStatisticsBounds() {
+		return labelGradeStatisticsBounds;
+	}
+
+	public static Rectangle getFinalizeButtonBackBounds() {
+		return finalizeButtonBackBounds;
+	}
+
+	public static Rectangle getFinalizeButtonCurveBounds() {
+		return finalizeButtonCurveBounds;
+	}
+
+	public static Rectangle getFinalizeButtonSaveBounds() {
+		return finalizeButtonSaveBounds;
+	}
+
+	public static Rectangle getFinalizeButtonFinalizeBounds() {
+		return finalizeButtonFinalizeBounds;
+	}
+
+	public static Rectangle getViewGradeStatBounds() {
+		return viewGradeStatBounds;
+	}
+
+	public static Rectangle getViewGradeTitleBounds() {
+		return viewGradeTitleBounds;
+	}
+
+	public static Rectangle[] getViewGradeComboBounds() {
+		return viewGradeComboBounds;
+	}
+
+	public static int getOptionPaneWidth() {
+		return optionPaneWidth;
+	}
+
+	public static int getOptionPaneRowHeight() {
+		return optionPaneRowHeight;
+	}
+
+	public static Rectangle getTitleBounds() {
+		return titleBounds;
+	}
+
+	public static Rectangle getLoginWindowBounds() {
+		return loginWindowBounds;
+	}
+
+	public static float getButtonLoginFontSize() {
+		return buttonLoginFontSize;
+	}
+
+	public static Rectangle getButtonLoginBounds() {
+		return buttonLoginBounds;
+	}
+
 }

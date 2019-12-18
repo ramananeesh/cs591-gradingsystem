@@ -15,7 +15,7 @@ import controller.Master;
 import helper.SizeManager;
 
 /**
- * The {@code LoginFrame} class represents the main frame which contains many kinds of panels
+ * The {@code LoginFrame} class represents the main frame which contains many kinds of panels.
  */
 public class MainFrame extends JFrame {
 
@@ -42,7 +42,7 @@ public class MainFrame extends JFrame {
 		setBounds(maximumWindowBounds);
 		setResizable(false);
 		try {
-			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName()); // Make GUI looks the same on macOS.
 			Image image = Toolkit.getDefaultToolkit().getImage(BACKGROUND_PICTURE_FILE_NAME).getScaledInstance((int) maximumWindowBounds.getWidth(), (int) maximumWindowBounds.getHeight(), Image.SCALE_SMOOTH);
 			ImageIcon imageIcon = new ImageIcon(image);
 			JLabel background = new JLabel(imageIcon);

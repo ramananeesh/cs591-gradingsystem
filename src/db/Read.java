@@ -1,29 +1,39 @@
 package db;
 
-import model.*;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import model.Category;
+import model.Course;
+import model.CourseStudent;
+import model.FinalGrade;
+import model.GradeEntry;
+import model.Item;
+
+/**
+ * Read records in database.
+ */
 public class Read {
 
-	// might want to start using courseID instead of courseName to avoid instances
-	// where for example:
-	// CS591 Spring 2019 has Exam, but CS591 Fall 2020 has Project. selecting by
-	// courseName will result in CS591 Fall
-	// 2020 having both Exam and Project when it should only have Project. selecting
-	// by courseID will avoid this.
-	public static ArrayList<Category> getCategoriesByCourse(int courseId) {
+	/**
+	 * Get categories by course.
+	 *
+	 * @param courseId Course ID.
+	 * @return List of categories.
+	 */
+	private static ArrayList<Category> getCategoriesByCourse(int courseId) {
 		ArrayList<Category> categories = new ArrayList<>();
-		String query = "select id, fieldName, weight, courseId from Category where courseId ='" + courseId + "'";
-		ResultSet rs = SQLHelper.performRead(query);
+		String sql = "select id, fieldName, weight, courseId from Category where courseId ='" + courseId + "'";
+		ResultSet resultSet = SQLHelper.performRead(sql);
 
 		try {
-			while (rs.next()) {
-				ArrayList<Item> items = getItemsByCategory(rs.getInt("ID"), rs.getInt("courseID"));
+			while (resultSet.next()) {
+				ArrayList<Item> items = getItemsByCategory(resultSet.getInt("ID"), resultSet.getInt("courseID"));
 
-				Category category = new Category(rs.getInt("ID"), rs.getString("fieldName"), rs.getDouble("weight"),
-						rs.getInt("courseId"), items);
+				Category category = new Category(resultSet.getInt("ID"), resultSet.getString("fieldName"), resultSet.getDouble("weight"),
+						resultSet.getInt("courseId"), items);
 				categories.add(category);
 			}
 		} catch (SQLException e) {
@@ -32,16 +42,23 @@ public class Read {
 		return categories;
 	}
 
-	public static ArrayList<Item> getItemsByCategory(int categoryID, int courseID) {
+	/**
+	 * Get items by category.
+	 *
+	 * @param categoryId Category ID.
+	 * @param courseId   Course ID.
+	 * @return List of items.
+	 */
+	private static ArrayList<Item> getItemsByCategory(int categoryId, int courseId) {
 		ArrayList<Item> items = new ArrayList<>();
-		String query = "select id, courseID, fieldName, weight, categoryId, maxPoints from Item where categoryID = '"
-				+ categoryID + "' and courseID = '" + courseID + "'";
-		ResultSet rs = SQLHelper.performRead(query);
+		String sql = "select id, courseID, fieldName, weight, categoryId, maxPoints from Item where categoryID = '"
+				+ categoryId + "' and courseID = '" + courseId + "'";
+		ResultSet resultSet = SQLHelper.performRead(sql);
 		try {
-			while (rs.next()) {
+			while (resultSet.next()) {
 
-				Item item = new Item(rs.getInt("ID"), rs.getString("fieldName"), rs.getInt("categoryID"),
-						rs.getDouble("weight"), rs.getDouble("maxPoints"), rs.getInt("courseID"));
+				Item item = new Item(resultSet.getInt("ID"), resultSet.getString("fieldName"), resultSet.getInt("categoryID"),
+						resultSet.getDouble("weight"), resultSet.getDouble("maxPoints"), resultSet.getInt("courseID"));
 				items.add(item);
 			}
 		} catch (SQLException e) {
@@ -50,18 +67,27 @@ public class Read {
 		return items;
 	}
 
-	public static ArrayList<GradeEntry> getStudentGradeEntriesByItem(String buid, int itemID, int categoryID,
-			int courseID) {
+	/**
+	 * Get student grade entries by items.
+	 *
+	 * @param buid       BU ID.
+	 * @param itemId     Item ID.
+	 * @param categoryId Category ID.
+	 * @param courseId   Course ID.
+	 * @return List of grade entries.
+	 */
+	public static ArrayList<GradeEntry> getStudentGradeEntriesByItem(String buid, int itemId,
+	                                                                 int categoryId, int courseId) {
 		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
-		String query = "Select * from GradeEntry where buid = '" + buid + " and itemID = '" + itemID
-				+ "' and categoryID = '" + categoryID + "' and " + "courseID = '" + courseID + "'";
-		ResultSet rs = SQLHelper.performRead(query);
+		String sql = "Select * from GradeEntry where buid = '" + buid + " and itemID = '" + itemId
+				+ "' and categoryID = '" + categoryId + "' and " + "courseID = '" + courseId + "'";
+		ResultSet resultSet = SQLHelper.performRead(sql);
 		try {
-			while (rs.next()) {
-				GradeEntry ge = new GradeEntry(rs.getString("entryName"), rs.getInt("itemID"), rs.getInt("categoryID"),
-						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getDouble("percentage"),
-						rs.getInt("courseID"), rs.getString("comment"));
-				gradeEntries.add(ge);
+			while (resultSet.next()) {
+				GradeEntry gradeEntry = new GradeEntry(resultSet.getString("entryName"), resultSet.getInt("itemID"), resultSet.getInt("categoryID"),
+						resultSet.getDouble("maxPoint"), resultSet.getDouble("pointsEarned"), resultSet.getDouble("percentage"),
+						resultSet.getInt("courseID"), resultSet.getString("comment"));
+				gradeEntries.add(gradeEntry);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -69,28 +95,32 @@ public class Read {
 		return gradeEntries;
 	}
 
+	/**
+	 * Get all courses.
+	 *
+	 * @return List of all courses.
+	 */
 	public static ArrayList<Course> getAllCourses() {
 		ArrayList<Course> courses = new ArrayList<>();
-		String query = "Select * from Course";
-		ResultSet rs = SQLHelper.performRead(query);
-
+		String sql = "Select * from Course";
+		ResultSet resultSet = SQLHelper.performRead(sql);
 		try {
-			while (rs.next()) {
-				ArrayList<Category> categories = getCategoriesByCourse(rs.getInt("ID"));
-				ArrayList<CourseStudent> students = getCourseStudentsByCourse(rs.getInt("ID"));
-				ArrayList<FinalGrade> finalGrades = getAllFinalGradesByCourse(rs.getInt("ID"), students);
+			while (resultSet.next()) {
+				ArrayList<Category> categories = getCategoriesByCourse(resultSet.getInt("ID"));
+				ArrayList<CourseStudent> students = getCourseStudentsByCourse(resultSet.getInt("ID"));
+				ArrayList<FinalGrade> finalGrades = getAllFinalGradesByCourse(resultSet.getInt("ID"), students);
 				if (finalGrades.size() == 0) {
-					Course course = new Course(rs.getInt("ID"), rs.getString("courseNumber"),
-							rs.getString("courseName"), rs.getString("term"), categories, students);
+					Course course = new Course(resultSet.getInt("ID"), resultSet.getString("courseNumber"),
+							resultSet.getString("courseName"), resultSet.getString("term"), categories, students);
 					courses.add(course);
 				} else {
-					boolean curveApplied = rs.getBoolean("curveApplied");
-					Double curve = rs.getDouble("curve");
-					if (curveApplied == false)
+					boolean curveApplied = resultSet.getBoolean("curveApplied");
+					Double curve = resultSet.getDouble("curve");
+					if (!curveApplied)
 						curve = null;
-					Course course = new Course(rs.getInt("ID"), rs.getString("courseNumber"),
-							rs.getString("courseName"), rs.getString("term"), categories, students, finalGrades,
-							curveApplied, curve, rs.getBoolean("finalized"));
+					Course course = new Course(resultSet.getInt("ID"), resultSet.getString("courseNumber"),
+							resultSet.getString("courseName"), resultSet.getString("term"), categories, students, finalGrades,
+							curveApplied, curve, resultSet.getBoolean("finalized"));
 					courses.add(course);
 				}
 
@@ -101,24 +131,24 @@ public class Read {
 		return courses;
 	}
 
-	public static CourseStudent getStudentByBuid(ArrayList<CourseStudent> students, String buid) {
+	private static CourseStudent getStudentByBuid(ArrayList<CourseStudent> students, String buid) {
 		for (CourseStudent student : students) {
-			if (student.getBuid().equals(buid))
+			if (student.getStudentId().equals(buid))
 				return student;
 		}
 		return null;
 	}
 
-	public static ArrayList<FinalGrade> getAllFinalGradesByCourse(int courseId, ArrayList<CourseStudent> students) {
-		ArrayList<FinalGrade> finalGrades = new ArrayList<FinalGrade>();
-		String query = "Select * from FinalGrade where courseID='" + courseId + "'";
-		ResultSet rs = SQLHelper.performRead(query);
+	private static ArrayList<FinalGrade> getAllFinalGradesByCourse(int courseId, ArrayList<CourseStudent> students) {
+		ArrayList<FinalGrade> finalGrades = new ArrayList<>();
+		String sql = "Select * from FinalGrade where courseID='" + courseId + "'";
+		ResultSet resultSet = SQLHelper.performRead(sql);
 		try {
-			while (rs.next()) {
-				CourseStudent student = getStudentByBuid(students, rs.getString("buid"));
-				FinalGrade f = new FinalGrade(student, rs.getDouble("actualPercentage"),
-						rs.getDouble("curvedPercentage"), rs.getString("letterGrade"));
-				finalGrades.add(f);
+			while (resultSet.next()) {
+				CourseStudent student = getStudentByBuid(students, resultSet.getString("buid"));
+				FinalGrade finalGrade = new FinalGrade(student, resultSet.getDouble("actualPercentage"),
+						resultSet.getDouble("curvedPercentage"), resultSet.getString("letterGrade"));
+				finalGrades.add(finalGrade);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -129,14 +159,14 @@ public class Read {
 
 	public static ArrayList<GradeEntry> getGradeEntriesByCourse(int courseID) {
 		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
-		String query = "Select * from GradeEntry where courseID='" + courseID + "'";
-		ResultSet rs = SQLHelper.performRead(query);
+		String sql = "Select * from GradeEntry where courseID='" + courseID + "'";
+		ResultSet resultSet = SQLHelper.performRead(sql);
 		try {
-			while (rs.next()) {
-				GradeEntry ge = new GradeEntry(rs.getString("entryName"), rs.getInt("itemID"), rs.getInt("categoryID"),
-						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getDouble("percentage"),
-						rs.getInt("courseID"), rs.getString("comment"));
-				gradeEntries.add(ge);
+			while (resultSet.next()) {
+				GradeEntry gradeEntry = new GradeEntry(resultSet.getString("entryName"), resultSet.getInt("itemID"), resultSet.getInt("categoryID"),
+						resultSet.getDouble("maxPoint"), resultSet.getDouble("pointsEarned"), resultSet.getDouble("percentage"),
+						resultSet.getInt("courseID"), resultSet.getString("comment"));
+				gradeEntries.add(gradeEntry);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -144,16 +174,16 @@ public class Read {
 		return gradeEntries;
 	}
 
-	public static ArrayList<GradeEntry> getGradeEntriesByCourseStudent(String BUID, int courseId) {
+	private static ArrayList<GradeEntry> getGradeEntriesByCourseStudent(String BUID, int courseId) {
 		ArrayList<GradeEntry> gradeEntries = new ArrayList<>();
-		String query = "Select * from GradeEntry where BUID='" + BUID + "' and courseId=" + courseId;
-		ResultSet rs = SQLHelper.performRead(query);
+		String sql = "Select * from GradeEntry where BUID='" + BUID + "' and courseId=" + courseId;
+		ResultSet resultSet = SQLHelper.performRead(sql);
 		try {
-			while (rs.next()) {
-				GradeEntry ge = new GradeEntry(rs.getString("entryName"), rs.getInt("itemID"), rs.getInt("categoryID"),
-						rs.getDouble("maxPoint"), rs.getDouble("pointsEarned"), rs.getDouble("percentage"),
-						rs.getInt("courseID"), rs.getString("comment"));
-				gradeEntries.add(ge);
+			while (resultSet.next()) {
+				GradeEntry gradeEntry = new GradeEntry(resultSet.getString("entryName"), resultSet.getInt("itemID"), resultSet.getInt("categoryID"),
+						resultSet.getDouble("maxPoint"), resultSet.getDouble("pointsEarned"), resultSet.getDouble("percentage"),
+						resultSet.getInt("courseID"), resultSet.getString("comment"));
+				gradeEntries.add(gradeEntry);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -161,45 +191,48 @@ public class Read {
 		return gradeEntries;
 	}
 
+	/**
+	 * Get users for system.
+	 *
+	 * @return Users.
+	 */
 	public static HashMap<String, String> getUsersForSystem() {
-		HashMap<String, String> map = new HashMap<String, String>();
+		HashMap<String, String> userMap = new HashMap<>();
 
-		String query = "Select username, password from users ";
-		ResultSet rs = SQLHelper.performRead(query);
-		
+		String sql = "Select username, password from users ";
+		ResultSet resultSet = SQLHelper.performRead(sql);
+
 		try {
-			while(rs.next()) {
-				String username = rs.getString("username");
-				String password = rs.getString("password");
-				map.put(username, password);
+			while (resultSet.next()) {
+				String username = resultSet.getString("username");
+				String password = resultSet.getString("password");
+				userMap.put(username, password);
 			}
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		return map;
+
+		return userMap;
 	}
 
-	// now properly makes the coursestudent object
-	public static ArrayList<CourseStudent> getCourseStudentsByCourse(int courseID) {
+	/**
+	 * Get course students by course.
+	 *
+	 * @param courseId Course ID.
+	 * @return List of course students.
+	 */
+	public static ArrayList<CourseStudent> getCourseStudentsByCourse(int courseId) {
 		ArrayList<CourseStudent> students = new ArrayList<>();
-		// String query = "Select A.* from Student A where A.BUID in (select B.BUID from
-		// CourseStudent B where B.courseID ='"
-		// + courseID + "')";
-		// String query = "Select Student.BUID, Student.fName, Student.lName,
-		// Student.type, Student.email, CourseStudent.courseID,"
-		// + "CourseStudent.active from Student, CourseStudent JOIN CourseStudent ON
-		// Student.BUID = CourseStudent.BUID";
-		String query = "Select s.buid, s.fname, s.lname, s.type, s.email, cs.courseId, cs.active from student s, coursestudent cs where "
-				+ "s.buid=cs.buid and courseId=" + courseID;
-		ResultSet rs = SQLHelper.performRead(query);
+		String sql = "Select s.buid, s.fname, s.lname, s.type, s.email, cs.courseId, cs.active from student s, coursestudent cs where "
+				+ "s.buid=cs.buid and courseId=" + courseId;
+		ResultSet resultSet = SQLHelper.performRead(sql);
 		try {
-			while (rs.next()) {
-				ArrayList<GradeEntry> gradeEntries = getGradeEntriesByCourseStudent(rs.getString("BUID"), courseID);
+			while (resultSet.next()) {
+				ArrayList<GradeEntry> gradeEntries = getGradeEntriesByCourseStudent(resultSet.getString("BUID"), courseId);
 
-				CourseStudent student = new CourseStudent(rs.getString("fName"), rs.getString("lName"),
-						rs.getString("BUID"), rs.getString("email"), rs.getString("type"), rs.getInt("courseID"),
-						rs.getBoolean("active"), gradeEntries);
+				CourseStudent student = new CourseStudent(resultSet.getString("fName"), resultSet.getString("lName"),
+						resultSet.getString("BUID"), resultSet.getString("email"), resultSet.getString("type"), resultSet.getInt("courseID"),
+						resultSet.getBoolean("active"), gradeEntries);
 				students.add(student);
 			}
 		} catch (SQLException e) {
@@ -207,4 +240,5 @@ public class Read {
 		}
 		return students;
 	}
+
 }

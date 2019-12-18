@@ -5,61 +5,68 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * SQL utilities.
+ */
 public class SQLHelper {
-    public static Connection getConnection() {
-        Connection conn = null;
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/grading_db?" + "user=root");
+	/**
+	 * Get a MySQL connection.
+	 *
+	 * @return A MySQL connection.
+	 */
+	private static Connection getConnection() {
+		Connection connection = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/grading_db?" + "user=root");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return connection;
+	}
 
-            // Do something with the Connection
+	/**
+	 * Perform read operation.
+	 *
+	 * @param sql SQL.
+	 * @return Result.
+	 */
+	public static ResultSet performRead(String sql) {
+		ResultSet resultSet = null;
+		try {
+			Connection connection = getConnection();
+			Statement statement = connection.createStatement();
+			resultSet = statement.executeQuery(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return resultSet;
+	}
 
-        } catch (Exception ex) {
-            // handle any errors
-            System.out.println("Exception: " + ex.getMessage());
+	/**
+	 * Perform query  operation.
+	 *
+	 * @param sql SQL.
+	 * @return Result.
+	 */
+	public static boolean performQuery(String sql) {
+		Connection connection = getConnection();
+		try {
+			Statement statement = connection.createStatement();
+			int executeUpdateResult = statement.executeUpdate(sql);
+			if (executeUpdateResult == 1) {
+				System.out.println("Insert successful");
+				connection.close();
+				return true;
+			} else {
+				System.out.println("Insert unsuccessful");
+			}
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
-        }
-
-        return conn;
-    }
-
-    public static ResultSet performRead(String query) {
-        ResultSet rs = null;
-
-        try {
-            Connection conn = getConnection();
-
-            Statement stmt = conn.createStatement();
-
-            rs = stmt.executeQuery(query);
-        } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
-        }
-
-        return rs;
-    }
-
-    public static boolean performQuery(String sql) {
-        Connection conn = getConnection();
-
-        try {
-            Statement st = conn.createStatement();
-            int m = st.executeUpdate(sql);
-
-            if (m == 1) {
-                System.out.println("Insert successful");
-                conn.close();
-                return true;
-            } else {
-                System.out.println("Insert unsuccessful");
-            }
-
-            conn.close();
-        } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
-        }
-
-        return false;
-    }
 }

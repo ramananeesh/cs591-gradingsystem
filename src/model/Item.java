@@ -1,55 +1,51 @@
 package model;
 
-import java.sql.Date;
-import java.util.*;
-
+/**
+ * Item.
+ */
 public class Item {
 
-	private int id;
-	private String fieldName;
+	/** Item ID. */
+	private int itemId;
+
+	/** Item name. */
+	private String itemName;
+
+	/** Category ID. */
 	private int categoryId;
+
+	/** Weight. */
 	private double weight;
+
+	/** Course ID. */
 	private int courseId;
-	// private int templateId;
-	// private Date dateAssigned;
-	// private Date dateDue;
+
+	/** Max points. */
 	private double maxPoints;
 
-	// Item(int id, String fieldName, String categoryName, double weight, String
-	// courseId, int templateId, Date dateAssigned, Date dateDue)
-	/*
-	 * public Item(int id, String fieldName, int categoryId, double weight, double
-	 * maxPoints, int courseId, ) { super(); this.id = id; this.fieldName =
-	 * fieldName; this.categoryId = categoryId; this.weight = weight; this.courseId
-	 * = courseId; // this.templateId = templateId; // this.dateAssigned =
-	 * dateAssigned; // this.dateDue = dateDue; this.maxPoints = maxPoints; }
-	 */
-
-	public Item(int id, String fieldName, int categoryId, double weight, double maxPoints, int courseId) {
-		super();
-		this.id = id;
-		this.fieldName = fieldName;
+	public Item(int itemId, String itemName, int categoryId, double weight, double maxPoints, int courseId) {
+		this.itemId = itemId;
+		this.itemName = itemName;
 		this.categoryId = categoryId;
 		this.weight = weight;
 		this.courseId = courseId;
 		this.maxPoints = maxPoints;
-		// this.templateId = templateId;
 	}
 
-	public int getId() {
-		return id;
+	public int getItemId() {
+		return itemId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setItemId(int itemId) {
+		this.itemId = itemId;
 	}
 
-	public String getFieldName() {
-		return fieldName;
+	public String getItemName() {
+		return itemName;
 	}
 
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
 	}
 
 	public int getCategoryId() {
@@ -76,26 +72,20 @@ public class Item {
 		this.courseId = courseId;
 	}
 
-	/*
-	 * public int getTemplateId() { return templateId; }
-	 * 
-	 * public void setTemplateId(int templateId) { this.templateId = templateId; }
-	 */
-
 	public String[] getDetails() {
-		return new String[] { this.fieldName, Double.toString(this.weight) };
+		return new String[]{this.itemName, Double.toString(this.weight)};
 	}
 
 	public String[] getDetailsWithMaxPoints() {
-		return new String[] { this.fieldName, Double.toString(this.weight), Double.toString(this.maxPoints) };
+		return new String[]{this.itemName, Double.toString(this.weight), Double.toString(this.maxPoints)};
 	}
 
 	public String[] getDetailsWithCategory(Course course) {
-		return new String[] { course.getCategoryById(this.categoryId).getFieldName(), this.fieldName, Double.toString(this.weight) };
+		return new String[]{course.getCategoryById(this.categoryId).getCategoryName(), this.itemName, Double.toString(this.weight)};
 	}
 
 	public String[] getDetailsWithMaxPointsWithCategory(Course course) {
-		return new String[] {course.getCategoryById(this.categoryId).getFieldName(), this.fieldName, Double.toString(this.weight), Double.toString(this.maxPoints) };
+		return new String[]{course.getCategoryById(this.categoryId).getCategoryName(), this.itemName, Double.toString(this.weight), Double.toString(this.maxPoints)};
 	}
 
 	public double getMaxPoints() {
@@ -105,4 +95,5 @@ public class Item {
 	public void setMaxPoints(double maxPoints) {
 		this.maxPoints = maxPoints;
 	}
+
 }

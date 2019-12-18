@@ -1,14 +1,23 @@
 package model;
 
+/**
+ * Final grade.
+ */
 public class FinalGrade {
 
+	/** Student. */
 	private CourseStudent student;
+
+	/** Actual percentage. */
 	private Double actualPercentage;
+
+	/** Curved percentage. */
 	private Double curvedPercentage;
+
+	/** Letter grade. */
 	private String letterGrade;
 
 	public FinalGrade(CourseStudent student, double actualPercentage, double curvedPercentage, String letterGrade) {
-		super();
 		this.student = student;
 		this.actualPercentage = actualPercentage;
 		this.curvedPercentage = curvedPercentage;
@@ -56,11 +65,11 @@ public class FinalGrade {
 
 	public String[] getDetailsForList() {
 		if (curvedPercentage != null) {
-			return new String[] { this.student.getName(), this.student.getBuid(), this.actualPercentage.toString(),
-					this.curvedPercentage.toString(), this.letterGrade };
+			return new String[]{this.student.getName(), this.student.getStudentId(), this.actualPercentage.toString(),
+					this.curvedPercentage.toString(), this.letterGrade};
 		} else {
-			return new String[] { this.student.getName(), this.student.getBuid(), this.actualPercentage.toString(), "",
-					this.letterGrade };
+			return new String[]{this.student.getName(), this.student.getStudentId(), this.actualPercentage.toString(), "",
+					this.letterGrade};
 		}
 	}
 }

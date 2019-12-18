@@ -2,8 +2,12 @@ package model;
 
 import java.util.ArrayList;
 
+/**
+ * Category.
+ */
 public class Category extends GenericCategory {
 
+	/** List of all items. */
 	private ArrayList<Item> items;
 
 	public Category(int id, String fieldName, double weight, int courseId) {
@@ -104,7 +108,7 @@ public class Category extends GenericCategory {
 
 	public Item getItemById(int itemId) {
 		for (Item i : this.items) {
-			if (i.getId() == itemId)
+			if (i.getItemId() == itemId)
 				return i;
 		}
 		return null;
@@ -112,7 +116,7 @@ public class Category extends GenericCategory {
 
 	public Item getItemByItemName(String itemName) {
 		for (Item i : this.items) {
-			if (i.getFieldName().equals(itemName))
+			if (i.getItemName().equals(itemName))
 				return i;
 		}
 		return null;
@@ -121,25 +125,25 @@ public class Category extends GenericCategory {
 	public int getItemIndexById(int id) {
 		int i = 0;
 		for (Item itt : this.items) {
-			if (itt.getId() == id)
+			if (itt.getItemId() == id)
 				return i;
 			i++;
 		}
 
 		return -1;
 	}
-	
+
 	public boolean itemWeightsSumToOne() {
 		double sum = 0;
-		for(Item i: this.items) {
-			sum+=i.getWeight();
+		for (Item i : this.items) {
+			sum += i.getWeight();
 		}
-		
-		return sum==1.0;
+
+		return sum == 1.0;
 	}
 
 	public void replaceAllCourseIdsInItems(int courseId) {
-		for(int i=0; i<this.items.size();i++) {
+		for (int i = 0; i < this.items.size(); i++) {
 			this.items.get(i).setCourseId(courseId);
 		}
 	}

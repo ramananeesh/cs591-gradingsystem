@@ -2,24 +2,24 @@ package model;
 
 public class Student extends Person {
 
-	private String buid;
+	private String studentId;
 	private String email;
 	private String type;
 
-	public Student(String fname, String lname, String buid, String email, String type) {
-		super(fname, lname);
+	public Student(String firstName, String lastName, String studentId, String email, String type) {
+		super(firstName, lastName);
 
-		this.buid = buid;
+		this.studentId = studentId;
 		this.email = email;
 		this.type = type;
 	}
 
-	public String getBuid() {
-		return buid;
+	public String getStudentId() {
+		return studentId;
 	}
 
-	public void setBuid(String buid) {
-		this.buid = buid;
+	public void setStudentId(String studentId) {
+		this.studentId = studentId;
 	}
 
 	public String getType() {
@@ -37,32 +37,32 @@ public class Student extends Person {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public String[] getStudentDataForTable() {
-		return new String[]{this.getFname()+" "+this.getLname(), this.getEmail()};
+		return new String[]{this.getFirstName() + " " + this.getLastName(), this.getEmail()};
 	}
-	
+
 	public String getStudentDetails() {
-		String str="";
-		
-		str+="\nName: "+this.getFname()+" "+this.getLname();
-		str+="\nBUID: "+this.getBuid();
-		str+="\nEmail: "+this.getEmail();
-		str+="\nStudent Type: "+this.getType();
-		return str; 
+		String str = "";
+
+		str += "\nName: " + this.getFirstName() + " " + this.getLastName();
+		str += "\nBUID: " + this.getStudentId();
+		str += "\nEmail: " + this.getEmail();
+		str += "\nStudent Type: " + this.getType();
+		return str;
 	}
-	
+
 	public String getName() {
-		return this.getFname()+" "+this.getLname();
+		return this.getFirstName() + " " + this.getLastName();
 	}
-	
+
 	public void setName(String name) {
 		String[] names = name.split(" ");
 		String fname = names[0];
 		String lname = names[1];
-		
-		this.setFname(fname);
-		this.setLname(lname);
+
+		this.setFirstName(fname);
+		this.setLastName(lname);
 	}
 
 }

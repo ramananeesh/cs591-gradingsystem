@@ -7,7 +7,6 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,71 +54,61 @@ import model.GradeEntry;
 import model.Item;
 
 /**
- * The {@code MenuPanel} class represents the panel for viewing or modifying all
- * the grades
+ * The {@code MenuPanel} class represents the panel for viewing or modifying all the grades.
  */
 public class MenuPanel extends JPanel implements Observer {
+
 	/** The title for the window when MenuPanel displays */
 	private static final String TITLE = "Grading System - Main Menu";
-	private Master controller;
-	/** The frame which contains this panel. */
-	private MainFrame frame;
-
-	private MyTableModel studentTableModel;
-
-	private String[] tableStudentColumns;
-
-	private String[] tableCategoryColumns;
-
-	private DefaultTableModel categoryTableModel;
-
-	private String[] tableItemColumns;
-
-	private DefaultTableModel itemTableModel;
-
-	private JTable tableCategory;
-
-	private JTable tableItem;
-
-	private JTable tableStudent;
-
-	private DefaultComboBoxModel studentComboModel;
-
-	private JComboBox<String> studentComboEdit;
-
-//	private JComboBox<String> categoryEditItemCombo;
-
-	private JTable editItemTable;
+	/** Buttons. */
 	private final JButton[] buttons = new JButton[4];
+	/** Menu bar. */
 	private final JMenuBar menuBar = new JMenuBar();
-	private final String[] menuName = new String[]{"  File  ", "  Edit  ", "  Grade  "};
-	private final String[][] menuItemName = new String[][]{
-			{"Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit"},
-			{"Edit Student", "Edit Category", "Edit Item"},
-			{"Edit All Grades", "Edit by Student", "View Grade", "Finalize Grade"}};
-	private final ActionListener[][] menuActionListener;
+	/** Controller. */
+	private Master controller;
+	/** Student table model. */
+	private MyTableModel studentTableModel;
+	/** Student table columns. */
+	private String[] tableStudentColumns;
+	/** Category table columns. */
+	private String[] tableCategoryColumns;
+	/** Category table model. */
+	private DefaultTableModel categoryTableModel;
+	/** Item table columns. */
+	private String[] tableItemColumns;
+	/** Item table model. */
+	private DefaultTableModel itemTableModel;
+	/** Category table. */
+	private JTable categoryTable;
+	/** Item table. */
+	private JTable itemTable;
+	/** Student table. */
+	private JTable studentTable;
+	/** Student combo box model. */
+	private DefaultComboBoxModel<String> studentComboBoxModel;
+	/** Edit student combo box. */
+	private JComboBox<String> editStudentComboBox;
+	/** Edit item table. */
+	private JTable editItemTable;
 
 	/**
 	 * Initializes a newly created {@code MenuPanel} object
 	 */
-	public MenuPanel(MainFrame frame, String[] courseData, Master controller) { // TODO data should not be String array
-		this.frame = frame;
+	public MenuPanel(MainFrame frame, String[] courseData, Master controller) {
 		this.controller = controller;
 		this.controller.addObserver(this);
-		
-		
 
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.contentPaneBounds);
+		setBounds(SizeManager.getContentPaneBounds());
 		setOpaque(false);
 
-		UIManager.put("Table.font", FontManager.fontMenuTable);
-		UIManager.put("TableHeader.font", FontManager.fontMenuTable);
-		UIManager.put("Menu.font", FontManager.fontMenu);
-		UIManager.put("MenuItem.font", FontManager.fontMenu);
-		UIManager.put("TextField.font", FontManager.fontLabel);
-		UIManager.put("ComboBox.font", FontManager.fontLabel);
+		UIManager.put("Table.font", FontManager.getFontMenuTable());
+		UIManager.put("TableHeader.font", FontManager.getFontMenuTable());
+		UIManager.put("Menu.font", FontManager.getFontMenu());
+		UIManager.put("MenuItem.font", FontManager.getFontMenu());
+		UIManager.put("TextField.font", FontManager.getFontLabel());
+		UIManager.put("ComboBox.font", FontManager.getFontLabel());
 
 		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
 
@@ -127,9 +116,9 @@ public class MenuPanel extends JPanel implements Observer {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 			                                               boolean hasFocus, int row, int column) {
 				MyTableModel model = (MyTableModel) table.getModel();
-				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-				c.setBackground(model.getRowColor(row));
-				return c;
+				Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				component.setBackground(model.getRowColor(row));
+				return component;
 			}
 		};
 		studentRender.setHorizontalAlignment(SwingConstants.CENTER);
@@ -139,7 +128,7 @@ public class MenuPanel extends JPanel implements Observer {
 
 		String courseString = courseData[0] + "\n" + courseData[1] + "\n" + courseData[2];
 
-		menuActionListener = new ActionListener[][]{ // TODO complete menu action
+		ActionListener[][] menuActionListener = new ActionListener[][]{
 				{ // File
 						addStudent -> { // Add Student
 							try {
@@ -151,8 +140,8 @@ public class MenuPanel extends JPanel implements Observer {
 										new String[]{"Undergraduate", "Graduate"});
 								Object[] fields = {"First Name: ", fNameField, "Last Name: ", lNameField, "BU ID: ",
 										BUIDField, "Email: ", emailField, "Level: ", levelCombo,};
-								UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
-										SizeManager.optionPaneRowHeight * fields.length));
+								UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.getOptionPaneWidth(),
+										SizeManager.getOptionPaneRowHeight() * fields.length));
 
 								while (true) {
 									int reply = JOptionPane.showConfirmDialog(null, fields, "Add Student",
@@ -171,24 +160,24 @@ public class MenuPanel extends JPanel implements Observer {
 										return;
 									}
 								}
-							} catch (Exception e1) {
+							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 						}, addStudentsFromFile -> {
 
 					// create an object of JFileChooser class
-					JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-					UIManager.put("FileChooser.listFont",new Font("Cascadia", Font.BOLD,35 ));
-					j.setPreferredSize(new Dimension(SizeManager.optionPaneWidth,
-							SizeManager.optionPaneRowHeight * 6));
+					JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+					UIManager.put("FileChooser.listFont", new Font("Cascadia", Font.BOLD, 35));
+					fileChooser.setPreferredSize(new Dimension(SizeManager.getOptionPaneWidth(),
+							SizeManager.getOptionPaneRowHeight() * 6));
 					// invoke the showsOpenDialog function to show the save dialog
-					int r = j.showOpenDialog(null);
+					int reply = fileChooser.showOpenDialog(null);
 
 					// if the user selects a file
-					if (r == JFileChooser.APPROVE_OPTION) {
+					if (reply == JFileChooser.APPROVE_OPTION) {
 						// set the label to the path of the selected file
 						ArrayList<HashMap<String, String>> students = processCsvFile(
-								j.getSelectedFile().getAbsolutePath());
+								fileChooser.getSelectedFile().getAbsolutePath());
 						controller.addStudentsForCourse(controller.getCurrentCourse(), students);
 					}
 					// if the user cancelled the operation
@@ -200,8 +189,8 @@ public class MenuPanel extends JPanel implements Observer {
 						JTextField categoryField = new JTextField();
 						JTextField percentageField = new JTextField();
 						Object[] fields = {"Category: ", categoryField, "Percentage (%): ", percentageField,};
-						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
-								SizeManager.optionPaneRowHeight * fields.length));
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.getOptionPaneWidth(),
+								SizeManager.getOptionPaneRowHeight() * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Add Category",
@@ -226,7 +215,7 @@ public class MenuPanel extends JPanel implements Observer {
 								return;
 							}
 						}
-					} catch (Exception e1) {
+					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}, addItem -> { // Add Item
@@ -235,15 +224,15 @@ public class MenuPanel extends JPanel implements Observer {
 
 						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
 						for (int i = 0; i < categories.size(); i++) {
-							categoryCombo.addItem(categories.get(i).getFieldName());
+							categoryCombo.addItem(categories.get(i).getCategoryName());
 						}
 						JTextField itemField = new JTextField();
 						JTextField percentageField = new JTextField();
 						JTextField maxPointsField = new JTextField();
 						Object[] fields = {"Category: ", categoryCombo, "Item: ", itemField, "Percentage (%): ",
 								percentageField, "Max Points: ", maxPointsField,};
-						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
-								SizeManager.optionPaneRowHeight * fields.length));
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.getOptionPaneWidth(),
+								SizeManager.getOptionPaneRowHeight() * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(null, fields, "Add Item",
@@ -277,7 +266,7 @@ public class MenuPanel extends JPanel implements Observer {
 								return;
 							}
 						}
-					} catch (Exception e1) {
+					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 
@@ -287,23 +276,23 @@ public class MenuPanel extends JPanel implements Observer {
 				{editStudent -> { // Edit Student
 					try {
 						String[] studentDataForCombo = controller.getCurrentCourse().getStudentNamesAsList();
-						studentComboModel = new DefaultComboBoxModel(studentDataForCombo);
-						studentComboEdit = new JComboBox<>(studentComboModel);
+						studentComboBoxModel = new DefaultComboBoxModel(studentDataForCombo);
+						editStudentComboBox = new JComboBox<>(studentComboBoxModel);
 
 						JTextField nameField = new JTextField();
 						JComboBox<String> levelCombo = new JComboBox<String>(
 								new String[]{"Undergraduate", "Graduate"});
 						JComboBox<String> statusCombo = new JComboBox<>(new String[]{"Active", "Freeze"});
-						Object[] fields = {"Student: ", studentComboEdit, "Name:", nameField, "Level: ", levelCombo,
+						Object[] fields = {"Student: ", editStudentComboBox, "Name:", nameField, "Level: ", levelCombo,
 								"status: ", statusCombo,};
-						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
-								SizeManager.optionPaneRowHeight * fields.length));
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.getOptionPaneWidth(),
+								SizeManager.getOptionPaneRowHeight() * fields.length));
 
 						while (true) {
 							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Student",
 									JOptionPane.OK_CANCEL_OPTION);
 							if (reply == JOptionPane.OK_OPTION) {
-								int chosenIndex = studentComboEdit.getSelectedIndex();
+								int chosenIndex = editStudentComboBox.getSelectedIndex();
 								if (chosenIndex != -1) {
 
 									String name = nameField.getText().trim();
@@ -327,7 +316,7 @@ public class MenuPanel extends JPanel implements Observer {
 								return;
 							}
 						}
-					} catch (Exception e1) {
+					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}, editCategory -> { // Edit Category
@@ -347,7 +336,7 @@ public class MenuPanel extends JPanel implements Observer {
 							}
 						};
 						categoryTable.setDefaultRenderer(Object.class, tableRender);
-						categoryTable.setRowHeight(SizeManager.tableRowHeight);
+						categoryTable.setRowHeight(SizeManager.getTableRowHeight());
 						JScrollPane categoryScrollPane = new JScrollPane(categoryTable);
 						Object[] options = {"Save", "Delete", "Cancel"};
 						while (true) {
@@ -393,26 +382,13 @@ public class MenuPanel extends JPanel implements Observer {
 								return;
 							}
 						}
-					} catch (Exception e1) {
+					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
+
 				}, editItem -> { // Edit Item
 					try {
-
-//						categoryEditItemCombo = new JComboBox<>();
-//
-						ArrayList<Category> categories = controller.getCurrentCourse().getCategories();
-//						for (int i = 0; i < categories.size(); i++) {
-//							categoryEditItemCombo.addItem(categories.get(i).getFieldName());
-//						}
-//
 						String[][] itemData;
-//						if (categoryEditItemCombo.getSelectedIndex() < 0)
-//							return;
-
-//						Category chosenCategory = categories.get(categoryEditItemCombo.getSelectedIndex());
-//						itemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
-//								categoryEditItemCombo.getSelectedIndex(), true);
 						itemData = controller.getAllItemDetailsForCourse(controller.getCurrentCourse(), true);
 						ArrayList<Item> allItems = controller.getAllItemsForCourse(controller.getCurrentCourse());
 						for (int i = 0; i < itemData.length; i++) {
@@ -426,13 +402,13 @@ public class MenuPanel extends JPanel implements Observer {
 								return column > 0;
 							}
 						};
-						editItemTable.setRowHeight(SizeManager.tableRowHeight);
+						editItemTable.setRowHeight(SizeManager.getTableRowHeight());
 						editItemTable.setDefaultRenderer(Object.class, tableRender);
 						JScrollPane itemScrollPane = new JScrollPane(editItemTable);
 //						Object[] fields = { "Category: ", categoryEditItemCombo, "Item: ", itemScrollPane, };
 						Object[] fields = {itemScrollPane,};
-						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
-								SizeManager.optionPaneRowHeight * fields.length));
+						UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.getOptionPaneWidth(),
+								SizeManager.getOptionPaneRowHeight() * fields.length));
 						Object[] options = {"Save", "Delete", "Cancel"};
 						while (true) {
 //							int reply = JOptionPane.showConfirmDialog(this, fields, "Edit Item",JOptionPane.OK_CANCEL_OPTION);
@@ -472,7 +448,7 @@ public class MenuPanel extends JPanel implements Observer {
 									}
 									map.put(key, l);
 								}
-								if (flag == false) {
+								if (!flag) {
 									controller.modifyItemsForCourse(controller.getCurrentCourse(), map);
 									System.out.println(map);
 									break;
@@ -486,7 +462,7 @@ public class MenuPanel extends JPanel implements Observer {
 								return;
 							}
 						}
-					} catch (Exception e1) {
+					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(this, "Error", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}}, {editAllGrades -> { // Edit All Grades
@@ -503,11 +479,11 @@ public class MenuPanel extends JPanel implements Observer {
 				}
 				String[] categoryComboBoxItems = new String[categoryList.size()];
 				for (int i = 0; i < categoryList.size(); ++i) {
-					categoryComboBoxItems[i] = categoryList.get(i).getFieldName();
+					categoryComboBoxItems[i] = categoryList.get(i).getCategoryName();
 				}
 				String[] itemComboBoxItems = new String[itemList.size()];
 				for (int i = 0; i < itemList.size(); ++i) {
-					itemComboBoxItems[i] = itemList.get(i).getFieldName();
+					itemComboBoxItems[i] = itemList.get(i).getItemName();
 				}
 				JComboBox<String> studentComboBox = new JComboBox<>(studentComboBoxItems);
 				JComboBox<String> categoryComboBox = new JComboBox<>(categoryComboBoxItems);
@@ -517,7 +493,7 @@ public class MenuPanel extends JPanel implements Observer {
 					List<Item> newItemList = categoryList.get(categoryIndex).getItems();
 					String[] newItemComboBoxItems = new String[newItemList.size()];
 					for (int i = 0; i < newItemList.size(); ++i) {
-						newItemComboBoxItems[i] = newItemList.get(i).getFieldName();
+						newItemComboBoxItems[i] = newItemList.get(i).getItemName();
 					}
 					itemComboBox.setModel(new DefaultComboBoxModel<>(newItemComboBoxItems));
 				});
@@ -525,8 +501,8 @@ public class MenuPanel extends JPanel implements Observer {
 				JTextField commentTextField = new JTextField();
 				Object[] fields = {"Student: ", studentComboBox, "Category: ", categoryComboBox, "Item: ",
 						itemComboBox, "Points Earned: ", gradeTextField, "Comment: ", commentTextField};
-				UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.optionPaneWidth,
-						SizeManager.optionPaneRowHeight * fields.length));
+				UIManager.put("OptionPane.minimumSize", new Dimension(SizeManager.getOptionPaneWidth(),
+						SizeManager.getOptionPaneRowHeight() * fields.length));
 
 				while (true) {
 					int reply = JOptionPane.showConfirmDialog(this, fields, "Edit by Student",
@@ -535,20 +511,20 @@ public class MenuPanel extends JPanel implements Observer {
 						CourseStudent student = controller.getCurrentCourse().getStudent(studentComboBox.getSelectedIndex());
 						Category category = categoryList.get(categoryComboBox.getSelectedIndex());
 						Item item = itemList.get(itemComboBox.getSelectedIndex());
-						GradeEntry gradeEntry = student.getGradeEntryForItemInCategory(course.getCourseId(), category.getId(), item.getId());
+						GradeEntry gradeEntry = student.getGradeEntryForItemInCategory(course.getCourseId(), category.getCategoryId(), item.getItemId());
 						double pointsEarned = Double.parseDouble(gradeTextField.getText());
 						if (gradeEntry != null) {
 							gradeEntry.setPointsEarned(pointsEarned);
 							gradeEntry.setPercentage(pointsEarned / item.getMaxPoints() * 100);
 							gradeEntry.setComments(commentTextField.getText());
-							Update.updateCourseStudentGradeEntry(student, course.getCourseId(), category.getId(), item.getId());
+							Update.updateCourseStudentGradeEntry(student, course.getCourseId(), category.getCategoryId(), item.getItemId());
 						} else {
 							gradeEntry = new GradeEntry(
-									item.getFieldName(), item.getId(), category.getId(),
+									item.getItemName(), item.getItemId(), category.getCategoryId(),
 									item.getMaxPoints(), pointsEarned, pointsEarned / item.getMaxPoints() * 100,
 									course.getCourseId(), commentTextField.getText());
 							student.addGradeEntry(gradeEntry);
-							Create.insertNewGradeEntry(gradeEntry, student.getBuid());
+							Create.insertNewGradeEntry(gradeEntry, student.getStudentId());
 						}
 						controller.fireUpdate();
 						break;
@@ -578,6 +554,11 @@ public class MenuPanel extends JPanel implements Observer {
 		}}};
 
 		menuBar.setLayout(new GridBagLayout());
+		String[] menuName = new String[]{"  File  ", "  Edit  ", "  Grade  "};
+		String[][] menuItemName = new String[][]{
+				{"Add Student", "Add Students from File", "Add Category", "Add Item", null, "Back", "Exit"},
+				{"Edit Student", "Edit Category", "Edit Item"},
+				{"Edit All Grades", "Edit by Student", "View Grade", "Finalize Grade"}};
 		for (int i = 0; i < menuName.length; ++i) {
 			JMenu menu = new JMenu(menuName[i]);
 			for (int j = 0; j < menuItemName[i].length; ++j) {
@@ -591,14 +572,14 @@ public class MenuPanel extends JPanel implements Observer {
 			}
 			menuBar.add(menu);
 		}
-		menuBar.setBounds(SizeManager.menuBarBounds);
+		menuBar.setBounds(SizeManager.getMenuBarBounds());
 
 		add(menuBar);
 
 		JTextPane informationTextPane = new JTextPane();
-		informationTextPane.setBounds(SizeManager.textInfoBounds);
-		informationTextPane.setText(courseString + "\n" ); //+ getStatisticsForCourse()
-		informationTextPane.setFont(FontManager.fontText);
+		informationTextPane.setBounds(SizeManager.getTextInfoBounds());
+		informationTextPane.setText(courseString + "\n"); //+ getStatisticsForCourse()
+		informationTextPane.setFont(FontManager.getFontText());
 		informationTextPane.setEditable(false);
 		StyledDocument doc = informationTextPane.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
@@ -619,17 +600,17 @@ public class MenuPanel extends JPanel implements Observer {
 		};
 
 		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
-			if (statusData[i] == false) {
+			if (!statusData[i]) {
 				studentTableModel.setRowColor(i, Color.gray);
 			} else {
 				studentTableModel.setRowColor(i, Color.WHITE);
 			}
 		}
 
-		tableStudent = new JTable(studentTableModel);
-		tableStudent.setRowHeight(SizeManager.menuTableRowHeight);
-		JScrollPane tableStudentScrollPane = new JScrollPane(tableStudent);
-		tableStudentScrollPane.setBounds(SizeManager.tableStudentBounds);
+		studentTable = new JTable(studentTableModel);
+		studentTable.setRowHeight(SizeManager.getMenuTableRowHeight());
+		JScrollPane tableStudentScrollPane = new JScrollPane(studentTable);
+		tableStudentScrollPane.setBounds(SizeManager.getTableStudentBounds());
 
 		add(tableStudentScrollPane);
 
@@ -647,10 +628,10 @@ public class MenuPanel extends JPanel implements Observer {
 				return false;
 			}
 		};
-		tableCategory = new JTable(categoryTableModel);
+		categoryTable = new JTable(categoryTableModel);
 
-		JScrollPane tableCategoryScrollPane = new JScrollPane(tableCategory);
-		tableCategoryScrollPane.setBounds(SizeManager.tableCategoryBounds);
+		JScrollPane tableCategoryScrollPane = new JScrollPane(categoryTable);
+		tableCategoryScrollPane.setBounds(SizeManager.getTableCategoryBounds());
 
 		add(tableCategoryScrollPane);
 
@@ -669,73 +650,73 @@ public class MenuPanel extends JPanel implements Observer {
 		}
 
 		;
-		tableItem = new JTable(itemTableModel);
+		itemTable = new JTable(itemTableModel);
 
-		JScrollPane tableItemScrollPane = new JScrollPane(tableItem);
-		tableItemScrollPane.setBounds(SizeManager.tableItemBounds);
+		JScrollPane tableItemScrollPane = new JScrollPane(itemTable);
+		tableItemScrollPane.setBounds(SizeManager.getTableItemBounds());
 
 		add(tableItemScrollPane);
 
 		for (int i = 0; i < 2; ++i) {
-			tableCategory.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
-			tableItem.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
+			categoryTable.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.getTableCategoryItemColumnWidth()[i]);
+			itemTable.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.getTableCategoryItemColumnWidth()[i]);
 		}
 		for (JScrollPane scrollPane : new JScrollPane[]{tableStudentScrollPane, tableCategoryScrollPane, tableItemScrollPane}) {
 			scrollPane.setOpaque(false);
 			scrollPane.getViewport().setOpaque(false);
 		}
-		tableStudent.setDefaultRenderer(Object.class, studentRender);
-		for (JTable table : new JTable[]{tableCategory, tableItem}) {
+		studentTable.setDefaultRenderer(Object.class, studentRender);
+		for (JTable table : new JTable[]{categoryTable, itemTable}) {
 			table.setDefaultRenderer(Object.class, tableRender);
 		}
-		for (JTable table : new JTable[]{tableStudent, tableCategory, tableItem}) {
-			table.setRowHeight(SizeManager.menuTableRowHeight);
+		for (JTable table : new JTable[]{studentTable, categoryTable, itemTable}) {
+			table.setRowHeight(SizeManager.getMenuTableRowHeight());
 			table.setRowSelectionAllowed(true);
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			table.getSelectionModel().addListSelectionListener(listSelectionEvent -> {
-				String text = courseString + "\n" +  "\n\n"; //getStatisticsForCourse() +
+				String text = courseString + "\n" + "\n\n"; //getStatisticsForCourse() +
 
-				if (tableStudent.getSelectedRow() != -1) {
-					CourseStudent courseStudent = controller.getCurrentCourse().getStudent(tableStudent.getSelectedRow());
+				if (studentTable.getSelectedRow() != -1) {
+					CourseStudent courseStudent = controller.getCurrentCourse().getStudent(studentTable.getSelectedRow());
 					text += courseStudent.getStudentDetails() + "\n" + "Grade : " + getStatisticsForStudent(courseStudent) + "\n\n";
 				}
-				if (tableCategory.getSelectedRow() != -1) {
-					if (listSelectionEvent.getSource() == tableCategory.getSelectionModel()) {
+				if (categoryTable.getSelectedRow() != -1) {
+					if (listSelectionEvent.getSource() == categoryTable.getSelectionModel()) {
 						Object[][] newTableItemData;
 
-						if (tableCategory.getSelectedRow() < 0) {
+						if (categoryTable.getSelectedRow() < 0) {
 							return;
 						}
 						newTableItemData = controller.getItemDetailsForCourseCategory(controller.getCurrentCourse(),
-								tableCategory.getSelectedRow(), false);
+								categoryTable.getSelectedRow(), false);
 						DefaultTableModel newTableItemModel = new DefaultTableModel(newTableItemData, tableItemColumns);
-						tableItem.setModel(newTableItemModel);
+						itemTable.setModel(newTableItemModel);
 						for (int i = 0; i < 2; ++i) {
-							tableCategory.getColumnModel().getColumn(i)
-									.setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
-							tableItem.getColumnModel().getColumn(i)
-									.setPreferredWidth(SizeManager.tableCategoryItemColumnWidth[i]);
+							categoryTable.getColumnModel().getColumn(i)
+									.setPreferredWidth(SizeManager.getTableCategoryItemColumnWidth()[i]);
+							itemTable.getColumnModel().getColumn(i)
+									.setPreferredWidth(SizeManager.getTableCategoryItemColumnWidth()[i]);
 						}
 					}
 					text += "Category: ";
-					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 0) + "\n";
+					text += categoryTable.getValueAt(categoryTable.getSelectedRow(), 0) + "\n";
 					text += "Weight: ";
-					text += tableCategory.getValueAt(tableCategory.getSelectedRow(), 1) + "\n";
-					Category category = controller.getCurrentCourse().getCategory(tableCategory.getSelectedRow());
+					text += categoryTable.getValueAt(categoryTable.getSelectedRow(), 1) + "\n";
+					Category category = controller.getCurrentCourse().getCategory(categoryTable.getSelectedRow());
 					text += getStatisticsForCategory(category) + "\n\n";
 
 				}
-				if (tableItem.getSelectedRow() != -1) {
+				if (itemTable.getSelectedRow() != -1) {
 					text += "Item: ";
-					text += tableItem.getValueAt(tableItem.getSelectedRow(), 0) + "\n";
+					text += itemTable.getValueAt(itemTable.getSelectedRow(), 0) + "\n";
 					text += "Weight: ";
-					text += tableItem.getValueAt(tableItem.getSelectedRow(), 1) + "\n";
-					if (tableCategory.getSelectedRow() != -1) {
-						Category category = controller.getCurrentCourse().getCategory(tableCategory.getSelectedRow());
-						Item item = category.getItem(tableItem.getSelectedRow());
+					text += itemTable.getValueAt(itemTable.getSelectedRow(), 1) + "\n";
+					if (categoryTable.getSelectedRow() != -1) {
+						Category category = controller.getCurrentCourse().getCategory(categoryTable.getSelectedRow());
+						Item item = category.getItem(itemTable.getSelectedRow());
 						text += getStatisticsForItem(item);
 					} else {
-						int categoryIndex = 0, itemIndex = 0, selectedRow = tableItem.getSelectedRow();
+						int categoryIndex = 0, itemIndex = 0, selectedRow = itemTable.getSelectedRow();
 						List<Category> categoryList = controller.getCurrentCourse().getCategories();
 						while (selectedRow > 0) {
 							Category category = categoryList.get(categoryIndex);
@@ -755,18 +736,18 @@ public class MenuPanel extends JPanel implements Observer {
 
 			JTableHeader tableHeader = table.getTableHeader();
 			tableHeader.setPreferredSize(new Dimension(table.getWidth(), table.getRowHeight()));
-			tableHeader.setForeground(ColorManager.lightColor);
-			tableHeader.setBackground(ColorManager.primaryColor);
+			tableHeader.setForeground(ColorManager.getLightColor());
+			tableHeader.setBackground(ColorManager.getPrimaryColor());
 			tableHeader.setEnabled(false);
 		}
 
 		for (int i = 0; i < 4; ++i) {
 			buttons[i] = new JButton(menuItemName[2][i]);
-			buttons[i].setForeground(ColorManager.lightColor);
-			buttons[i].setBackground(ColorManager.primaryColor);
+			buttons[i].setForeground(ColorManager.getLightColor());
+			buttons[i].setBackground(ColorManager.getPrimaryColor());
 			buttons[i].addActionListener(menuActionListener[2][i]);
-			buttons[i].setBounds(SizeManager.menuButtonsBounds[i]);
-			buttons[i].setFont(FontManager.fontMenuButton);
+			buttons[i].setBounds(SizeManager.getMenuButtonsBounds()[i]);
+			buttons[i].setFont(FontManager.getFontMenuButton());
 			add(buttons[i]);
 		}
 
@@ -775,28 +756,6 @@ public class MenuPanel extends JPanel implements Observer {
 		}
 
 		setVisible(true);
-
-	}
-
-	static class MyTableModel extends DefaultTableModel {
-		List<Color> rowColor;
-
-		public MyTableModel(String[][] tableRowData, Object[] tableColumnNames) {
-			super(tableRowData, tableColumnNames);
-			rowColor = new ArrayList<Color>();
-			for (int i = 0; i < tableRowData.length; i++) {
-				rowColor.add(Color.white);
-			}
-		}
-
-		public void setRowColor(int row, Color c) {
-			rowColor.set(row, c);
-			fireTableRowsUpdated(row, row);
-		}
-
-		public Color getRowColor(int row) {
-			return rowColor.get(row);
-		}
 
 	}
 
@@ -823,8 +782,6 @@ public class MenuPanel extends JPanel implements Observer {
 			}
 			return students;
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -839,15 +796,18 @@ public class MenuPanel extends JPanel implements Observer {
 		return null;
 	}
 
+	/**
+	 * Update table.
+	 *
+	 * @param observable the observable object.
+	 * @param argument   an argument passed to the notifyObservers method.
+	 */
 	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-
+	public void update(Observable observable, Object argument) {
 		if (controller.getCurrentCourse().isFinalized()) {
 			lock();
 			return;
 		}
-		this.controller = controller;
 
 		String[][] tableCategoryData = controller.getCurrentCourse().getCategoryDataForList();
 		for (int i = 0; i < tableCategoryData.length; i++) {
@@ -860,7 +820,7 @@ public class MenuPanel extends JPanel implements Observer {
 				return false;
 			}
 		};
-		tableCategory.setModel(categoryTableModel);
+		categoryTable.setModel(categoryTableModel);
 
 		String[][] tableItemData = controller.getAllItemsDetailsForCourse(controller.getCurrentCourse());
 		for (int i = 0; i < tableItemData.length; i++) {
@@ -873,7 +833,7 @@ public class MenuPanel extends JPanel implements Observer {
 				return false;
 			}
 		};
-		tableItem.setModel(itemTableModel);
+		itemTable.setModel(itemTableModel);
 
 		String[][] tableStudentData;
 		tableStudentData = controller.getAllStudentsForCourse(controller.getCurrentCourse());
@@ -887,16 +847,19 @@ public class MenuPanel extends JPanel implements Observer {
 
 		Boolean[] statusData = controller.getAllStudentsStatusForCourse(controller.getCurrentCourse());
 		for (int i = 0; i < studentTableModel.getRowCount(); i++) {
-			if (statusData[i] == false) {
+			if (!statusData[i]) {
 				System.out.println(i);
 				studentTableModel.setRowColor(i, Color.gray);
 			} else {
 				studentTableModel.setRowColor(i, Color.WHITE);
 			}
 		}
-		tableStudent.setModel(studentTableModel);
+		studentTable.setModel(studentTableModel);
 	}
 
+	/**
+	 * Lock some components after finalized.
+	 */
 	private void lock() {
 		List<String> ableFunction = Arrays.asList("Back", "Exit", "View Grade", "Finalize Grade");
 		for (int i = 0; i < menuBar.getMenuCount(); ++i) {
@@ -914,6 +877,9 @@ public class MenuPanel extends JPanel implements Observer {
 		repaint();
 	}
 
+	/**
+	 * Get statistics for course.
+	 */
 	private String getStatisticsForCourse() {
 		Course course = controller.getCurrentCourse();
 		List<Category> categoryList = controller.getAllCategoriesForCourse(course);
@@ -924,7 +890,7 @@ public class MenuPanel extends JPanel implements Observer {
 			CourseStudent courseStudent = studentList.get(i);
 			for (Category category : categoryList) {
 				for (Item item : category.getItems()) {
-					GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), category.getId(), item.getId());
+					GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), category.getCategoryId(), item.getItemId());
 					if (gradeEntry != null) {
 						statisticsGrade[i] += gradeEntry.getPercentage() * category.getWeight() * item.getWeight();
 					}
@@ -936,12 +902,15 @@ public class MenuPanel extends JPanel implements Observer {
 				statistics.getMean(), statistics.getMedian(), statistics.getStandardDeviation());
 	}
 
+	/**
+	 * Get statistics for student.
+	 */
 	private String getStatisticsForStudent(CourseStudent courseStudent) {
 		Course course = controller.getCurrentCourse();
 		double grade = 0;
 		for (Category category : course.getCategories()) {
 			for (Item item : category.getItems()) {
-				GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), category.getId(), item.getId());
+				GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), category.getCategoryId(), item.getItemId());
 				if (gradeEntry != null) {
 					grade += gradeEntry.getPercentage() * category.getWeight() * item.getWeight();
 				}
@@ -950,6 +919,9 @@ public class MenuPanel extends JPanel implements Observer {
 		return Double.toString(grade);
 	}
 
+	/**
+	 * Get statistics for category.
+	 */
 	private String getStatisticsForCategory(Category category) {
 		Course course = controller.getCurrentCourse();
 		List<CourseStudent> studentList = course.getStudents();
@@ -958,7 +930,7 @@ public class MenuPanel extends JPanel implements Observer {
 		for (int i = 0; i < studentList.size(); ++i) {
 			CourseStudent courseStudent = studentList.get(i);
 			for (Item item : category.getItems()) {
-				GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), category.getId(), item.getId());
+				GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), category.getCategoryId(), item.getItemId());
 				if (gradeEntry != null) {
 					statisticsGrade[i] += gradeEntry.getPercentage() * item.getWeight();
 				}
@@ -969,6 +941,9 @@ public class MenuPanel extends JPanel implements Observer {
 				statistics.getMean(), statistics.getMedian(), statistics.getStandardDeviation());
 	}
 
+	/**
+	 * Get statistics for item.
+	 */
 	private String getStatisticsForItem(Item item) {
 		Course course = controller.getCurrentCourse();
 		List<CourseStudent> studentList = course.getStudents();
@@ -976,7 +951,7 @@ public class MenuPanel extends JPanel implements Observer {
 		Arrays.fill(statisticsGrade, 0);
 		for (int i = 0; i < studentList.size(); ++i) {
 			CourseStudent courseStudent = studentList.get(i);
-			GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), item.getCategoryId(), item.getId());
+			GradeEntry gradeEntry = courseStudent.getGradeEntryForItemInCategory(course.getCourseId(), item.getCategoryId(), item.getItemId());
 			if (gradeEntry != null) {
 				statisticsGrade[i] += gradeEntry.getPercentage();
 			}
@@ -985,4 +960,27 @@ public class MenuPanel extends JPanel implements Observer {
 		return String.format("Mean = %.1f, Median = %.1f, Standard Deviation = %.1f",
 				statistics.getMean(), statistics.getMedian(), statistics.getStandardDeviation());
 	}
+
+	static class MyTableModel extends DefaultTableModel {
+		List<Color> rowColor;
+
+		public MyTableModel(String[][] tableRowData, Object[] tableColumnNames) {
+			super(tableRowData, tableColumnNames);
+			rowColor = new ArrayList<Color>();
+			for (int i = 0; i < tableRowData.length; i++) {
+				rowColor.add(Color.white);
+			}
+		}
+
+		public void setRowColor(int row, Color c) {
+			rowColor.set(row, c);
+			fireTableRowsUpdated(row, row);
+		}
+
+		public Color getRowColor(int row) {
+			return rowColor.get(row);
+		}
+
+	}
+
 }

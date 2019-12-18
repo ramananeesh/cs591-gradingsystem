@@ -1,23 +1,28 @@
 package view;
 
+import java.awt.Dimension;
+import java.util.HashMap;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
+import db.Read;
 import helper.ColorManager;
 import helper.FontManager;
 import helper.SizeManager;
-
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.HashMap;
-import java.util.UUID;
-
-import javax.swing.*;
-
-import db.Read;
 
 /**
  * The {@code LoginFrame} class represents the frame for logging in the grading
  * system.
  */
 public class LoginFrame extends JFrame {
+
 	/** The title for the window when LoginFrame displays */
 	private static final String TITLE = "Grading System";
 
@@ -33,41 +38,34 @@ public class LoginFrame extends JFrame {
 		setLayout(null);
 		setResizable(false);
 		setContentPane(new JLabel(new ImageIcon(BACKGROUND_PICTURE_FILE_NAME)));
-		setBounds(SizeManager.loginWindowBounds);
+		setBounds(SizeManager.getLoginWindowBounds());
 
 		JLabel titleLabel = new JLabel("Grading System");
-		titleLabel.setBounds(SizeManager.titleBounds);
+		titleLabel.setBounds(SizeManager.getTitleBounds());
 		titleLabel.setOpaque(true);
-		titleLabel.setBackground(ColorManager.primaryColor);
-		titleLabel.setForeground(ColorManager.lightColor);
+		titleLabel.setBackground(ColorManager.getPrimaryColor());
+		titleLabel.setForeground(ColorManager.getLightColor());
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		titleLabel.setVerticalAlignment(SwingConstants.CENTER);
-		titleLabel.setFont(FontManager.fontTitle);
+		titleLabel.setFont(FontManager.getFontTitle());
 		add(titleLabel);
 
 		JButton loginButton = new JButton("Login");
-		loginButton.setBounds(SizeManager.buttonLoginBounds);
-		loginButton.setBackground(ColorManager.lightColor);
-		loginButton.setForeground(ColorManager.primaryColor);
-		loginButton.setFont(FontManager.fontLogin);
+		loginButton.setBounds(SizeManager.getButtonLoginBounds());
+		loginButton.setBackground(ColorManager.getLightColor());
+		loginButton.setForeground(ColorManager.getPrimaryColor());
+		loginButton.setFont(FontManager.getFontLogin());
 		loginButton.setFocusPainted(false);
 
-//		UIManager.put("Table.font", FontManager.fontMenuTable);
-//		UIManager.put("TableHeader.font", FontManager.fontMenuTable);
-//		UIManager.put("Menu.font", FontManager.fontMenu);
-//		UIManager.put("MenuItem.font", FontManager.fontMenu);
-//		UIManager.put("TextField.font", FontManager.fontLabel);
-//		UIManager.put("ComboBox.font", FontManager.fontLabel);
-
-		UIManager.put("PasswordField.font", new Font("Cascadia", Font.BOLD, 35));
-		UIManager.put("Label.font", new Font("Cascadia", Font.BOLD, 35));
-		UIManager.put("Button.font", new Font("Cascadia", Font.BOLD, 35));
+		UIManager.put("PasswordField.font", FontManager.getFontPassword());
+		UIManager.put("Label.font", FontManager.getFontPassword());
+		UIManager.put("Button.font", FontManager.getFontPassword());
 
 		loginButton.addActionListener(e -> {
 			JPasswordField passwordField = new JPasswordField();
-			Object[] fields = { "Password: ", passwordField };
+			Object[] fields = {"Password: ", passwordField};
 			UIManager.put("OptionPane.minimumSize",
-					new Dimension(SizeManager.optionPaneWidth, SizeManager.optionPaneRowHeight * fields.length));
+					new Dimension(SizeManager.getOptionPaneWidth(), SizeManager.getOptionPaneRowHeight() * fields.length));
 
 			int r = JOptionPane.showConfirmDialog(null, fields, "Enter Password: ", JOptionPane.OK_CANCEL_OPTION);
 
@@ -75,7 +73,7 @@ public class LoginFrame extends JFrame {
 				String reply = passwordField.getText();
 				if (reply != null && !checkPassword(reply)) {
 					while (true) {
-						
+
 						int repl = JOptionPane.showConfirmDialog(null, fields, "Enter Password: ", JOptionPane.OK_CANCEL_OPTION);
 						if (repl == JOptionPane.CANCEL_OPTION)
 							break;
@@ -101,21 +99,16 @@ public class LoginFrame extends JFrame {
 		setVisible(true);
 	}
 
-	public boolean checkPassword(String password) {
+	private boolean checkPassword(String password) {
 		HashMap<String, String> allUsers = getAllUsers();
 		if (password == null) {
 			return false;
 		}
-		
-		if (password.equals(allUsers.get("admin")))
-			return true;
-
-		return false;
+		return password.equals(allUsers.get("admin"));
 	}
 
-	public HashMap<String, String> getAllUsers() {
-		HashMap<String, String> map = Read.getUsersForSystem();
-
-		return map;
+	private HashMap<String, String> getAllUsers() {
+		return Read.getUsersForSystem();
 	}
+
 }

@@ -4,17 +4,17 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Statistics tool for data
+ * Statistics tool.
  */
 public class Statistics {
 
-	/** Mean */
+	/** Mean. */
 	private double mean;
 
-	/** Median */
+	/** Median. */
 	private double median;
 
-	/** Standard Deviation */
+	/** Standard Deviation. */
 	private double standardDeviation;
 
 	/**
@@ -88,12 +88,46 @@ public class Statistics {
 	}
 
 	/**
+	 * Get letter grade.
+	 *
+	 * @param total Number grade.
+	 * @return Letter grade.
+	 */
+	public static String getLetterGrade(Double total) {
+		String grade;
+		if (total >= 97) {
+			grade = "A+";
+		} else if (total >= 93) {
+			grade = "A";
+		} else if (total >= 90) {
+			grade = "A-";
+		} else if (total >= 87) {
+			grade = "B+";
+		} else if (total >= 83) {
+			grade = "B";
+		} else if (total >= 80) {
+			grade = "B-";
+		} else if (total >= 77) {
+			grade = "C+";
+		} else if (total >= 73) {
+			grade = "C";
+		} else if (total >= 70) {
+			grade = "C-";
+		} else if (total >= 60) {
+			grade = "D";
+		} else {
+			grade = "F";
+		}
+		return grade;
+	}
+
+	/**
 	 * Returns mean of the data.
 	 *
 	 * @return mean of the data.
 	 */
 	public double getMean() {
-        return mean;
+		return mean;
 	}
 
 	/**
@@ -123,37 +157,6 @@ public class Statistics {
 	public String toString() {
 		return String.format("Statistics : Mean = %.2f, Median = %.2f, Standard Deviation = %.2f",
 				getMean(), getMedian(), getStandardDeviation());
-	}
-
-	public static String getLetterGrade(Double total) {
-		String grade = "";
-
-		if (total >= 97) {
-			grade = "A+";
-		} else if (total >= 93) {
-			grade = "A";
-		} else if (total >= 90) {
-			grade = "A-";
-		} else if (total >= 87) {
-			grade = "B+";
-		} else if (total >= 83) {
-			grade = "B";
-		} else if (total >= 80) {
-			grade = "B-";
-		} else if (total >= 77) {
-			grade = "C+";
-		} else if (total >= 73) {
-			grade = "C";
-		} else if (total >= 70) {
-			grade = "C-";
-		} else if (total >= 60) {
-			grade = "D";
-		} else {
-			grade = "F";
-		}
-
-		return grade;
-
 	}
 
 }

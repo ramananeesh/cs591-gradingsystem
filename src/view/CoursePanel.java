@@ -1,10 +1,27 @@
 package view;
 
-import helper.ColorManager;
-import helper.FontManager;
-import helper.SizeManager;
+import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Observable;
+import java.util.Observer;
 
-import javax.swing.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.RowFilter;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -13,25 +30,30 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
 import controller.Master;
-import model.*;
+import helper.ColorManager;
+import helper.FontManager;
+import helper.SizeManager;
+import model.Category;
+import model.Course;
+import model.CourseStudent;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Observable;
-import java.util.Observer;
-
+/**
+ * Panel for viewing courses.
+ */
 public class CoursePanel extends JPanel implements Observer {
-	private Master controller;
+
+	/** Title of window. */
 	private static final String TITLE = "Grading System - Course";
-	private MainFrame frame;
+
+	/** Controller. */
+	private Master controller;
+	/** Course table model. */
 	private DefaultTableModel modelCourse;
+
+	/** Course table columns. */
 	private String[] tableCourseColumns;
+
+	/** Course table. */
 	private JTable tableCourse;
 
 	/**
@@ -40,24 +62,17 @@ public class CoursePanel extends JPanel implements Observer {
 	public CoursePanel(MainFrame frame, Master controller) {
 
 		this.controller = controller;
-		this.frame = frame;
 		this.controller.addObserver(this);
 		frame.setTitle(TITLE);
 		setLayout(null);
-		setBounds(SizeManager.contentPaneBounds);
+		setBounds(SizeManager.getContentPaneBounds());
 		setLocation(0, 0);
 		setOpaque(false);
 
-		UIManager.put("TextField.font", FontManager.fontSearch);
-		UIManager.put("ComboBox.font", FontManager.fontFilter);
+		UIManager.put("TextField.font", FontManager.getFontSearch());
+		UIManager.put("ComboBox.font", FontManager.getFontFilter());
 
-		tableCourseColumns = new String[] { "#", "Course Name", "Semester" };
-//		String[][] tableCourseData = { // TODO load course data
-//				{ "CS505", "Introduction to Natural Language Processing", "Spring 2020" },
-//				{ "CS542", "Machine Learning", "Spring 2020" }, { "CS585", "Image & Video Computing", "Spring 2020" },
-//				{ "CS591 P1", "Topics in Computer Science", "Fall 2019" },
-//				{ "CS480/680", "Introduction to Computer Graphics", "Fall 2019" },
-//				{ "CS530", "Graduate Algorithms", "Fall 2019" } };
+		tableCourseColumns = new String[]{"#", "Course Name", "Semester"};
 
 		String[][] tableCourseData = controller.getAllCourseDetails();
 		modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumns) {
@@ -67,12 +82,12 @@ public class CoursePanel extends JPanel implements Observer {
 			}
 		};
 		tableCourse = new JTable(modelCourse);
-		tableCourse.setBounds(SizeManager.tableCourseBounds);
-		tableCourse.setRowHeight(SizeManager.tableRowHeight);
-		tableCourse.setFont(FontManager.fontTable);
+		tableCourse.setBounds(SizeManager.getTableCourseBounds());
+		tableCourse.setRowHeight(SizeManager.getTableRowHeight());
+		tableCourse.setFont(FontManager.getFontTable());
 
 		for (int i = 0; i < 3; ++i) {
-			tableCourse.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.courseTableColumnWidth[i]);
+			tableCourse.getColumnModel().getColumn(i).setPreferredWidth(SizeManager.getCourseTableColumnWidth()[i]);
 		}
 		DefaultTableCellRenderer tableRender = new DefaultTableCellRenderer();
 		tableRender.setHorizontalAlignment(SwingConstants.CENTER);
@@ -81,8 +96,8 @@ public class CoursePanel extends JPanel implements Observer {
 		TableRowSorter<DefaultTableModel> sorterCourse = new TableRowSorter<>(modelCourse);
 		tableCourse.setRowSorter(sorterCourse);
 		JTableHeader tableHeader = tableCourse.getTableHeader();
-		tableHeader.setBackground(ColorManager.primaryColor);
-		tableHeader.setForeground(ColorManager.lightColor);
+		tableHeader.setBackground(ColorManager.getPrimaryColor());
+		tableHeader.setForeground(ColorManager.getLightColor());
 		tableHeader.setFont(tableCourse.getFont());
 		tableHeader.setEnabled(false);
 		tableHeader.setPreferredSize(new Dimension(tableCourse.getWidth(), tableCourse.getRowHeight()));
@@ -106,19 +121,19 @@ public class CoursePanel extends JPanel implements Observer {
 			}
 		});
 
-		String[] semester = { "All", "Fall 2019", "Spring 2020" }; // TODO
+		String[] semester = {"All", "Fall 2019", "Spring 2020"};
 
 		JComboBox<String> boxFilter = new JComboBox<>(semester);
-		boxFilter.setBounds(SizeManager.filterCourseBounds);
-		boxFilter.setFont(FontManager.fontFilter);
+		boxFilter.setBounds(SizeManager.getFilterCourseBounds());
+		boxFilter.setFont(FontManager.getFontFilter());
 		DefaultListCellRenderer renderer = new DefaultListCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		boxFilter.setRenderer(renderer);
 		add(boxFilter);
 
 		JTextField textSearch = new JTextField();
-		textSearch.setBounds(SizeManager.searchCourseBounds);
-		textSearch.setFont(FontManager.fontSearch);
+		textSearch.setBounds(SizeManager.getSearchCourseBounds());
+		textSearch.setFont(FontManager.getFontSearch());
 		textSearch.setHorizontalAlignment(SwingConstants.CENTER);
 		add(textSearch);
 
@@ -141,10 +156,10 @@ public class CoursePanel extends JPanel implements Observer {
 		boxFilter.addActionListener(e -> search(sorterCourse, textSearch, boxFilter));
 
 		JButton buttonAdd = new JButton("Add");
-		buttonAdd.setFont(FontManager.fontButton);
-		buttonAdd.setBounds(SizeManager.buttonAddBounds);
-		buttonAdd.setForeground(ColorManager.lightColor);
-		buttonAdd.setBackground(ColorManager.primaryColor);
+		buttonAdd.setFont(FontManager.getFontButton());
+		buttonAdd.setBounds(SizeManager.getButtonAddBounds());
+		buttonAdd.setForeground(ColorManager.getLightColor());
+		buttonAdd.setBackground(ColorManager.getPrimaryColor());
 		buttonAdd.addActionListener(e -> {
 			try {
 				JTextField numberField = new JTextField();
@@ -155,8 +170,8 @@ public class CoursePanel extends JPanel implements Observer {
 				for (String[] tableCourseDatum : tableCourseData) {
 					templateCombo.addItem(tableCourseDatum[0] + " " + tableCourseDatum[2]);
 				}
-				Object[] fields = { "Course Id: ", numberField, "Course Name: ", nameField, "Course Term: ", termField,
-						"Template: ", templateCombo, };
+				Object[] fields = {"Course Id: ", numberField, "Course Name: ", nameField, "Course Term: ", termField,
+						"Template: ", templateCombo,};
 				while (true) { // TODO
 					int reply = JOptionPane.showConfirmDialog(null, fields, "Add a Course",
 							JOptionPane.OK_CANCEL_OPTION);
@@ -188,13 +203,13 @@ public class CoursePanel extends JPanel implements Observer {
 		});
 		add(buttonAdd);
 
-		UIManager.put("OptionPane.messageFont", FontManager.fontLabel);
-		UIManager.put("OptionPane.buttonFont", FontManager.fontLabel);
+		UIManager.put("OptionPane.messageFont", FontManager.getFontLabel());
+		UIManager.put("OptionPane.buttonFont", FontManager.getFontLabel());
 		JButton buttonView = new JButton("View");
-		buttonView.setFont(FontManager.fontButton);
-		buttonView.setBounds(SizeManager.buttonViewBounds);
-		buttonView.setForeground(ColorManager.lightColor);
-		buttonView.setBackground(ColorManager.primaryColor);
+		buttonView.setFont(FontManager.getFontButton());
+		buttonView.setBounds(SizeManager.getButtonViewBounds());
+		buttonView.setForeground(ColorManager.getLightColor());
+		buttonView.setBackground(ColorManager.getPrimaryColor());
 		buttonView.addActionListener(e -> {
 			if (tableCourse.getSelectedRow() == -1) {
 				JOptionPane.showMessageDialog(this, "Please select a course.", "Error", JOptionPane.WARNING_MESSAGE);
@@ -211,32 +226,24 @@ public class CoursePanel extends JPanel implements Observer {
 		add(buttonView);
 
 		JLabel labelFilter = new JLabel("Semester : ");
-		labelFilter.setBounds(SizeManager.labelFilterBounds);
-		labelFilter.setFont(FontManager.fontLabel);
+		labelFilter.setBounds(SizeManager.getLabelFilterBounds());
+		labelFilter.setFont(FontManager.getFontLabel());
 		labelFilter.setVerticalAlignment(SwingConstants.CENTER);
 		labelFilter.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(labelFilter);
 
 		JLabel labelSearch = new JLabel("Search : ");
-		labelSearch.setBounds(SizeManager.labelSearchBounds);
-		labelSearch.setFont(FontManager.fontLabel);
+		labelSearch.setBounds(SizeManager.getLabelSearchBounds());
+		labelSearch.setFont(FontManager.getFontLabel());
 		labelSearch.setVerticalAlignment(SwingConstants.CENTER);
 		labelSearch.setHorizontalAlignment(SwingConstants.RIGHT);
 		add(labelSearch);
 
 		setVisible(true);
-
-		// testing purposes
-//		controller.addNewCourse("CS565", "Data Mining", "Fall 2019");
-//		Course course = controller.getCourse(0);
-//		
-//		Category category = new Category(1, "Homework", 0.3, course.getCourseId());
-//		controller.addNewCategoryForCourse(course, category.getId(),category.getFieldName(),category.getWeight(),category.getCourseId());
-//		controller.addItemForCourseCategory(course, 0, "HW1", 0.4, 100);
 	}
 
 	private static void search(TableRowSorter<DefaultTableModel> sorter, JTextField search,
-			JComboBox<String> boxFilter) {
+	                           JComboBox<String> boxFilter) {
 		if (search.getText().length() != 0 && !Objects.equals(boxFilter.getSelectedItem(), "All")) {
 			sorter.setRowFilter(RowFilter.andFilter(
 					new ArrayList<>(Arrays.asList(RowFilter.regexFilter("(?i)" + boxFilter.getSelectedItem()),
@@ -250,17 +257,28 @@ public class CoursePanel extends JPanel implements Observer {
 		}
 	}
 
+	/**
+	 * Add course rows to course table model.
+	 *
+	 * @param model           Course table model.
+	 * @param tableCourseData Course table data.
+	 * @return New course table model.
+	 */
 	public DefaultTableModel addCourseRowsToModel(DefaultTableModel model, String[][] tableCourseData) {
-
-		for (int i = 0; i < tableCourseData.length; i++) {
-			model.addRow(tableCourseData[i]);
+		for (String[] tableCourseDatum : tableCourseData) {
+			model.addRow(tableCourseDatum);
 		}
 		return model;
 	}
 
+	/**
+	 * Update table.
+	 *
+	 * @param observable the observable object.
+	 * @param argument   an argument passed to the notifyObservers method.
+	 */
 	@Override
-	public void update(Observable arg0, Object arg1) {
-		// TODO Auto-generated method stub
+	public void update(Observable observable, Object argument) {
 		String[][] tableCourseData = controller.getAllCourseDetails();
 		modelCourse = new DefaultTableModel(tableCourseData, tableCourseColumns) {
 			@Override
@@ -271,6 +289,6 @@ public class CoursePanel extends JPanel implements Observer {
 		tableCourse.setModel(modelCourse);
 		TableRowSorter<DefaultTableModel> sorterCourse = new TableRowSorter<>(modelCourse);
 		tableCourse.setRowSorter(sorterCourse);
-
 	}
+
 }

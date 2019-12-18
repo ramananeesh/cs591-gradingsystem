@@ -1,26 +1,36 @@
 package model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+/**
+ * Course student.
+ */
 public class CourseStudent extends Student {
 
+	/** Course ID. */
 	private int courseId;
-	private boolean active;
+
+	/** Whether student is active or not. */
+	private boolean isActive;
+
+	/** List of grade entries. */
 	private ArrayList<GradeEntry> grades;
 
-	public CourseStudent(String fname, String lname, String buid, String email, String type, int courseId,
-			boolean active) {
-		super(fname, lname, buid, email, type);
+	public CourseStudent(String firstName, String lastName, String studentId, String email,
+	                     String type, int courseId, boolean isActive) {
+		super(firstName, lastName, studentId, email, type);
 		this.courseId = courseId;
-		this.active = active;
-		this.grades = new ArrayList<GradeEntry>();
+		this.isActive = isActive;
+		this.grades = new ArrayList<>();
 	}
 
 	public CourseStudent(String fname, String lname, String buid, String email, String type, int courseId,
-			boolean active, ArrayList<GradeEntry> grades) {
+	                     boolean isActive, ArrayList<GradeEntry> grades) {
 		super(fname, lname, buid, email, type);
 		this.courseId = courseId;
-		this.active = active;
+		this.isActive = isActive;
 		this.grades = grades;
 	}
 
@@ -33,11 +43,11 @@ public class CourseStudent extends Student {
 	}
 
 	public boolean isActive() {
-		return active;
+		return isActive;
 	}
 
 	public void setActive(boolean active) {
-		this.active = active;
+		this.isActive = active;
 	}
 
 	public ArrayList<GradeEntry> getGrades() {
@@ -51,7 +61,7 @@ public class CourseStudent extends Student {
 	public HashMap<String, Double> getAllGradeEntries() {
 		HashMap<String, Double> map = new HashMap<String, Double>();
 		for (GradeEntry entry : this.getGrades()) {
-			map.put(entry.getEntryName(), entry.getPointsEarned());
+			map.put(entry.getGradeEntryName(), entry.getPointsEarned());
 		}
 
 		return map;
@@ -76,15 +86,15 @@ public class CourseStudent extends Student {
 		return null;
 	}
 
-	public double getGradeEntryForCategory(int courseId, int categoryId, List<Item> allItems){
+	public double getGradeEntryForCategory(int courseId, int categoryId, List<Item> allItems) {
 		double score = 0;
-		for(GradeEntry entry: this.grades) {
-			if(entry.getCourseId()==courseId&&entry.getCategoryId()==categoryId) {
+		for (GradeEntry entry : this.grades) {
+			if (entry.getCourseId() == courseId && entry.getCategoryId() == categoryId) {
 				int itemId = entry.getItemId();
-				for(Item i : allItems){
-					if(itemId == i.getId()){
+				for (Item i : allItems) {
+					if (itemId == i.getItemId()) {
 						double percentage = i.getWeight();
-						score += percentage*(entry.getPointsEarned()/entry.getMaxPoints());
+						score += percentage * (entry.getPointsEarned() / entry.getMaxPoints());
 						break;
 					}
 				}
